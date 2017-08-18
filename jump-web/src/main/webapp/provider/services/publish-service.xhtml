@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html lang="en"
+xmlns="http://www.w3.org/1999/xhtml"
+xmlns:h="http://xmlns.jcp.org/jsf/html"
+xmlns:f="http://xmlns.jcp.org/jsf/core"
+xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    
+    <ui:composition template="/WEB-INF/masterTemplate.xhtml">
+        <ui:define name="title"> 
+            <h:outputText value="#{publishService.pageTitle}"/> 
+        </ui:define>
+        
+        <ui:define name="location"> 
+            <h:outputText value="#{publishService.nav1}"/><h:graphicImage value="#{resource['images/common/nav_arrow.png']}" alt="/"/>
+            <h:outputText value="#{publishService.nav2}"/><h:graphicImage value="#{resource['images/common/nav_arrow.png']}" alt="/"/>
+            <h:outputText value="#{publishService.nav3}"/><h:graphicImage value="#{resource['images/common/nav_arrow.png']}" alt="/"/>
+            <h:outputText value="#{publishService.nav4}"/>
+        </ui:define>
+        
+        <ui:define name="content">
+            <!-- add required content here-->
+            <h:messages infoStyle="color:blue" warnStyle="color:orange" errorStyle="color:red"/>
+            <h:form>
+            <h:panelGrid columns="3">
+                <h:outputLabel value="#{publishService.kind}"/>
+                <h:selectOneMenu id = "service_kind" required="true" value="#{publishService.service.kind}"
+                                 onchange="submit()" >
+                    <f:selectItems value="#{publishService.servicesKinds}" />
+                </h:selectOneMenu>
+                <h:message for="service_kind"/>
+                
+                <h:outputLabel value="#{publishService.type}"/>
+                <h:selectOneMenu id = "service_type" required="true" value="#{publishService.service.type}"
+                                 onchange="submit()" >
+                    <f:selectItems value="#{publishService.servicesTypes}" />
+                </h:selectOneMenu>
+                <h:message for="service_type"/>
+                
+                <h:outputLabel value="#{publishService.name}"/>
+                <h:selectOneMenu id = "service_name" required="true" value="#{publishService.service.servicename}"
+                                 onchange="submit()" >
+                    <f:selectItems value="#{publishService.servicesNames}" />
+                </h:selectOneMenu>
+                <h:message for="service_name"/>
+                
+                <h:outputLabel value="#{publishService.category}"/>
+                <h:selectOneMenu id = "category_name" required="true" value="#{publishService.service.category}"
+                                 onchange="submit()" >
+                    <f:selectItems value="#{publishService.categoriesNames}" />
+                </h:selectOneMenu>
+                <h:message for="category_name"/>
+                
+                <h:outputLabel value="#{publishService.status}"/>
+                <h:selectBooleanCheckbox disabled="true" readonly="true" id = "publish_status" value="#{publishService.service.published}"/>
+                <h:message for="publish_status"/>
+            </h:panelGrid>
+            <hr/>
+                <h:dataTable value="#{publishService.sortedDataModel}" var="model">
+                    <h:column>
+                        
+                        <f:facet name="header">#{publishService.itemReference}</f:facet>
+                        
+                        #{model.itemreference}
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">#{publishService.itemName}</f:facet>
+                        #{model.itemname}
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">#{publishService.itemPrice}</f:facet>
+                        #{model.price}
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">#{publishService.itemVirtual}l</f:facet>
+                        #{model.virtual_}
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">#{publishService.itemQty}</f:facet>
+                        #{model.qty}
+                    </h:column>
+                </h:dataTable>
+            
+                <h:button value="#{publishService.addItemButtonLabel}" outcome="add-item">
+                    <f:param name="kind" value="#{publishService.service.kind}"/>
+                    <f:param name="type" value="#{publishService.service.type}"/>
+                    <f:param name="service" value="#{publishService.service.servicename}"/>
+                    <f:param name="category" value="#{publishService.service.category}"/>
+                    <f:param name="serviceReference" value="#{publishService.reference_}"/>
+                </h:button>
+            <h:commandButton disabled="#{publishService.service.published}" value="#{publishService.publishButtonLabel}" action="#{publishService.publish()}"/>
+                              
+            
+            </h:form>
+            
+        </ui:define>
+    </ui:composition>
+   
+</html>
