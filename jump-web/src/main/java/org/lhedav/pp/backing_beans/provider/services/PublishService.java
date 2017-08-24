@@ -5,7 +5,7 @@
  */
 package org.lhedav.pp.backing_beans.provider.services;
 
-import org.lhedav.pp.business.ServiceEJB;
+import org.lhedav.pp.business.logic.ServiceEJB;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
@@ -15,11 +15,11 @@ import javax.faces.context.FacesContext;
 //import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.CollectionDataModel;
 import javax.inject.Named;
-import org.lhedav.pp.persistence.common.CRC32StringCollection;
-import org.lhedav.pp.persistence.common.Global;
-import static org.lhedav.pp.persistence.common.Global.GLOBAL_DISPLAY_MESSAGE;
-import org.lhedav.pp.persistence.service.Item;
-import org.lhedav.pp.persistence.service.Service;
+import org.lhedav.pp.business.model.common.CRC32StringCollection;
+import org.lhedav.pp.business.model.common.Global;
+import static org.lhedav.pp.business.model.common.Global.GLOBAL_DISPLAY_MESSAGE;
+import org.lhedav.pp.business.model.service.Item;
+import org.lhedav.pp.business.model.service.Service;
 
 /**
  *

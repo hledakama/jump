@@ -5,7 +5,7 @@
  */
 package org.lhedav.pp.backing_beans.provider.services;
 
-import org.lhedav.pp.business.ServiceEJB;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -16,10 +16,12 @@ import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.CollectionDataModel;
 import javax.inject.Named;
 import javax.validation.constraints.NotNull;
-import org.lhedav.pp.persistence.common.CRC32StringCollection;
-import org.lhedav.pp.persistence.common.Global;
-import org.lhedav.pp.persistence.service.Item;
-import org.lhedav.pp.persistence.service.Service;
+import org.lhedav.pp.business.logic.ServiceEJB;
+import org.lhedav.pp.business.model.common.CRC32StringCollection;
+import org.lhedav.pp.business.model.common.Global;
+import org.lhedav.pp.business.model.service.Item;
+import org.lhedav.pp.business.model.service.Service;
+
 
 /**
  *
