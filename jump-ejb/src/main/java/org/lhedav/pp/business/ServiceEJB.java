@@ -49,7 +49,6 @@ public class ServiceEJB {
             System.out.println("getType: "+aService.getType());
             System.out.println("toString: "+aService.toString());
             System.out.println("getId: "+aService.getId());
-            System.out.println("getRateFk: "+aService.getRateFk());
             System.out.println("isPublished: "+aService.isPublished());
             
             
@@ -70,6 +69,37 @@ public class ServiceEJB {
         
         return true;
     }
+        
+          public boolean createService(@NotNull Service aService){
+            System.out.println("getCategory: "+aService.getCategory());
+            System.out.println("getKind: "+aService.getKind());
+            System.out.println("getServicename: "+aService.getServicename());
+            System.out.println("getServicereference: "+aService.getServicereference());
+            System.out.println("getSubcategory: "+aService.getSubcategory());
+            System.out.println("getType: "+aService.getType());
+            System.out.println("toString: "+aService.toString());
+            System.out.println("getId: "+aService.getId());
+            System.out.println("-----------------isPublished------------: "+aService.isPublished());
+            
+            Item anItem = aService.getItems().get(0);
+            System.out.println("getItemname: "+anItem.getItemname());
+            System.out.println("getItemreference: "+anItem.getItemreference());
+            System.out.println("toString: "+anItem.toString());
+            System.out.println("getCdate: "+anItem.getCdate());
+            System.out.println("getId: "+anItem.getId());
+            System.out.println("getPrice: "+anItem.getPrice());
+            System.out.println("getQty: "+anItem.getQty());
+            System.out.println("getServiceFk: "+anItem.getServiceFk());
+            System.out.println("getVirtual_: "+anItem.getVirtual_());
+            System.out.println("isEdited: "+anItem.isEdited());
+            em.persist(aService);
+            em.flush(); //force insert to receive the id of the aService
+       // anItem.setServiceFk(aService.getId());
+       // em.persist(anItem);
+        
+        return true;
+    }   
+     
     
      public Service getServiceByServiceReference(@NotNull String aReference){
         TypedQuery<Service> theQuery;
@@ -100,10 +130,14 @@ public class ServiceEJB {
     }
     
     public List<Item> getItemsListByServiceReference(@NotNull String aReference){
-        TypedQuery<Item> theQuery;
+        TypedQuery<Service> theQuery;
         System.out.println("@@@aReference: "+aReference);
-        theQuery = em.createNamedQuery("Item.findByServicereferenceFk", Item.class);
-        return theQuery.setParameter("servicereferenceFk", aReference).getResultList();       
+        theQuery = em.createNamedQuery("Service.findByServicereference", Service.class);
+        Service theService = theQuery.setParameter("servicereference", aReference).getSingleResult();
+        if(theService != null){
+            return theService.getItems();
+        }
+        return null;
     }
     
     

@@ -7,8 +7,6 @@ package org.lhedav.pp.backing_beans.provider.services;
 
 import org.lhedav.pp.business.ServiceEJB;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;

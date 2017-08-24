@@ -6,15 +6,17 @@
 package org.lhedav.pp.persistence.service;
 
 import java.io.Serializable;
-import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -30,55 +32,53 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "Service.findAll", query = "SELECT s FROM Service s")
     , @NamedQuery(name = "Service.findById", query = "SELECT s FROM Service s WHERE s.id = :id")
-    , @NamedQuery(name = "Service.findByKind", query = "SELECT s FROM Service s WHERE s.kind = :kind")
-    , @NamedQuery(name = "Service.findByType", query = "SELECT s FROM Service s WHERE s.type = :type")
     , @NamedQuery(name = "Service.findByCategory", query = "SELECT s FROM Service s WHERE s.category = :category")
-    , @NamedQuery(name = "Service.findBySubcategory", query = "SELECT s FROM Service s WHERE s.subcategory = :subcategory")
-    , @NamedQuery(name = "Service.findByServicename", query = "SELECT s FROM Service s WHERE s.servicename = :servicename")
+    , @NamedQuery(name = "Service.findByKind", query = "SELECT s FROM Service s WHERE s.kind = :kind")
     , @NamedQuery(name = "Service.findByPublished", query = "SELECT s FROM Service s WHERE s.published = :published")
+    , @NamedQuery(name = "Service.findByServicename", query = "SELECT s FROM Service s WHERE s.servicename = :servicename")
     , @NamedQuery(name = "Service.findByServicereference", query = "SELECT s FROM Service s WHERE s.servicereference = :servicereference")
-    , @NamedQuery(name = "Service.findByRateFk", query = "SELECT s FROM Service s WHERE s.rateFk = :rateFk")})
+    , @NamedQuery(name = "Service.findBySubcategory", query = "SELECT s FROM Service s WHERE s.subcategory = :subcategory")
+    , @NamedQuery(name = "Service.findByType", query = "SELECT s FROM Service s WHERE s.type = :type")})
 public class Service implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Basic(optional = false)
     @NotNull
     @Column(name = "ID")
     private Long id;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 10)
-    @Column(name = "KIND")
-    private String kind;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 20)
-    @Column(name = "TYPE_")
-    private String type;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 50)
+    
+    @Size(max = 255)
     @Column(name = "CATEGORY")
     private String category;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 50)
-    @Column(name = "SUBCATEGORY")
-    private String subcategory;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 50)
+    
+    @Size(max = 255)
+    @Column(name = "KIND")
+    private String kind;
+    
+    @Column(name = "PUBLISHED")
+    private Boolean published;
+    
+    @Size(max = 255)
     @Column(name = "SERVICENAME")
     private String servicename;
-    @Column(name = "PUBLISHED")
-    private boolean published;
-    @Size(max = 50)
+    
+    @Size(max = 255)
     @Column(name = "SERVICEREFERENCE")
     private String servicereference;
-    @Column(name = "RATE_FK")
-    private Long rateFk;
+    
+    @Size(max = 255)
+    @Column(name = "SUBCATEGORY")
+    private String subcategory;
+    
+    @Size(max = 255)
+    @Column(name = "TYPE_")
+    private String type;
+    
+     @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = "serviceFk")
+    private List<Item> items = new ArrayList();
     
     
 	public final static String KIND_HOUSEHOLD      = "HOUSE_HOLD";
@@ -93,22 +93,12 @@ public class Service implements Serializable {
 	public final static String TYPE_MAINTENANCE    = "MAINTENANCE";
 	public final static String TYPE_SECURITY       = "SECURITY";
 	public final static String TYPE_TRANSPORTATION = "TRANSPORTATION";
-        
 
     public Service() {
     }
 
     public Service(Long id) {
         this.id = id;
-    }
-
-    public Service(Long id, String kind, String type, String category, String subcategory, String servicename) {
-        this.id = id;
-        this.kind = kind;
-        this.type = type;
-        this.category = category;
-        this.subcategory = subcategory;
-        this.servicename = servicename;
     }
 
     public Long getId() {
@@ -119,22 +109,6 @@ public class Service implements Serializable {
         this.id = id;
     }
 
-    public String getKind() {
-        return kind;
-    }
-
-    public void setKind(String kind) {
-        this.kind = kind;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
     public String getCategory() {
         return category;
     }
@@ -143,12 +117,20 @@ public class Service implements Serializable {
         this.category = category;
     }
 
-    public String getSubcategory() {
-        return subcategory;
+    public String getKind() {
+        return kind;
     }
 
-    public void setSubcategory(String subcategory) {
-        this.subcategory = subcategory;
+    public void setKind(String kind) {
+        this.kind = kind;
+    }
+
+    public Boolean isPublished() {
+        return published;
+    }
+
+    public void setPublished(Boolean published) {
+        this.published = published;
     }
 
     public String getServicename() {
@@ -159,14 +141,6 @@ public class Service implements Serializable {
         this.servicename = servicename;
     }
 
-    public boolean isPublished() {
-        return published;
-    }
-
-    public void setPublished(boolean published) {
-        this.published = published;
-    }
-
     public String getServicereference() {
         return servicereference;
     }
@@ -175,12 +149,38 @@ public class Service implements Serializable {
         this.servicereference = servicereference;
     }
 
-    public Long getRateFk() {
-        return rateFk;
+    public String getSubcategory() {
+        return subcategory;
     }
 
-    public void setRateFk(Long rateFk) {
-        this.rateFk = rateFk;
+    public void setSubcategory(String subcategory) {
+        this.subcategory = subcategory;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+    
+        public List<Item> getItems(){
+        return items;
+    }
+    
+    public void setItems(List<Item> aList){
+        items = aList;
+    }
+    
+    public void addItem(Item anItem){
+        if(!items.contains(anItem))
+        items.add(anItem);
+    }
+    
+    public void removeItem(Item anItem){
+        if(items.contains(anItem))
+        items.remove(anItem);
     }
 
     @Override

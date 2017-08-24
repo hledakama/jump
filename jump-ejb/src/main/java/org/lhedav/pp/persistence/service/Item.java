@@ -34,51 +34,61 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Item.findAll", query = "SELECT i FROM Item i")
-    , @NamedQuery(name = "Item.findById", query = "SELECT i FROM Item i WHERE i.id = :id")
-    , @NamedQuery(name = "Item.findByServicereferenceFk", query = "SELECT i FROM Item i WHERE i.servicereferenceFk = :servicereferenceFk")
+    , @NamedQuery(name = "Item.findById", query = "SELECT i FROM Item i WHERE i.id = :id")  
     , @NamedQuery(name = "Item.findByItemreference", query = "SELECT i FROM Item i WHERE i.itemreference = :itemreference")
     , @NamedQuery(name = "Item.findByItemname", query = "SELECT i FROM Item i WHERE i.itemname = :itemname")
     , @NamedQuery(name = "Item.findByPrice", query = "SELECT i FROM Item i WHERE i.price = :price")
     , @NamedQuery(name = "Item.findByVirtual_", query = "SELECT i FROM Item i WHERE i.virtual_ = :virtual_")
     , @NamedQuery(name = "Item.findByQty", query = "SELECT i FROM Item i WHERE i.qty = :qty")
     , @NamedQuery(name = "Item.findByCdate", query = "SELECT i FROM Item i WHERE i.cdate = :cdate")
-    , @NamedQuery(name = "Item.findByServiceFk", query = "SELECT i FROM Item i WHERE i.serviceFk = :serviceFk")})
+    , @NamedQuery(name = "Item.findByServiceFk", query = "SELECT i FROM Item i WHERE i.serviceFk = :serviceFk")
+    , @NamedQuery(name = "Item.findByServicereferenceFk", query = "SELECT i FROM Item i WHERE i.servicereferenceFk = :servicereferenceFk")
+        })
+
 public class Item implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Basic(optional = false)
     @NotNull
     @Column(name = "ID")
     private Long id;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 50)
-    @Column(name = "SERVICEREFERENCE_FK")
-    private String servicereferenceFk;
+    
+        
+    @Column(name = "CDATE")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date cdate;    
+        
+    @Size(max = 50)
+    @Column(name = "ITEMNAME")
+    private String itemname;
+    
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 50)
     @Column(name = "ITEMREFERENCE")
     private String itemreference;
-    @Size(max = 50)
-    @Column(name = "ITEMNAME")
-    private String itemname;
+
+    
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Basic(optional = false)
     @NotNull
     @Column(name = "PRICE")
-    private Long price;
-    @Column(name = "VIRTUAL_")
-    private boolean virtual_;
+    private Long price;    
+        
     @Column(name = "QTY")
-    private Long qty;
-    @Column(name = "CDATE")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date cdate;
+    private Long qty; 
+    
     @Column(name = "SERVICE_FK")
     private Long serviceFk;
+    
+    @Column(name = "VIRTUAL_")
+    private boolean virtual_;
+
+
+    
     @Transient
     private boolean edited;
 
@@ -91,7 +101,6 @@ public class Item implements Serializable {
 
     public Item(Long id, String servicereferenceFk, String itemreference, Long price) {
         this.id = id;
-        this.servicereferenceFk = servicereferenceFk;
         this.itemreference = itemreference;
         this.price = price;
     }
@@ -102,14 +111,6 @@ public class Item implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getServicereferenceFk() {
-        return servicereferenceFk;
-    }
-
-    public void setServicereferenceFk(String servicereferenceFk) {
-        this.servicereferenceFk = servicereferenceFk;
     }
 
     public String getItemreference() {

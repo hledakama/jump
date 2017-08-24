@@ -390,7 +390,7 @@ public class AddItem {
             List<Item> theList;
             theList = serviceEjb.getItemsListByServiceReference(service.getServicereference());
             System.out.println("theList == null: "+(theList == null) +", service.getServicereference(): "+service.getServicereference());
-            if(!theList.isEmpty()){
+            if((theList != null) && (!theList.isEmpty())){
                 System.out.println("getItemname from theList: "+(theList.get(0).getItemname())+", theSize: "+theList.size());
             }
            sortitemmodel = new SortedDataModel<>(new CollectionDataModel<>(theList));
@@ -460,9 +460,9 @@ public class AddItem {
        private String addItem(){ 
           item.setItemreference(getItemCRC());
           service.setSubcategory(item.getItemname());
-         // service.addItem(item);
-          serviceEjb.createService(service, item); 
-     //     modifyItems();          
+          service.addItem(item);
+          serviceEjb.createService(service); 
+     //   modifyItems();          
           return Global.STAY_ON_CURRENT_PAGE;
   
        }
