@@ -58,7 +58,7 @@ public class Service implements Serializable {
     private String kind;
     
     @Column(name = "PUBLISHED")
-    private Boolean published;
+    private boolean published;
     
     @Size(max = 255)
     @Column(name = "SERVICENAME")
@@ -125,11 +125,11 @@ public class Service implements Serializable {
         this.kind = kind;
     }
 
-    public Boolean isPublished() {
+    public boolean isPublished() {
         return published;
     }
 
-    public void setPublished(Boolean published) {
+    public void setPublished(boolean published) {
         this.published = published;
     }
 

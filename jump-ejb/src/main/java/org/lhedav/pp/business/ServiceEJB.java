@@ -102,10 +102,19 @@ public class ServiceEJB {
      
     
      public Service getServiceByServiceReference(@NotNull String aReference){
+         try{
         TypedQuery<Service> theQuery;
         theQuery = em.createNamedQuery("Service.findByServicereference", Service.class);
         theQuery.setParameter("servicereference", aReference);
         return theQuery.getSingleResult();
+         }
+         catch(javax.persistence.NoResultException e){
+             return null;
+         }
+         catch(Exception e){
+             e.printStackTrace();
+             return null;
+         }
     }
     
     public boolean PersistService(@NotNull Service aService){
@@ -130,10 +139,20 @@ public class ServiceEJB {
     }
     
     public List<Item> getItemsListByServiceReference(@NotNull String aReference){
+        Service theService = null;
+        try{
         TypedQuery<Service> theQuery;
         System.out.println("@@@aReference: "+aReference);
         theQuery = em.createNamedQuery("Service.findByServicereference", Service.class);
-        Service theService = theQuery.setParameter("servicereference", aReference).getSingleResult();
+        theService = theQuery.setParameter("servicereference", aReference).getSingleResult();
+        }
+         catch(javax.persistence.NoResultException e){
+             return null;
+         }
+         catch(Exception e){
+             e.printStackTrace();
+             return null;
+         }
         if(theService != null){
             return theService.getItems();
         }

@@ -42,7 +42,6 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Item.findByQty", query = "SELECT i FROM Item i WHERE i.qty = :qty")
     , @NamedQuery(name = "Item.findByCdate", query = "SELECT i FROM Item i WHERE i.cdate = :cdate")
     , @NamedQuery(name = "Item.findByServiceFk", query = "SELECT i FROM Item i WHERE i.serviceFk = :serviceFk")
-    , @NamedQuery(name = "Item.findByServicereferenceFk", query = "SELECT i FROM Item i WHERE i.servicereferenceFk = :servicereferenceFk")
         })
 
 public class Item implements Serializable {
@@ -99,7 +98,7 @@ public class Item implements Serializable {
         this.id = id;
     }
 
-    public Item(Long id, String servicereferenceFk, String itemreference, Long price) {
+    public Item(Long id, String itemreference, Long price) {
         this.id = id;
         this.itemreference = itemreference;
         this.price = price;
