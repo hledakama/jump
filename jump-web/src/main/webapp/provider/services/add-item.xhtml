@@ -60,13 +60,13 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                     <h:message for="item_price"/>
 
                     <h:outputLabel value="#{addItem.qty}"/>
-                    <h:inputText id = "item_qty" required="#{not addItem.item.virtual}" value="#{addItem.item.qty}">
+                    <h:inputText id = "item_qty" required="#{not addItem.virtualItem}" value="#{addItem.item.qty}">
                     <f:validateLongRange minimum="0" maximum="10000"/>
                     </h:inputText >
                     <h:message for="item_qty"/>
 
                     <h:outputLabel value="#{addItem.virtual}"/>
-                    <h:selectBooleanCheckbox id = "item_virtual" value="#{addItem.item.virtual}"/>
+                    <h:selectBooleanCheckbox id = "item_virtual" value="#{addItem.virtualItem}"/>
                     <h:message for="item_virtual"/>
                 </h:panelGrid>
                 
@@ -119,9 +119,9 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                     
                     <h:column>
                         <f:facet name="header">#{addItem.virtual}</f:facet> 
-                        <h:outputText value="#{model.virtual}"  rendered="#{not model.edited}"/>
+                        <h:outputText value="#{addItem.virtualItem}"  rendered="#{not model.edited}"/>
                       
-                        <h:inputText value="#{model.virtual}" rendered="#{model.edited}">
+                        <h:inputText value="#{addItem.virtualItem}" rendered="#{model.edited}">
                       </h:inputText>
                    </h:column>
                     

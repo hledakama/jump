@@ -16,3 +16,10 @@
         <maven.compiler.target>1.7</maven.compiler.target>
     </properties>
 </project>
+
+<!-- 
+    https://docs.oracle.com/javaee/7/tutorial/jsf-page-core001.htm 
+    http://docs.oracle.com/javaee/5/tutorial/doc/bnast.html
+    
+    
+-->

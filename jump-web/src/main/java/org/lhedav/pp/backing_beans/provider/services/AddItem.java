@@ -60,6 +60,7 @@ public class AddItem {
     private String date_ = "Date";
     private SortedDataModel<Item> sortitemmodel;
     private String sortType;
+    private boolean virtualItem;
 
     private String itemCRC;
             @EJB
@@ -491,6 +492,22 @@ public class AddItem {
     
        public void ItemAddressChanged(ValueChangeEvent anEvent){
     }
+
+    public boolean isVirtualItem() {
+   
+        virtualItem = (item != null) && (item.getVirtual() != 0);
+    return virtualItem;
+    }
+    
+    //https://stackoverflow.com/questions/5706513/bind-hselectbooleancheckbox-value-to-int-integer-instead-of-boolean-boolean
+   
+    public void setVirtualItem(boolean virtual) {
+         if(item == null){
+             return;
+         }
+        virtualItem = virtual;        
+        item.setVirtual(virtualItem ? (short)1 : (short)0);
+    } 
 
     
 }
