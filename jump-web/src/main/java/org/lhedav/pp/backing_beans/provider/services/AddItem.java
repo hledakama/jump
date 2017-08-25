@@ -7,6 +7,7 @@ package org.lhedav.pp.backing_beans.provider.services;
 
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -355,7 +356,8 @@ public class AddItem {
        }*/
        
        public String sortItemByReference(final String dir) {
-           List<Item> theList = serviceEjb.getItemsListByServiceReference(service.getServicereference());
+           Collection<Item> theCollection = serviceEjb.getItemsListByServiceReference(service.getServicereference());
+           List theList = new ArrayList(theCollection);
            Collections.sort(theList, new Comparator<Item>() {
             @Override
             public int compare(Item key_1, Item key_2) {
@@ -389,11 +391,11 @@ public class AddItem {
     }
        
         public void setSortitemmodel() {
-            List<Item> theList;
+            Collection<Item> theList;
             theList = serviceEjb.getItemsListByServiceReference(service.getServicereference());
             System.out.println("theList == null: "+(theList == null) +", service.getServicereference(): "+service.getServicereference());
             if((theList != null) && (!theList.isEmpty())){
-                System.out.println("getItemname from theList: "+(theList.get(0).getItemname())+", theSize: "+theList.size());
+                //System.out.println("getItemname from theList: "+(theList.get(0).getItemname())+", theSize: "+theList.size());
             }
            sortitemmodel = new SortedDataModel<>(new CollectionDataModel<>(theList));
            
@@ -437,7 +439,6 @@ public class AddItem {
                 return true;
             }
         }
-
         return false;
     }
     

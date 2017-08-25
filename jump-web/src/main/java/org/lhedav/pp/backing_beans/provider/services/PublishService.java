@@ -7,6 +7,7 @@ package org.lhedav.pp.backing_beans.provider.services;
 
 import org.lhedav.pp.business.logic.ServiceEJB;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
@@ -78,7 +79,7 @@ public class PublishService {
     public boolean isServiceEmpty(){
         setReference_();
         java.lang.System.out.println("getReference_(): "+getReference_());
-        List<Item>   theItems = m_service_ejb.getItemsListByServiceReference(getReference_());
+        Collection<Item>   theItems = m_service_ejb.getItemsListByServiceReference(getReference_());
         boolean isNotEmpty = (theItems != null) && (theItems.size() > 0);
         if(theItems != null){
             java.lang.System.out.println("listSize: "+theItems.size()+", ");
@@ -276,7 +277,7 @@ public class PublishService {
          
            public SortedDataModel<Item> getSortedDataModel() {
                setReference_();
-           List<Item>   theItems = m_service_ejb.getItemsListByServiceReference(getReference_());
+           Collection<Item>   theItems = m_service_ejb.getItemsListByServiceReference(getReference_());
            
            sortedDataModel = new SortedDataModel<>(new CollectionDataModel<>(theItems));
            /* } catch (ParseException ex) {
@@ -308,7 +309,7 @@ public class PublishService {
        
     public String publish(){
         FacesContext theCtx = FacesContext.getCurrentInstance();
-         if(service.isPublished() || isServiceEmpty()){
+         if((service.getPublished() == 1) || isServiceEmpty()){
              theCtx.addMessage(GLOBAL_DISPLAY_MESSAGE, new FacesMessage(FacesMessage.SEVERITY_WARN, 
                                                                         "Service is already published or no itemdatis created.",
                                                                         "Current service is empty or already published!"));
@@ -316,7 +317,7 @@ public class PublishService {
          }
          setReference_();
          Service theRetrived = m_service_ejb.getServiceByServiceReference(getReference_());
-         theRetrived.setPublished(true);
+         theRetrived.setPublished((short)1);
          
          if(m_service_ejb.updateService(service)){
              theCtx.addMessage(GLOBAL_DISPLAY_MESSAGE, new FacesMessage(FacesMessage.SEVERITY_INFO, 

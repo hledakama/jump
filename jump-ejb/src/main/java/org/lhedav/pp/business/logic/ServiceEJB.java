@@ -5,6 +5,7 @@
  */
 package org.lhedav.pp.business.logic;
 
+import java.util.Collection;
 import java.util.List;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -32,11 +33,11 @@ public class ServiceEJB {
     
      //***************************  Service   *********************************************
     public boolean createService(@NotNull Service aService, @NotNull Item anItem, @NotNull ItemData anItemFata){
-        anItemFata.setItemFk(anItem.getId());
+        /*anItemFata.setItemFk(anItem.getId());
         anItem.setServiceFk(aService.getId());
         em.persist(anItemFata);
         em.persist(anItem);
-        em.persist(aService);
+        em.persist(aService);*/
         return true;
     }
     
@@ -49,7 +50,7 @@ public class ServiceEJB {
             System.out.println("getType: "+aService.getType());
             System.out.println("toString: "+aService.toString());
             System.out.println("getId: "+aService.getId());
-            System.out.println("isPublished: "+aService.isPublished());
+            //System.out.println("isPublished: "+aService.isPublished());
             
             
             System.out.println("getItemname: "+anItem.getItemname());
@@ -60,7 +61,7 @@ public class ServiceEJB {
             System.out.println("getPrice: "+anItem.getPrice());
             System.out.println("getQty: "+anItem.getQty());
             System.out.println("getServiceFk: "+anItem.getServiceFk());
-            System.out.println("getVirtual_: "+anItem.getVirtual_());
+            System.out.println("getVirtual_: "+anItem.getVirtual());
             System.out.println("isEdited: "+anItem.isEdited());
             em.persist(aService);
             em.flush(); //force insert to receive the id of the aService
@@ -79,9 +80,9 @@ public class ServiceEJB {
             System.out.println("getType: "+aService.getType());
             System.out.println("toString: "+aService.toString());
             System.out.println("getId: "+aService.getId());
-            System.out.println("-----------------isPublished------------: "+aService.isPublished());
+            System.out.println("-----------------isPublished------------: "+aService.getPublished());
             
-            Item anItem = aService.getItems().get(0);
+           /* Item anItem = aService.getItemCollection().get(0);
             System.out.println("getItemname: "+anItem.getItemname());
             System.out.println("getItemreference: "+anItem.getItemreference());
             System.out.println("toString: "+anItem.toString());
@@ -90,8 +91,8 @@ public class ServiceEJB {
             System.out.println("getPrice: "+anItem.getPrice());
             System.out.println("getQty: "+anItem.getQty());
             System.out.println("getServiceFk: "+anItem.getServiceFk());
-            System.out.println("getVirtual_: "+anItem.getVirtual_());
-            System.out.println("isEdited: "+anItem.isEdited());
+            System.out.println("getVirtual_: "+anItem.getVirtual());
+            System.out.println("isEdited: "+anItem.isEdited());*/
             em.persist(aService);
             em.flush(); //force insert to receive the id of the aService
        // anItem.setServiceFk(aService.getId());
@@ -138,7 +139,7 @@ public class ServiceEJB {
         return theQuery.getSingleResult();
     }
     
-    public List<Item> getItemsListByServiceReference(@NotNull String aReference){
+    public Collection<Item> getItemsListByServiceReference(@NotNull String aReference){
         Service theService = null;
         try{
         TypedQuery<Service> theQuery;
@@ -154,7 +155,7 @@ public class ServiceEJB {
              return null;
          }
         if(theService != null){
-            return theService.getItems();
+            return theService.getItemCollection();
         }
         return null;
     }

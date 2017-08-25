@@ -6,15 +6,13 @@
 package org.lhedav.pp.business.model.service;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -34,59 +32,43 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Item.findAll", query = "SELECT i FROM Item i")
-    , @NamedQuery(name = "Item.findById", query = "SELECT i FROM Item i WHERE i.id = :id")  
-    , @NamedQuery(name = "Item.findByItemreference", query = "SELECT i FROM Item i WHERE i.itemreference = :itemreference")
-    , @NamedQuery(name = "Item.findByItemname", query = "SELECT i FROM Item i WHERE i.itemname = :itemname")
-    , @NamedQuery(name = "Item.findByPrice", query = "SELECT i FROM Item i WHERE i.price = :price")
-    , @NamedQuery(name = "Item.findByVirtual_", query = "SELECT i FROM Item i WHERE i.virtual_ = :virtual_")
-    , @NamedQuery(name = "Item.findByQty", query = "SELECT i FROM Item i WHERE i.qty = :qty")
+    , @NamedQuery(name = "Item.findById", query = "SELECT i FROM Item i WHERE i.id = :id")
     , @NamedQuery(name = "Item.findByCdate", query = "SELECT i FROM Item i WHERE i.cdate = :cdate")
-    , @NamedQuery(name = "Item.findByServiceFk", query = "SELECT i FROM Item i WHERE i.serviceFk = :serviceFk")
-        })
-
+    , @NamedQuery(name = "Item.findByItemname", query = "SELECT i FROM Item i WHERE i.itemname = :itemname")
+    , @NamedQuery(name = "Item.findByItemreference", query = "SELECT i FROM Item i WHERE i.itemreference = :itemreference")
+    , @NamedQuery(name = "Item.findByPrice", query = "SELECT i FROM Item i WHERE i.price = :price")
+    , @NamedQuery(name = "Item.findByQty", query = "SELECT i FROM Item i WHERE i.qty = :qty")
+    , @NamedQuery(name = "Item.findByVirtual", query = "SELECT i FROM Item i WHERE i.virtual = :virtual")})
 public class Item implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Basic(optional = false)
     @NotNull
     @Column(name = "ID")
     private Long id;
-    
-        
+    @Basic(optional = false)
+    @NotNull
     @Column(name = "CDATE")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date cdate;    
-        
+    private Date cdate;
     @Size(max = 50)
     @Column(name = "ITEMNAME")
     private String itemname;
-    
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 50)
     @Column(name = "ITEMREFERENCE")
     private String itemreference;
-
-    
-    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    @Basic(optional = false)
-    @NotNull
     @Column(name = "PRICE")
-    private Long price;    
-        
+    private Long price;
     @Column(name = "QTY")
-    private Long qty; 
-    
-    @Column(name = "SERVICE_FK")
-    private Long serviceFk;
-    
+    private Long qty;
     @Column(name = "VIRTUAL_")
-    private boolean virtual_;
-
-
+    private Short virtual;
+    @JoinColumn(name = "SERVICE_FK", referencedColumnName = "ID")
+    @ManyToOne(optional = false)
+    private Service serviceFk;
     
     @Transient
     private boolean edited;
@@ -98,10 +80,10 @@ public class Item implements Serializable {
         this.id = id;
     }
 
-    public Item(Long id, String itemreference, Long price) {
+    public Item(Long id, Date cdate, String itemreference) {
         this.id = id;
+        this.cdate = cdate;
         this.itemreference = itemreference;
-        this.price = price;
     }
 
     public Long getId() {
@@ -112,12 +94,12 @@ public class Item implements Serializable {
         this.id = id;
     }
 
-    public String getItemreference() {
-        return itemreference;
+    public Date getCdate() {
+        return cdate;
     }
 
-    public void setItemreference(String itemreference) {
-        this.itemreference = itemreference;
+    public void setCdate(Date cdate) {
+        this.cdate = cdate;
     }
 
     public String getItemname() {
@@ -128,20 +110,20 @@ public class Item implements Serializable {
         this.itemname = itemname;
     }
 
+    public String getItemreference() {
+        return itemreference;
+    }
+
+    public void setItemreference(String itemreference) {
+        this.itemreference = itemreference;
+    }
+
     public Long getPrice() {
         return price;
     }
 
     public void setPrice(Long price) {
         this.price = price;
-    }
-
-    public boolean getVirtual_() {
-        return virtual_;
-    }
-
-    public void setVirtual_(boolean virtual) {
-        this.virtual_ = virtual;
     }
 
     public Long getQty() {
@@ -152,20 +134,28 @@ public class Item implements Serializable {
         this.qty = qty;
     }
 
-    public Date getCdate() {
-        return cdate;
+    public Short getVirtual() {
+        return virtual;
     }
 
-    public void setCdate(Date cdate) {
-        this.cdate = cdate;
+    public void setVirtual(Short virtual) {
+        this.virtual = virtual;
     }
 
-    public Long getServiceFk() {
+    public Service getServiceFk() {
         return serviceFk;
     }
 
-    public void setServiceFk(Long serviceFk) {
+    public void setServiceFk(Service serviceFk) {
         this.serviceFk = serviceFk;
+    }
+    
+    public boolean isEdited(){
+        return edited;
+    }
+    
+    public void setEdited(boolean aBool){
+        edited = aBool;
     }
 
     @Override
@@ -190,15 +180,7 @@ public class Item implements Serializable {
 
     @Override
     public String toString() {
-        return "org.lhedav.pp.persistence.service.Item[ id=" + id + " ]";
-    }
-    
-    public boolean isEdited(){
-        return edited;
-    }
-    
-    public void setEdited(boolean aBool){
-        edited = aBool;
+        return "org.lhedav.pp.business.model.service.Item[ id=" + id + " ]";
     }
     
 }

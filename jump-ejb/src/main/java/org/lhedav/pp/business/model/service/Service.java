@@ -6,14 +6,12 @@
 package org.lhedav.pp.business.model.service;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -21,6 +19,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -42,46 +41,45 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Service implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    
     @Id
     @Basic(optional = false)
     @NotNull
     @Column(name = "ID")
     private Long id;
-    
-    @Size(max = 255)
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 50)
     @Column(name = "CATEGORY")
     private String category;
-    
-    @Size(max = 255)
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 10)
     @Column(name = "KIND")
     private String kind;
-    
     @Column(name = "PUBLISHED")
-    private boolean published;
-    
-    @Size(max = 255)
+    private Short published;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 50)
     @Column(name = "SERVICENAME")
     private String servicename;
-    
-    @Size(max = 255)
+    @Size(max = 50)
     @Column(name = "SERVICEREFERENCE")
     private String servicereference;
-    
-    @Size(max = 255)
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 50)
     @Column(name = "SUBCATEGORY")
     private String subcategory;
-    
-    @Size(max = 255)
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 20)
     @Column(name = "TYPE_")
     private String type;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "serviceFk")
+    private Collection<Item> itemCollection;
     
-     @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "serviceFk")
-    private List<Item> items = new ArrayList();
-    
-    
-	public final static String KIND_HOUSEHOLD      = "HOUSE_HOLD";
+    	public final static String KIND_HOUSEHOLD      = "HOUSE_HOLD";
 	public final static String KIND_WORKPLACE      = "WORK_PLACE";
 	
 	public final static String TYPE_ADMINISTRATION = "ADMINISTRATION";
@@ -99,6 +97,15 @@ public class Service implements Serializable {
 
     public Service(Long id) {
         this.id = id;
+    }
+
+    public Service(Long id, String category, String kind, String servicename, String subcategory, String type) {
+        this.id = id;
+        this.category = category;
+        this.kind = kind;
+        this.servicename = servicename;
+        this.subcategory = subcategory;
+        this.type = type;
     }
 
     public Long getId() {
@@ -125,11 +132,11 @@ public class Service implements Serializable {
         this.kind = kind;
     }
 
-    public boolean isPublished() {
+    public Short getPublished() {
         return published;
     }
 
-    public void setPublished(boolean published) {
+    public void setPublished(Short published) {
         this.published = published;
     }
 
@@ -164,23 +171,26 @@ public class Service implements Serializable {
     public void setType(String type) {
         this.type = type;
     }
-    
-        public List<Item> getItems(){
-        return items;
+
+    @XmlTransient
+    public Collection<Item> getItemCollection() {
+        return itemCollection;
     }
-    
-    public void setItems(List<Item> aList){
-        items = aList;
+
+    public void setItemCollection(Collection<Item> itemCollection) {
+        this.itemCollection = itemCollection;
     }
     
     public void addItem(Item anItem){
-        if(!items.contains(anItem))
-        items.add(anItem);
+        if(anItem != null){
+            this.itemCollection.add(anItem);
+        }
     }
     
-    public void removeItem(Item anItem){
-        if(items.contains(anItem))
-        items.remove(anItem);
+        public void removeItem(Item anItem){
+        if((this.itemCollection.contains(anItem))){
+            this.itemCollection.remove(anItem);
+        }
     }
 
     @Override
@@ -205,7 +215,7 @@ public class Service implements Serializable {
 
     @Override
     public String toString() {
-        return "org.lhedav.pp.persistence.service.Service[ id=" + id + " ]";
+        return "org.lhedav.pp.business.model.service.Service[ id=" + id + " ]";
     }
     
 }
