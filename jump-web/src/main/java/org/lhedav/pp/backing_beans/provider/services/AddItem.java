@@ -494,8 +494,6 @@ public class AddItem {
     }
 
     public boolean isVirtualItem() {
-   
-        virtualItem = (item != null) && (item.getVirtual() != 0);
     return virtualItem;
     }
     
@@ -503,11 +501,11 @@ public class AddItem {
    
     public void setVirtualItem(boolean virtual) {
          if(item == null){
-             return;
+             virtualItem = false;
          }
-        virtualItem = virtual;        
-        item.setVirtual(virtualItem ? (short)1 : (short)0);
+         else{
+            virtualItem = virtual;        
+            item.setVirtual(virtualItem ? (short)1 : (short)0);
+         }
     } 
-
-    
 }

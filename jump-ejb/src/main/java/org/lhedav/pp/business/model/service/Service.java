@@ -6,6 +6,7 @@
 package org.lhedav.pp.business.model.service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -93,13 +94,16 @@ public class Service implements Serializable {
 	public final static String TYPE_TRANSPORTATION = "TRANSPORTATION";
 
     public Service() {
+        this.itemCollection = new ArrayList();
     }
 
     public Service(Long id) {
+        this.itemCollection = new ArrayList();
         this.id = id;
     }
 
     public Service(Long id, String category, String kind, String servicename, String subcategory, String type) {
+        this.itemCollection = new ArrayList();
         this.id = id;
         this.category = category;
         this.kind = kind;

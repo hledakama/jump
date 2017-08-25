@@ -336,16 +336,19 @@ public class PublishService {
 
           
     public boolean isPublishChecked() {
-        publishChecked = (service != null) && (service.getPublished() != 0);
         return publishChecked;
     }
     
     //https://stackoverflow.com/questions/5706513/bind-hselectbooleancheckbox-value-to-int-integer-instead-of-boolean-boolean
    
     public void setPublishChecked(boolean checked) {
-        if(service == null) return;
-        publishChecked = checked;        
-        service.setPublished(publishChecked ? (short)1 : (short)0);
+        if(service == null){
+            publishChecked = false;
+        }
+        else{
+            publishChecked = checked;        
+            service.setPublished(publishChecked ? (short)1 : (short)0);
+        }        
     }       
        
     
