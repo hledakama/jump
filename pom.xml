@@ -20,6 +20,13 @@
 <!-- 
     https://docs.oracle.com/javaee/7/tutorial/jsf-page-core001.htm 
     http://docs.oracle.com/javaee/5/tutorial/doc/bnast.html
+    https://en.wikibooks.org/wiki/Java_Persistence/Persisting
+    https://docs.oracle.com/cd/E16439_01/doc.1013/e13981/cmp30cfg001.htm
+    https://openjpa.apache.org/docs/openjpa-0.9.0-incubating/manual/manual.html#jpa_overview_mapping_sequence_tablegen
+    http://www.developerscrappad.com/408/java/java-ee/ejb3-jpa-3-ways-of-generating-primary-key-through-generatedvalue/
+    http://www.java2s.com/Code/Java/JPA/IDGenerationTypeAUTO.htm
+    http://www.developerscrappad.com/408/java/java-ee/ejb3-jpa-3-ways-of-generating-primary-key-through-generatedvalue/
+    
     
     
 -->

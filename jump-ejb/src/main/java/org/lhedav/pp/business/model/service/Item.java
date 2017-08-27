@@ -10,12 +10,15 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.TableGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
@@ -42,10 +45,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Item implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    //https://stackoverflow.com/questions/9087848/when-does-the-jpa-set-a-generatedvalue-id
     @Id
-    @Basic(optional = false)
-    @NotNull
     @Column(name = "ID")
+    @TableGenerator( name = "sequence", table = "SEQUENCE", pkColumnName = "APP_SEQ_NAME", pkColumnValue = "ITEM_T.ID", valueColumnName = "APP_SEQ_COUNT", initialValue = 1, allocationSize = 1 )
+    @GeneratedValue( strategy = GenerationType.TABLE, generator = "sequence" )
     private Long id;
     @Basic(optional = false)
     @NotNull
