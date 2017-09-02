@@ -7,9 +7,6 @@ package org.lhedav.pp.business.model.service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
-import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -20,7 +17,6 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -29,12 +25,12 @@ import javax.xml.bind.annotation.XmlTransient;
  *
  * @author client
  */
-@Entity
-@Table( name = "SERVICE_T")
+@Entity(name = "Service")
+@Table(name = "SERVICE_T")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Service.findAll", query = "SELECT s FROM Service s")
-    , @NamedQuery(name = "Service.findById", query = "SELECT s FROM Service s WHERE s.id = :id")
+    , @NamedQuery(name = "Service.findByServiceTId", query = "SELECT s FROM Service s WHERE s.serviceTId = :serviceTId")
     , @NamedQuery(name = "Service.findByCategory", query = "SELECT s FROM Service s WHERE s.category = :category")
     , @NamedQuery(name = "Service.findByKind", query = "SELECT s FROM Service s WHERE s.kind = :kind")
     , @NamedQuery(name = "Service.findByPublished", query = "SELECT s FROM Service s WHERE s.published = :published")
@@ -46,44 +42,34 @@ public class Service implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @Column(name = "ID")
-    @TableGenerator( name = "sequence", table = "SEQUENCE", pkColumnName = "APP_SEQ_NAME", pkColumnValue = "SERVICE_T.ID", valueColumnName = "APP_SEQ_COUNT", initialValue = 1, allocationSize = 1 )
-    @GeneratedValue( strategy = GenerationType.TABLE, generator = "sequence" )
-    private Long id;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 50)
+    @Column(name = "SERVICE_T_ID")
+    @TableGenerator( name = "sequence_service", table = "SEQUENCE", pkColumnName = "APP_SEQ_NAME", pkColumnValue = "SERVICE_T_ID", valueColumnName = "APP_SEQ_COUNT", initialValue = 0, allocationSize = 1 )
+    @GeneratedValue( strategy = GenerationType.TABLE, generator = "sequence_service" )    
+    private Long serviceTId;
+    @Size(max = 50)
     @Column(name = "CATEGORY")
     private String category;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 10)
+    @Size(max = 10)
     @Column(name = "KIND")
     private String kind;
     @Column(name = "PUBLISHED")
     private Short published;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 50)
+    @Size(max = 50)
     @Column(name = "SERVICENAME")
     private String servicename;
     @Size(max = 50)
     @Column(name = "SERVICEREFERENCE")
     private String servicereference;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 50)
+    @Size(max = 50)
     @Column(name = "SUBCATEGORY")
     private String subcategory;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 20)
+    @Size(max = 20)
     @Column(name = "TYPE_")
     private String type;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "serviceFk")
-    private Collection<Item> itemCollection;
+    @OneToMany(mappedBy = "serviceFk")
+    private ArrayList<Item> itemCollection;
     
-    	public final static String KIND_HOUSEHOLD      = "HOUSE_HOLD";
+        public final static String KIND_HOUSEHOLD      = "HOUSE_HOLD";
 	public final static String KIND_WORKPLACE      = "WORK_PLACE";
 	
 	public final static String TYPE_ADMINISTRATION = "ADMINISTRATION";
@@ -100,27 +86,17 @@ public class Service implements Serializable {
         this.itemCollection = new ArrayList();
     }
 
-    public Service(Long id) {
+    public Service(Long serviceTId) {
+        this.serviceTId = serviceTId;
         this.itemCollection = new ArrayList();
-        this.id = id;
     }
 
-    public Service(Long id, String category, String kind, String servicename, String subcategory, String type) {
-        this.itemCollection = new ArrayList();
-        this.id = id;
-        this.category = category;
-        this.kind = kind;
-        this.servicename = servicename;
-        this.subcategory = subcategory;
-        this.type = type;
+    public Long getServiceTId() {
+        return serviceTId;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+    public void setServiceTId(Long serviceTId) {
+        this.serviceTId = serviceTId;
     }
 
     public String getCategory() {
@@ -180,18 +156,22 @@ public class Service implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Item> getItemCollection() {
+    public ArrayList<Item> getItemCollection() {
         return itemCollection;
     }
 
-    public void setItemCollection(Collection<Item> itemCollection) {
+    public void setItemCollection(ArrayList<Item> itemCollection) {
         this.itemCollection = itemCollection;
     }
     
-    public void addItem(Item anItem){
+     public void addItem(Item anItem){
         if(anItem != null){
             this.itemCollection.add(anItem);
         }
+    }
+     
+    public Item retrieveItem(){
+        return (Item)itemCollection.get(0);
     }
     
         public void removeItem(Item anItem){
@@ -203,7 +183,7 @@ public class Service implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        hash += (serviceTId != null ? serviceTId.hashCode() : 0);
         return hash;
     }
 
@@ -214,7 +194,7 @@ public class Service implements Serializable {
             return false;
         }
         Service other = (Service) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if ((this.serviceTId == null && other.serviceTId != null) || (this.serviceTId != null && !this.serviceTId.equals(other.serviceTId))) {
             return false;
         }
         return true;
@@ -222,7 +202,7 @@ public class Service implements Serializable {
 
     @Override
     public String toString() {
-        return "org.lhedav.pp.business.model.service.Service[ id=" + id + " ]";
+        return "org.lhedav.pp.business.model.service.Service[ serviceTId=" + serviceTId + " ]";
     }
     
 }

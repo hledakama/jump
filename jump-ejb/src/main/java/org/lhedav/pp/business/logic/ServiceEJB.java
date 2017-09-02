@@ -42,31 +42,11 @@ public class ServiceEJB {
     }
     
         public boolean createService(@NotNull Service aService, @NotNull Item anItem){
-            System.out.println("getCategory: "+aService.getCategory());
-            System.out.println("getKind: "+aService.getKind());
-            System.out.println("getServicename: "+aService.getServicename());
-            System.out.println("getServicereference: "+aService.getServicereference());
-            System.out.println("getSubcategory: "+aService.getSubcategory());
-            System.out.println("getType: "+aService.getType());
-            System.out.println("toString: "+aService.toString());
-            System.out.println("getId: "+aService.getId());
-            //System.out.println("isPublished: "+aService.isPublished());
             
-            
-            System.out.println("getItemname: "+anItem.getItemname());
-            System.out.println("getItemreference: "+anItem.getItemreference());
-            System.out.println("toString: "+anItem.toString());
-            System.out.println("getCdate: "+anItem.getCdate());
-            System.out.println("getId: "+anItem.getId());
-            System.out.println("getPrice: "+anItem.getPrice());
-            System.out.println("getQty: "+anItem.getQty());
-            System.out.println("getServiceFk: "+anItem.getServiceFk());
-            System.out.println("getVirtual_: "+anItem.getVirtual());
-            System.out.println("isEdited: "+anItem.isEdited());
             em.persist(aService);
             em.flush(); //force insert to receive the id of the aService
-       // anItem.setServiceFk(aService.getId());
-       // em.persist(anItem);
+            //anItem.setServiceFk(aService.getServiceTId());
+            em.persist(anItem);
         
         return true;
     }
@@ -79,24 +59,26 @@ public class ServiceEJB {
             System.out.println("getSubcategory: "+aService.getSubcategory());
             System.out.println("getType: "+aService.getType());
             System.out.println("toString: "+aService.toString());
-            System.out.println("getId: "+aService.getId());
+            System.out.println("getId: "+aService.getServiceTId());
             System.out.println("-----------------isPublished------------: "+aService.getPublished());
             
-           /* Item anItem = aService.getItemCollection().get(0);
+            Item anItem = aService.retrieveItem();
             System.out.println("getItemname: "+anItem.getItemname());
             System.out.println("getItemreference: "+anItem.getItemreference());
             System.out.println("toString: "+anItem.toString());
             System.out.println("getCdate: "+anItem.getCdate());
-            System.out.println("getId: "+anItem.getId());
+            System.out.println("getgetItemTId: "+anItem.getItemTId());
             System.out.println("getPrice: "+anItem.getPrice());
             System.out.println("getQty: "+anItem.getQty());
             System.out.println("getServiceFk: "+anItem.getServiceFk());
             System.out.println("getVirtual_: "+anItem.getVirtual());
-            System.out.println("isEdited: "+anItem.isEdited());*/
-            em.persist(aService);
-            em.flush(); //force insert to receive the id of the aService
-       // anItem.setServiceFk(aService.getId());
-       // em.persist(anItem);
+            System.out.println("isEdited: "+anItem.isEdited());
+            em.persist(aService);  
+           // em.flush(); 
+          //  anItem.setServiceFk(aService);
+            System.out.println("getServiceFk++: "+anItem.getServiceFk());
+            em.persist(anItem);
+            em.flush(); 
         
         return true;
     }   

@@ -23,8 +23,20 @@
   https://stackoverflow.com/questions/5776148/how-to-find-a-file-in-ubuntu
   http://www.mojohaus.org/exec-maven-plugin/
   https://www.omniprogrammer.com/?p=340
-  https://stackoverflow.com/questions/19054371/glassfish-web-xml-vs-sun-web-xml-vs-web-xml
-  http://docs.oracle.com/cd/E26576_01/index.htm
+  https://stackoverflow.com/questions/19054371/glassfish-web-xml-vs-sun-web-xml-vs-web-xml  
+  http://docs.oracle.com/cd/E26576_01/index.htm  
+  
+  http://itdoc.hitachi.co.jp/manuals/3020/30203Y0710e/EY070231.HTM
+  https://docs.oracle.com/cd/E19159-01/819-3669/bnbrj/index.html
+  
+  https://stackoverflow.com/questions/36733289/usage-and-significance-of-classpath-in-application-ear
+  https://www.mkyong.com/maven/how-to-create-a-manifest-file-with-maven/
+  https://access.redhat.com/documentation/en-US/JBoss_Enterprise_Application_Platform/6/html/Development_Guide/Generate_MANIFESTMF_entries_using_Maven.html
+  https://access.redhat.com/documentation/en-US/JBoss_Enterprise_Application_Platform/6/html/Development_Guide/Add_an_Explicit_Module_Dependency_to_a_Deployment1.html
+  https://stackoverflow.com/questions/11114118/scope-provided-does-not-add-in-jars-in-classpath
+  https://docs.oracle.com/cd/E13222_01/wls/docs61/programming/app_xml.html
+  
+  
   
   
   
@@ -59,6 +71,9 @@
             <artifactId>jump-ejb</artifactId>
             <version>1.0-SNAPSHOT</version>
             <type>ejb</type>
+            <!--scope>provided</scope-->
+            <scope>compile</scope>
+            <optional>true</optional>
         </dependency>
         
         <dependency>
@@ -66,6 +81,9 @@
             <artifactId>jump-web</artifactId>
             <version>1.0-SNAPSHOT</version>
             <type>war</type>
+            <!--scope>provided</scope-->
+            <scope>compile</scope>
+            <optional>true</optional>
         </dependency>
         
     </dependencies>
@@ -88,6 +106,14 @@
                     <configuration>
                         <source>1.7</source>
                         <target>1.7</target>
+                        
+                        <archive>
+                            <manifest>
+                                <addClasspath>true</addClasspath>
+                                <!--mainClass>com.mkyong.core.App</mainClass>
+                                <classpathPrefix>dependency-jars/</classpathPrefix-->
+                            </manifest>
+                        </archive>
                     </configuration>
                 </plugin>
 
@@ -95,12 +121,39 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-ear-plugin</artifactId>
                     <version>2.10</version>
-                    <configuration>
+                    <configuration>                                
+                        <generateApplicationXml>false</generateApplicationXml>
                         <version>7</version>
-                        <defaultLibBundleDir>lib</defaultLibBundleDir>
+                        <!--defaultLibBundleDir>lib</defaultLibBundleDir-->
+                        <archive>
+                            <manifest>
+                                <addClasspath>true</addClasspath>
+                                <!--mainClass>com.mkyong.core.App</mainClass>
+                                <classpathPrefix>dependency-jars/</classpathPrefix-->
+                            </manifest>
+                        </archive>
                     </configuration>
                 </plugin>
-
+                
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>2.5.1</version>
+                    <executions>
+                      <execution>
+                            <id>copy-dependencies</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>copy-dependencies</goal>
+                            </goals>
+                            <configuration>
+                                <outputDirectory>
+                                    ${project.build.directory}/dependency-jars/
+                                </outputDirectory>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
 
       </plugins>
     </build>

@@ -25,35 +25,45 @@
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>javax.persistence</artifactId>
             <version>2.1.1</version>
-            <scope>provided</scope>
+            <!--scope>provided</scope-->
+            <scope>compile</scope>
+            <optional>true</optional>
         </dependency>
         
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.jpa.modelgen.processor</artifactId>
             <version>2.5.2</version>
-            <scope>provided</scope>
+            <!--scope>provided</scope-->
+            <scope>compile</scope>
+            <optional>true</optional>
         </dependency>
         
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>eclipselink</artifactId>
             <version>2.5.2</version>
-            <scope>provided</scope>
+            <!--scope>provided</scope-->
+            <scope>compile</scope>
+            <optional>true</optional>
         </dependency>
         
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-api</artifactId>
             <version>7.0</version>
-            <scope>provided</scope>
+            <!--scope>provided</scope-->
+            <scope>compile</scope>
+            <optional>true</optional>
         </dependency>
 
 	<dependency>
             <groupId>javax.ejb</groupId>
             <artifactId>javax.ejb-api</artifactId>
             <version>3.2</version>
-            <scope>provided</scope>
+            <!--scope>provided</scope-->
+            <scope>compile</scope>
+            <optional>true</optional>
         </dependency>
         
     </dependencies>
@@ -72,20 +82,45 @@
                     </compilerArguments>
                 </configuration>
             </plugin>
+            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-ejb-plugin</artifactId>
                 <version>2.5.1</version>
                 <configuration>
                     <ejbVersion>3.2</ejbVersion>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <!--mainClass>com.mkyong.core.App</mainClass>
+                            <classpathPrefix>dependency-jars/</classpathPrefix-->
+                        </manifest>
+                        <!--manifestEntries>
+                            <Dependencies>javax.persistence, org.eclipse.persistence.jpa.modelgen.processor, eclipselink, javaee-api, javax.ejb-api</Dependencies>
+                        </manifestEntries-->
+                    </archive>
                 </configuration>
             </plugin>
+            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <version>2.5.1</version>
                 <executions>
                     <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>
+                                ${project.build.directory}/dependency-jars/
+                            </outputDirectory>
+                        </configuration>
+                    </execution>
+                    
+                    <!--execution>
                         <phase>validate</phase>
                         <goals>
                             <goal>copy</goal>
@@ -102,7 +137,7 @@
                                 </artifactItem>
                             </artifactItems>
                         </configuration>
-                    </execution>
+                    </execution-->
                 </executions>
             </plugin>
         </plugins>

@@ -30,12 +30,12 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  * @author client
  */
-@Entity
+@Entity(name = "Item")
 @Table(name = "ITEM_T")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Item.findAll", query = "SELECT i FROM Item i")
-    , @NamedQuery(name = "Item.findById", query = "SELECT i FROM Item i WHERE i.id = :id")
+    , @NamedQuery(name = "Item.findByItemTId", query = "SELECT i FROM Item i WHERE i.itemTId = :itemTId")
     , @NamedQuery(name = "Item.findByCdate", query = "SELECT i FROM Item i WHERE i.cdate = :cdate")
     , @NamedQuery(name = "Item.findByItemname", query = "SELECT i FROM Item i WHERE i.itemname = :itemname")
     , @NamedQuery(name = "Item.findByItemreference", query = "SELECT i FROM Item i WHERE i.itemreference = :itemreference")
@@ -45,23 +45,20 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Item implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    //https://stackoverflow.com/questions/9087848/when-does-the-jpa-set-a-generatedvalue-id
     @Id
-    @Column(name = "ID")
-    @TableGenerator( name = "sequence", table = "SEQUENCE", pkColumnName = "APP_SEQ_NAME", pkColumnValue = "ITEM_T.ID", valueColumnName = "APP_SEQ_COUNT", initialValue = 1, allocationSize = 1 )
-    @GeneratedValue( strategy = GenerationType.TABLE, generator = "sequence" )
-    private Long id;
+    @Column(name = "ITEM_T_ID")
+    @TableGenerator( name = "sequence_item", table = "SEQUENCE", pkColumnName = "APP_SEQ_NAME", pkColumnValue = "ITEM_T_ID", valueColumnName = "APP_SEQ_COUNT", initialValue = 0, allocationSize = 1 )
+    @GeneratedValue( strategy = GenerationType.TABLE, generator = "sequence_item" )    
+    private Long itemTId;
     @Basic(optional = false)
-    @NotNull
+   // @NotNull
     @Column(name = "CDATE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date cdate;
     @Size(max = 50)
     @Column(name = "ITEMNAME")
     private String itemname;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 50)
+    @Size(max = 50)
     @Column(name = "ITEMREFERENCE")
     private String itemreference;
     @Column(name = "PRICE")
@@ -70,8 +67,8 @@ public class Item implements Serializable {
     private Long qty;
     @Column(name = "VIRTUAL_")
     private Short virtual;
-    @JoinColumn(name = "SERVICE_FK", referencedColumnName = "ID")
-    @ManyToOne(optional = false)
+    @JoinColumn(name = "SERVICE_FK", referencedColumnName = "SERVICE_T_ID")
+    @ManyToOne
     private Service serviceFk;
     
     @Transient
@@ -80,22 +77,21 @@ public class Item implements Serializable {
     public Item() {
     }
 
-    public Item(Long id) {
-        this.id = id;
+    public Item(Long itemTId) {
+        this.itemTId = itemTId;
     }
 
-    public Item(Long id, Date cdate, String itemreference) {
-        this.id = id;
+    public Item(Long itemTId, Date cdate) {
+        this.itemTId = itemTId;
         this.cdate = cdate;
-        this.itemreference = itemreference;
     }
 
-    public Long getId() {
-        return id;
+    public Long getItemTId() {
+        return itemTId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setItemTId(Long itemTId) {
+        this.itemTId = itemTId;
     }
 
     public Date getCdate() {
@@ -153,19 +149,11 @@ public class Item implements Serializable {
     public void setServiceFk(Service serviceFk) {
         this.serviceFk = serviceFk;
     }
-    
-    public boolean isEdited(){
-        return edited;
-    }
-    
-    public void setEdited(boolean aBool){
-        edited = aBool;
-    }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        hash += (itemTId != null ? itemTId.hashCode() : 0);
         return hash;
     }
 
@@ -176,7 +164,7 @@ public class Item implements Serializable {
             return false;
         }
         Item other = (Item) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if ((this.itemTId == null && other.itemTId != null) || (this.itemTId != null && !this.itemTId.equals(other.itemTId))) {
             return false;
         }
         return true;
@@ -184,7 +172,15 @@ public class Item implements Serializable {
 
     @Override
     public String toString() {
-        return "org.lhedav.pp.business.model.service.Item[ id=" + id + " ]";
+        return "org.lhedav.pp.business.model.service.Item[ itemTId=" + itemTId + " ]";
+    }
+    
+    public boolean isEdited(){
+        return edited;
+    }
+    
+    public void setEdited(boolean aBool){
+        edited = aBool;
     }
     
 }

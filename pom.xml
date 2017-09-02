@@ -27,6 +27,15 @@
     http://www.java2s.com/Code/Java/JPA/IDGenerationTypeAUTO.htm
     http://www.developerscrappad.com/408/java/java-ee/ejb3-jpa-3-ways-of-generating-primary-key-through-generatedvalue/
     
+    http://www.eclipse.org/eclipselink/api/2.5/javax/persistence/TableGenerator.html
+    https://en.wikibooks.org/wiki/Java_Persistence/Identity_and_Sequencing
+    https://wiki.eclipse.org/EclipseLink/UserGuide/JPA/Basic_JPA_Development/Entities/Ids/TableGenerator
+    
+    http://wiki.eclipse.org/EclipseLink/Examples/JPA/Tomcat_Web_Tutorial
+    http://www.eclipse.org/eclipselink/documentation/2.5/solutions/tlandwls002.htm
+    http://itdoc.hitachi.co.jp/manuals/3020/30203Y0710e/EY070231.HTM
     
     
+    
+    https://stackoverflow.com/questions/4433341/what-is-the-right-path-to-refer-a-jar-file-in-jpa-persistence-xml-in-a-web-app
 -->

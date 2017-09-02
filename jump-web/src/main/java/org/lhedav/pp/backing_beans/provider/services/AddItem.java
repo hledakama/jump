@@ -177,12 +177,12 @@ public class AddItem {
           theList.add(Global.REFERENCE_SPLITTER);
           theList.add("todo username");
           itemCRC = ((new CRC32StringCollection(theList)).hashCode())+Global.STR_EMPTY;
-          System.out.println("service.getKind(): "+service.getKind());
+         /* System.out.println("service.getKind(): "+service.getKind());
           System.out.println("service.getType(): "+service.getType());
           System.out.println("service.getServicename(): "+service.getServicename());
           System.out.println("service.getCategory(): "+service.getCategory());
-          System.out.println("item.getItemname(): "+item.getItemname());
-          System.out.println("CRC: "+itemCRC);
+          System.out.println("item.getItemname()++: "+item.getItemname());
+          System.out.println("CRC: "+itemCRC);*/
           
        }
        
@@ -397,8 +397,9 @@ public class AddItem {
             System.out.println("theList == null: "+(theList == null) +", service.getServicereference(): "+service.getServicereference());
             if((theList != null) && (!theList.isEmpty())){
                 //System.out.println("getItemname from theList: "+(theList.get(0).getItemname())+", theSize: "+theList.size());
+                sortitemmodel = new SortedDataModel<>(new CollectionDataModel<>(theList));
             }
-           sortitemmodel = new SortedDataModel<>(new CollectionDataModel<>(theList));
+           
            
     }
        
@@ -408,9 +409,9 @@ public class AddItem {
             @Override
             public int compare(Item key_1, Item key_2) {
                 if (sortType.equals("asc")) {
-                    return (int) (key_1.getId() - key_2.getId());
+                    return (int) (key_1.getItemTId()- key_2.getItemTId());
                 } else {
-                    return (-1) * (int) (key_1.getId() - key_2.getId());
+                    return (-1) * (int) (key_1.getItemTId() - key_2.getItemTId());
                 }
             }
         });
@@ -466,6 +467,7 @@ public class AddItem {
           service.setSubcategory(item.getItemname());
           service.addItem(item);
           serviceEjb.createService(service); 
+         // service.setId((long)100001);
      //   modifyItems();          
           return Global.STAY_ON_CURRENT_PAGE;
   
