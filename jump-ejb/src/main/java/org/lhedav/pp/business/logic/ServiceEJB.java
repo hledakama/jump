@@ -73,11 +73,13 @@ public class ServiceEJB {
             System.out.println("getServiceFk: "+anItem.getServiceFk());
             System.out.println("getVirtual_: "+anItem.getVirtual());
             System.out.println("isEdited: "+anItem.isEdited());
-            em.persist(aService);  
+            em.persist(aService);
+            em.persist(anItem);
+              
            // em.flush(); 
           //  anItem.setServiceFk(aService);
-            System.out.println("getServiceFk++: "+anItem.getServiceFk());
-            em.persist(anItem);
+           // System.out.println("getServiceFk++: "+anItem.getServiceFk());
+            
             em.flush(); 
         
         return true;
