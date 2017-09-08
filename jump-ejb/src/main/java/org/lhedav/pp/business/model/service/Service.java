@@ -43,7 +43,7 @@ public class Service implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Column(name = "SERVICE_T_ID")
-    @TableGenerator( name = "sequence_service", table = "SEQUENCE", pkColumnName = "APP_SEQ_NAME", pkColumnValue = "SERVICE_T_ID", valueColumnName = "APP_SEQ_COUNT", initialValue = 0, allocationSize = 1 )
+    @TableGenerator( name = "sequence_service", table = "SEQUENCE", pkColumnName = "SEQ_NAME", pkColumnValue = "SERVICE_T_ID", valueColumnName = "SEQ_COUNT", initialValue = 0, allocationSize = 1 )
     @GeneratedValue( strategy = GenerationType.TABLE, generator = "sequence_service" )    
     private Long serviceTId;
     @Size(max = 50)
