@@ -73,7 +73,7 @@
             <type>ejb</type>
             <!--scope>provided</scope-->
             <scope>compile</scope>
-            <optional>true</optional>
+            <!--optional>true</optional-->
         </dependency>
         
         <dependency>
@@ -83,7 +83,7 @@
             <type>war</type>
             <!--scope>provided</scope-->
             <scope>compile</scope>
-            <optional>true</optional>
+            <!--optional>true</optional-->
         </dependency>
         
     </dependencies>
