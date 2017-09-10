@@ -7,6 +7,8 @@ package org.lhedav.pp.business.model.service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -19,7 +21,6 @@ import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -42,34 +43,43 @@ public class Service implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @Column(name = "SERVICE_T_ID")
+    @Basic(optional = false)
     @TableGenerator( name = "sequence_service", table = "SEQUENCE", pkColumnName = "SEQ_NAME", pkColumnValue = "SERVICE_T_ID", valueColumnName = "SEQ_COUNT", initialValue = 0, allocationSize = 1 )
-    @GeneratedValue( strategy = GenerationType.TABLE, generator = "sequence_service" )    
+    @GeneratedValue( strategy = GenerationType.TABLE, generator = "sequence_service" )   
+    @Column(name = "SERVICE_T_ID")
     private Long serviceTId;
+    
     @Size(max = 50)
     @Column(name = "CATEGORY")
     private String category;
+    
     @Size(max = 10)
     @Column(name = "KIND")
     private String kind;
+    
     @Column(name = "PUBLISHED")
     private Short published;
+    
     @Size(max = 50)
     @Column(name = "SERVICENAME")
     private String servicename;
+    
     @Size(max = 50)
     @Column(name = "SERVICEREFERENCE")
     private String servicereference;
+    
     @Size(max = 50)
     @Column(name = "SUBCATEGORY")
     private String subcategory;
+    
     @Size(max = 20)
     @Column(name = "TYPE_")
     private String type;
-    @OneToMany(mappedBy = "serviceFk")
-    private ArrayList<Item> itemCollection;
     
-        public final static String KIND_HOUSEHOLD      = "HOUSE_HOLD";
+    @OneToMany(mappedBy = "serviceFk")
+    private List<Item> itemList;
+    
+      public final static String KIND_HOUSEHOLD      = "HOUSE_HOLD";
 	public final static String KIND_WORKPLACE      = "WORK_PLACE";
 	
 	public final static String TYPE_ADMINISTRATION = "ADMINISTRATION";
@@ -83,12 +93,12 @@ public class Service implements Serializable {
 	public final static String TYPE_TRANSPORTATION = "TRANSPORTATION";
 
     public Service() {
-        this.itemCollection = new ArrayList();
+        itemList = new ArrayList();
     }
 
     public Service(Long serviceTId) {
+        itemList = new ArrayList();
         this.serviceTId = serviceTId;
-        this.itemCollection = new ArrayList();
     }
 
     public Long getServiceTId() {
@@ -155,28 +165,22 @@ public class Service implements Serializable {
         this.type = type;
     }
 
-    @XmlTransient
-    public ArrayList<Item> getItemCollection() {
-        return itemCollection;
+    //@XmlTransient
+    public List<Item> getItemList() {
+        return itemList;
     }
 
-    public void setItemCollection(ArrayList<Item> itemCollection) {
-        this.itemCollection = itemCollection;
+    public void setItemList(List<Item> itemList) {
+        this.itemList = itemList;
     }
     
-     public void addItem(Item anItem){
-        if(anItem != null){
-            this.itemCollection.add(anItem);
-        }
-    }
-     
-    public Item retrieveItem(){
-        return (Item)itemCollection.get(0);
-    }
-    
-        public void removeItem(Item anItem){
-        if((this.itemCollection.contains(anItem))){
-            this.itemCollection.remove(anItem);
+    public void addItemToList(Item anItem) {
+        if (!getItemList().contains(anItem)) {
+            getItemList().add(anItem);
+            if (anItem.getServiceFk() != null) {
+                anItem.getServiceFk().getItemList().remove(anItem);
+            }
+            anItem.setServiceFk(this);
         }
     }
 

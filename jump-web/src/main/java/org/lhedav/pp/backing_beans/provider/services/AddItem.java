@@ -457,7 +457,6 @@ public class AddItem {
        
        public String saveItem(){
            itemNameChanged = false;
-           //modifyItems();
            addItem();
            return Global.STAY_ON_CURRENT_PAGE;
        }
@@ -465,10 +464,9 @@ public class AddItem {
        private String addItem(){ 
           item.setItemreference(getItemCRC());
           service.setSubcategory(item.getItemname());
-          service.addItem(item);
-          serviceEjb.createService(service); 
-         // service.setId((long)100001);
-     //   modifyItems();          
+          //item.setServiceFk(service);
+          service.addItemToList(item);
+          serviceEjb.createService(service, item); 
           return Global.STAY_ON_CURRENT_PAGE;
   
        }

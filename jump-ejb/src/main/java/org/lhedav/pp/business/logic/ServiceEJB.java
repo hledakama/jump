@@ -6,7 +6,6 @@
 package org.lhedav.pp.business.logic;
 
 import java.util.Collection;
-import java.util.List;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -44,14 +43,14 @@ public class ServiceEJB {
         public boolean createService(@NotNull Service aService, @NotNull Item anItem){
             
             em.persist(aService);
-            em.flush(); //force insert to receive the id of the aService
-            //anItem.setServiceFk(aService.getServiceTId());
             em.persist(anItem);
+            em.flush(); //force insert to receive the id of the aService
         
         return true;
     }
         
           public boolean createService(@NotNull Service aService){
+           
             System.out.println("getCategory: "+aService.getCategory());
             System.out.println("getKind: "+aService.getKind());
             System.out.println("getServicename: "+aService.getServicename());
@@ -62,24 +61,8 @@ public class ServiceEJB {
             System.out.println("getId: "+aService.getServiceTId());
             System.out.println("-----------------isPublished------------: "+aService.getPublished());
             
-            Item anItem = aService.retrieveItem();
-            System.out.println("getItemname: "+anItem.getItemname());
-            System.out.println("getItemreference: "+anItem.getItemreference());
-            System.out.println("toString: "+anItem.toString());
-            System.out.println("getCdate: "+anItem.getCdate());
-            System.out.println("getgetItemTId: "+anItem.getItemTId());
-            System.out.println("getPrice: "+anItem.getPrice());
-            System.out.println("getQty: "+anItem.getQty());
-            System.out.println("getServiceFk: "+anItem.getServiceFk());
-            System.out.println("getVirtual_: "+anItem.getVirtual());
-            System.out.println("isEdited: "+anItem.isEdited());
-            em.persist(aService);
-            em.persist(anItem);
-              
-           // em.flush(); 
-          //  anItem.setServiceFk(aService);
-           // System.out.println("getServiceFk++: "+anItem.getServiceFk());
             
+            em.persist(aService);            
             em.flush(); 
         
         return true;
@@ -139,7 +122,7 @@ public class ServiceEJB {
              return null;
          }
         if(theService != null){
-            return theService.getItemCollection();
+            return theService.getItemList();
         }
         return null;
     }

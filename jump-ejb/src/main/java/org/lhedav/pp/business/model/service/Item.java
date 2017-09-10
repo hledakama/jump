@@ -22,7 +22,6 @@ import javax.persistence.TableGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -46,12 +45,12 @@ public class Item implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @Column(name = "ITEM_T_ID")
+    @Basic(optional = false)
     @TableGenerator( name = "sequence_item", table = "SEQUENCE", pkColumnName = "SEQ_NAME", pkColumnValue = "ITEM_T_ID", valueColumnName = "SEQ_COUNT", initialValue = 0, allocationSize = 1 )
     @GeneratedValue( strategy = GenerationType.TABLE, generator = "sequence_item" )    
+    @Column(name = "ITEM_T_ID")
     private Long itemTId;
     @Basic(optional = false)
-   // @NotNull
     @Column(name = "CDATE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date cdate;
@@ -70,7 +69,6 @@ public class Item implements Serializable {
     @JoinColumn(name = "SERVICE_FK", referencedColumnName = "SERVICE_T_ID")
     @ManyToOne
     private Service serviceFk;
-    
     @Transient
     private boolean edited;
 
@@ -149,6 +147,14 @@ public class Item implements Serializable {
     public void setServiceFk(Service serviceFk) {
         this.serviceFk = serviceFk;
     }
+    
+    public boolean isEdited(){
+        return edited;
+    }
+    
+    public void setEdited(boolean aBool){
+        edited = aBool;
+    }
 
     @Override
     public int hashCode() {
@@ -173,14 +179,6 @@ public class Item implements Serializable {
     @Override
     public String toString() {
         return "org.lhedav.pp.business.model.service.Item[ itemTId=" + itemTId + " ]";
-    }
-    
-    public boolean isEdited(){
-        return edited;
-    }
-    
-    public void setEdited(boolean aBool){
-        edited = aBool;
     }
     
 }
