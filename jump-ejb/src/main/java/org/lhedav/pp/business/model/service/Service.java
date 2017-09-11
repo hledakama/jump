@@ -21,6 +21,7 @@ import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -79,9 +80,8 @@ public class Service implements Serializable {
     @OneToMany(mappedBy = "serviceFk")
     private List<Item> itemList;
     
-      public final static String KIND_HOUSEHOLD      = "HOUSE_HOLD";
-	public final static String KIND_WORKPLACE      = "WORK_PLACE";
-	
+        public final static String KIND_HOUSEHOLD      = "HOUSE_HOLD";
+	public final static String KIND_WORKPLACE      = "WORK_PLACE";	
 	public final static String TYPE_ADMINISTRATION = "ADMINISTRATION";
 	public final static String TYPE_BEAUTY         = "BEAUTY";
 	public final static String TYPE_EDUCATION      = "EDUCATION";
@@ -165,7 +165,7 @@ public class Service implements Serializable {
         this.type = type;
     }
 
-    //@XmlTransient
+    @XmlTransient
     public List<Item> getItemList() {
         return itemList;
     }

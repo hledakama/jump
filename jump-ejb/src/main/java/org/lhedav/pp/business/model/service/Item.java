@@ -8,6 +8,7 @@ package org.lhedav.pp.business.model.service;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -67,7 +68,7 @@ public class Item implements Serializable {
     @Column(name = "VIRTUAL_")
     private Short virtual;
     @JoinColumn(name = "SERVICE_FK", referencedColumnName = "SERVICE_T_ID")
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private Service serviceFk;
     @Transient
     private boolean edited;

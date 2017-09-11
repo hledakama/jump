@@ -464,7 +464,6 @@ public class AddItem {
        private String addItem(){ 
           item.setItemreference(getItemCRC());
           service.setSubcategory(item.getItemname());
-          //item.setServiceFk(service);
           service.addItemToList(item);
           serviceEjb.createService(service, item); 
           return Global.STAY_ON_CURRENT_PAGE;
