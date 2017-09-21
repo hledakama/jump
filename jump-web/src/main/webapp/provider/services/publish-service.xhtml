@@ -80,25 +80,27 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                         <f:facet name="header">#{publishService.itemPrice}</f:facet>
                         #{model.price}
                     </h:column>
-
-                    <h:column>
-                        <f:facet name="header">#{publishService.itemVirtual}l</f:facet>
-                        #{"model.virtual todo"}
-                    </h:column>
-
+                    
                     <h:column>
                         <f:facet name="header">#{publishService.itemQty}</f:facet>
                         #{model.qty}
                     </h:column>
+                    
+                                        
+                    <h:column>
+                        <f:facet name="header">#{publishService.itemDate}</f:facet>
+                        #{model.cdate}
+                    </h:column>
                 </h:dataTable>
             
-                <h:button value="#{publishService.addItemButtonLabel}" outcome="add-item">
+                <h:button value="#{publishService.addServiceButtonLabel}" outcome="add-item">
                     <f:param name="kind" value="#{publishService.service.kind}"/>
                     <f:param name="type" value="#{publishService.service.type}"/>
                     <f:param name="service" value="#{publishService.service.servicename}"/>
                     <f:param name="category" value="#{publishService.service.category}"/>
                     <f:param name="serviceReference" value="#{publishService.reference_}"/>
                 </h:button>
+                <h:commandButton disabled="true" value="#{publishService.modifyServiceButtonLabel}"/>
             <h:commandButton disabled="#{publishService.publishChecked}" value="#{publishService.publishButtonLabel}" action="#{publishService.publish()}"/>
                               
             

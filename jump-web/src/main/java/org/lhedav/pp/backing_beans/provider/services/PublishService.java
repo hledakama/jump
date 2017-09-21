@@ -48,10 +48,12 @@ public class PublishService {
     private String status = "Subscribed";
     private String itemReference = "Reference";    
     private String itemName = "Name";
+    private String itemDate = "Date";
     private String itemPrice = "Price";
     private String itemVirtual = "Virtual";
     private String itemQty = "Qty";
-    private String addItemButtonLabel = "Add an item";
+    private String addServiceButtonLabel = "Add service";
+    private String modifyServiceButtonLabel = "Modify service";
     private String publishButtonLabel = "Publish service";
     private List<String> m_crc_key;
             @EJB
@@ -209,6 +211,14 @@ public class PublishService {
            itemReference = aReference;
        }
        
+       public String getItemDate(){
+            return itemDate;
+       }
+        
+       public void setItemDate(String aDate){
+           itemDate = aDate;
+       }
+       
        public String getItemName(){
             return itemName;
        }
@@ -239,14 +249,22 @@ public class PublishService {
         
        public void setItemQty(String aQty){
            itemQty = aQty;
-       }    
-       
-       public String getAddItemButtonLabel(){
-          return addItemButtonLabel;
+       }  
+               
+       public String getAddServiceButtonLabel(){
+          return addServiceButtonLabel;
        }
         
-       public void setAddItemButtonLabel(String aLabel){
-           addItemButtonLabel = aLabel;
+       public void setAddServiceButtonLabel(String aLabel){
+           addServiceButtonLabel = aLabel;
+       }
+       
+       public String getModifyServiceButtonLabel(){
+          return modifyServiceButtonLabel;
+       }
+        
+       public void setModifyServiceButtonLabel(String aLabel){
+           modifyServiceButtonLabel = aLabel;
        }
        
        public String getPublishButtonLabel(){
@@ -276,9 +294,25 @@ public class PublishService {
     }*/
          
            public SortedDataModel<Item> getSortedDataModel() {
-               setReference_();
-           Collection<Item>   theItems = m_service_ejb.getItemsListByServiceReference(getReference_());
+             //  setReference_();
+           List<Service>   theServices;
+           System.out.println("service.getServicename(): "+service.getServicename());
+           System.out.println("service.getKind(): "+service.getKind());
+           System.out.println("service.getType(): "+service.getType());
+           theServices = m_service_ejb.getItemsFromServiceByService(service.getServicename(), service.getKind(), service.getType());
+           List<Item> theItems = new ArrayList();
+           if(theServices != null) {
+              for(int index = 0; index< theServices.size();index++) {
+              Service theService = theServices.get(index);
+              List<Item> theTempResult = theService.getItemList();
+              if(theTempResult == null) continue;
            
+              for(Item theItem : theTempResult) {
+                if(theItem == null) continue;
+                   theItems.add(theItem);           
+              }           
+            }
+           }
            sortedDataModel = new SortedDataModel<>(new CollectionDataModel<>(theItems));
            /* } catch (ParseException ex) {
             Logger.getLogger(AddModifyItem.class.getName()).log(Level.SEVERE, null, ex);
@@ -300,7 +334,7 @@ public class PublishService {
           m_crc_key.add(Global.REFERENCE_SPLITTER);
           m_crc_key.add(service.getCategory());
           m_crc_key.add(Global.REFERENCE_SPLITTER);
-          m_crc_key.add("todo username");
+        //  m_crc_key.add("todo username");
           reference_ = (new CRC32StringCollection(m_crc_key)).hashCode() + Global.STR_EMPTY;
           System.out.println("getkind(): "+service.getKind()+", getType: "+service.getType());
           System.out.println("getName_(): "+service.getServicename()+", getCategory: "+service.getCategory());

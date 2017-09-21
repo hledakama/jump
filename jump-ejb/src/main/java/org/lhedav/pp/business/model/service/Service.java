@@ -39,7 +39,9 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Service.findByServicename", query = "SELECT s FROM Service s WHERE s.servicename = :servicename")
     , @NamedQuery(name = "Service.findByServicereference", query = "SELECT s FROM Service s WHERE s.servicereference = :servicereference")
     , @NamedQuery(name = "Service.findBySubcategory", query = "SELECT s FROM Service s WHERE s.subcategory = :subcategory")
-    , @NamedQuery(name = "Service.findByType", query = "SELECT s FROM Service s WHERE s.type = :type")})
+    , @NamedQuery(name = "Service.findByType", query = "SELECT s FROM Service s WHERE s.type = :type")
+    , @NamedQuery(name = "Service.findByServiceNameKindType", query = "SELECT s FROM Service s WHERE ((s.servicename = :servicename) AND (s.kind = :kind) AND (s.type = :type))")
+})
 public class Service implements Serializable {
 
     private static final long serialVersionUID = 1L;

@@ -42,35 +42,45 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
             <h:form id="add_item_form_id" enctype="multipart/form-data">
                 <h:messages infoStyle="color:blue" warnStyle="color:orange" errorStyle="color:red"/>
                 <h:panelGrid columns="3">
+                    <h:outputLabel value="#{addItem.serviceKind}"/>
+                    <h:outputText id = "service_kind" value="#{addItem.service.kind}"/>
+                    
+                    <h:outputLabel value="#{addItem.serviceType}"/>
+                    <h:outputText id = "service_type" value="#{addItem.service.type}"/>
+                    
+                    <h:outputLabel value="#{addItem.serviceReference}"/>
+                    <h:outputText id = "service_reference" value="#{addItem.service.servicereference}"/>
+                    
                     <h:outputLabel value="#{addItem.itemReference}"/>
                     <h:outputText id = "item_reference" value="#{addItem.itemCRC}"/>
-
+                    
                     <h:outputLabel value="#{addItem.name}"/>
                     <h:selectOneMenu id = "item_name" required="true" value="#{addItem.item.itemname}"
                                      onchange="submit()" valueChangeListener="#{addItem.ItemNameChanged}">
                         <f:selectItems value="#{addItem.itemsNames}" />
                         <f:validateLength minimum="3" maximum="50"/>
-                    </h:selectOneMenu>
+                    </h:selectOneMenu>                    
                     <h:message for="item_name"/>
-
+                    
                     <h:outputLabel value="#{addItem.price}"/>
                     <h:inputText id = "item_price" required="true" value="#{addItem.item.price}">
                         <f:validateLongRange minimum="1" maximum="1000000"/>
                     </h:inputText >
                     <h:message for="item_price"/>
-
+                    
                     <h:outputLabel value="#{addItem.qty}"/>
                     <h:inputText id = "item_qty" required="#{not addItem.virtualItem}" value="#{addItem.item.qty}">
                     <f:validateLongRange minimum="0" maximum="10000"/>
                     </h:inputText >
                     <h:message for="item_qty"/>
-
+                    
                     <h:outputLabel value="#{addItem.virtual}"/>
                     <h:selectBooleanCheckbox id = "item_virtual" value="#{addItem.virtualItem}"/>
                     <h:message for="item_virtual"/>
+                    
                 </h:panelGrid>
                 
-            <hr/>
+            
                 
                 <h:dataTable value="#{addItem.sortitemmodel}" var="model">
                    <h:column>
@@ -79,12 +89,7 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                               #{addItem.itemReference}
                           </h:commandLink>                           
                       </f:facet>
-                      #{model.itemname}
-                   </h:column>
-                    
-                   <h:column>
-                       <f:facet name="header"> #{addItem.serviceReference}  </f:facet> 
-                       #{model.serviceFk}
+                      #{model.itemreference}
                    </h:column>
                     
                     <h:column>
@@ -93,7 +98,7 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                    </h:column>
                     
                     <h:column>
-                      <f:facet name="header"> #{addItem.address}   </f:facet>                         
+                        <f:facet name="header"> #{addItem.name}   </f:facet>                         
                       <h:outputText value="#{model.itemname}" rendered="#{not model.edited}" />
                         
                       <h:selectOneMenu required="true" value="#{model.itemname}" rendered="#{model.edited}">
@@ -129,18 +134,18 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                     <h:column>
                       <f:facet name="header">#{addItem.remove}</f:facet>
                       <h:commandButton image="#{resource['images/common/red_minus.png']}" action="#{addItem.removeRowList(model)}" 
-                                       disabled="#{not model.edited}"/> 
+                                       disabled="#{model.edited}"/> 
                    </h:column>
                     
                    <h:column>
                       <f:facet name="header">#{addItem.edit}</f:facet>
                       <h:commandButton image="#{resource['images/common/green_plus.png']}" action="#{addItem.editRowItem(model)}"
-                                       disabled="#{not model.edited}"/> 
+                                       disabled="#{model.edited}"/> 
                   </h:column>
                 </h:dataTable>
                 
                 
-                 <hr/>
+                 
             
                  
                  <h:commandButton value="#{addItem.saveItemLabel}" action="#{addItem.saveItem()}"/>

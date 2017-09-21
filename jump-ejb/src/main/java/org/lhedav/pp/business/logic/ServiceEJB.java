@@ -5,7 +5,8 @@
  */
 package org.lhedav.pp.business.logic;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -13,7 +14,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
 import org.lhedav.pp.business.model.service.Item;
-import org.lhedav.pp.business.model.service.ItemData;
+import org.lhedav.pp.business.model.service.Itemdata;
 import org.lhedav.pp.business.model.service.Service;
 
 /**
@@ -31,7 +32,7 @@ public class ServiceEJB {
     
     
      //***************************  Service   *********************************************
-    public boolean createService(@NotNull Service aService, @NotNull Item anItem, @NotNull ItemData anItemFata){
+    public boolean createService(@NotNull Service aService, @NotNull Item anItem, @NotNull Itemdata anItemFata){
         /*anItemFata.setItemFk(anItem.getId());
         anItem.setServiceFk(aService.getId());
         em.persist(anItemFata);
@@ -84,6 +85,24 @@ public class ServiceEJB {
              return null;
          }
     }
+     
+    public List<Service> getItemsFromServiceByService(@NotNull String aServiceName, @NotNull String aKind, @NotNull String aType){
+       try{
+        TypedQuery<Service> theQuery;
+        theQuery = em.createNamedQuery("Service.findByServiceNameKindType", Service.class);
+        theQuery.setParameter("servicename", aServiceName);
+        theQuery.setParameter("kind", aKind);
+        theQuery.setParameter("type", aType);
+        return theQuery.getResultList();
+         }
+         catch(javax.persistence.NoResultException e){
+             return null;
+         }
+         catch(Exception e){
+             e.printStackTrace();
+             return null;
+         }
+    }
     
     public boolean PersistService(@NotNull Service aService){
         em.persist(aService);
@@ -106,25 +125,40 @@ public class ServiceEJB {
         return theQuery.getSingleResult();
     }
     
-    public Collection<Item> getItemsListByServiceReference(@NotNull String aReference){
-        Service theService = null;
+    public List<Item> getItemsListByServiceReference(@NotNull String aReference){
+       java.util.List<Service> theList = null;
         try{
         TypedQuery<Service> theQuery;
         System.out.println("@@@aReference: "+aReference);
         theQuery = em.createNamedQuery("Service.findByServicereference", Service.class);
-        theService = theQuery.setParameter("servicereference", aReference).getSingleResult();
+        theList = theQuery.setParameter("servicereference", aReference).getResultList();
         }
-         catch(javax.persistence.NoResultException e){
+         
+        catch(javax.persistence.NoResultException e){
              return null;
-         }
-         catch(Exception e){
+        }
+         
+        catch(Exception e){
              e.printStackTrace();
              return null;
-         }
-        if(theService != null){
-            return theService.getItemList();
         }
-        return null;
+        
+        if(theList == null) return null;
+        
+        List<Item> theResult = new ArrayList();
+        
+        System.out.println("theList,size(): "+theList.size());
+        for(int index = 0; index< theList.size();index++) {
+            Service theService = theList.get(index);
+           List<Item> theTempResult = theService.getItemList();
+           if(theTempResult == null) continue;
+           
+            for(Item theItem : theTempResult) {
+                if(theItem == null) continue;
+            theResult.add(theItem);           
+                }           
+        }      
+        return theResult;
     }
     
     
@@ -147,24 +181,24 @@ public class ServiceEJB {
     
         //***************************  ItemData   *********************************************
     
-    public boolean updateItemData(@NotNull ItemData anItemData){
+    public boolean updateItemData(@NotNull Itemdata anItemData){
         em.merge(anItemData);
             return true;
     }
     
-    public boolean deleteItemData(ItemData aData){
+    public boolean deleteItemData(Itemdata aData){
         em.remove(em.merge(aData));
         return false;
     }
     
-    public ItemData getItemDataByReference(@NotNull String aReference){
-        TypedQuery<ItemData> theQuery;
-        theQuery = em.createNamedQuery("ItemData.findByItemdatareference", ItemData.class);
+    public Itemdata getItemdataByReference(@NotNull String aReference){
+        TypedQuery<Itemdata> theQuery;
+        theQuery = em.createNamedQuery("Itemdata.findByItemdatareference", Itemdata.class);
         theQuery.setParameter("itemdatareference", aReference);
         return theQuery.getSingleResult();
     }
     
-    public boolean PersistItemData(@NotNull ItemData anItemData){
+    public boolean PersistItemdata(@NotNull Itemdata anItemData){
         em.persist(anItemData);
         return true;
     }    

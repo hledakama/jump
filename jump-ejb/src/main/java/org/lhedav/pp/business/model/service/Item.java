@@ -6,7 +6,9 @@
 package org.lhedav.pp.business.model.service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -18,6 +20,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Temporal;
@@ -25,6 +28,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -43,6 +47,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Item.findByQty", query = "SELECT i FROM Item i WHERE i.qty = :qty")
     , @NamedQuery(name = "Item.findByVirtual", query = "SELECT i FROM Item i WHERE i.virtual = :virtual")})
 public class Item implements Serializable {
+
+    @OneToMany(mappedBy = "itemFk")
+    private List<Itemdata> itemdataList;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -74,15 +81,18 @@ public class Item implements Serializable {
     private boolean edited;
 
     public Item() {
+        itemdataList = new ArrayList();
     }
 
     public Item(Long itemTId) {
         this.itemTId = itemTId;
+        itemdataList = new ArrayList();
     }
 
     public Item(Long itemTId, Date cdate) {
         this.itemTId = itemTId;
         this.cdate = cdate;
+        itemdataList = new ArrayList();
     }
 
     public Long getItemTId() {
@@ -180,6 +190,25 @@ public class Item implements Serializable {
     @Override
     public String toString() {
         return "org.lhedav.pp.business.model.service.Item[ itemTId=" + itemTId + " ]";
+    }
+
+    @XmlTransient
+    public List<Itemdata> getItemdataList() {
+        return itemdataList;
+    }
+
+    public void setItemdataList(List<Itemdata> itemdataList) {
+        this.itemdataList = itemdataList;
+    }
+    
+    public void addItemDataToList(Itemdata anItemData) {
+        if (!getItemdataList().contains(anItemData)) {
+            getItemdataList().add(anItemData);
+            if (anItemData.getItemFk() != null) {
+                anItemData.getItemFk().getItemdataList().remove(anItemData);
+            }
+            anItemData.setItemFk(this);
+        }
     }
     
 }

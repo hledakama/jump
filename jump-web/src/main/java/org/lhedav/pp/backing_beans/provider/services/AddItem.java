@@ -48,8 +48,10 @@ public class AddItem {
     private String strService = "Service";
     private String strCategory = "Category";
     private static Item item = new Item();
-    private String serviceReference = "ServiceReference";
-    private String itemReference = "ItemReference";
+    private String serviceKind = "Service Kind";
+    private String serviceType = "ServiceType";
+    private String serviceReference = "Service Reference";
+    private String itemReference = "Item Reference";
     private String name = "Name";    
     private String price = "Price";
     private String qty = "Qty";
@@ -175,7 +177,7 @@ public class AddItem {
           theList.add(Global.REFERENCE_SPLITTER);
           theList.add(item.getItemname());
           theList.add(Global.REFERENCE_SPLITTER);
-          theList.add("todo username");
+         // theList.add("todo username");
           itemCRC = ((new CRC32StringCollection(theList)).hashCode())+Global.STR_EMPTY;
          /* System.out.println("service.getKind(): "+service.getKind());
           System.out.println("service.getType(): "+service.getType());
@@ -184,6 +186,22 @@ public class AddItem {
           System.out.println("item.getItemname()++: "+item.getItemname());
           System.out.println("CRC: "+itemCRC);*/
           
+       }
+       
+       public String getServiceKind(){
+           return serviceKind;
+       }
+       
+       public void setServiceKind(String aServiceKind){
+           serviceKind = aServiceKind;
+       }
+       
+       public String getServiceType(){
+           return serviceType;
+       }
+       
+       public void setServiceType(String aServiceType){
+           serviceType = aServiceType;
        }
        
        public String getServiceReference(){
