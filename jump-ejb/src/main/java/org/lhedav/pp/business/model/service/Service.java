@@ -19,9 +19,12 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
+import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import org.lhedav.pp.business.model.common.CRC32StringCollection;
+import org.lhedav.pp.business.model.common.Global;
 
 /**
  *
@@ -38,9 +41,8 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Service.findByPublished", query = "SELECT s FROM Service s WHERE s.published = :published")
     , @NamedQuery(name = "Service.findByServicename", query = "SELECT s FROM Service s WHERE s.servicename = :servicename")
     , @NamedQuery(name = "Service.findByServicereference", query = "SELECT s FROM Service s WHERE s.servicereference = :servicereference")
-    , @NamedQuery(name = "Service.findBySubcategory", query = "SELECT s FROM Service s WHERE s.subcategory = :subcategory")
     , @NamedQuery(name = "Service.findByType", query = "SELECT s FROM Service s WHERE s.type = :type")
-    , @NamedQuery(name = "Service.findByServiceNameKindType", query = "SELECT s FROM Service s WHERE ((s.servicename = :servicename) AND (s.kind = :kind) AND (s.type = :type))")
+    , @NamedQuery(name = "Service.findByServiceNameKindTypeCategory", query = "SELECT s FROM Service s WHERE ((s.servicename = :servicename) AND (s.kind = :kind) AND (s.type = :type) AND (s.category = :category))")
 })
 public class Service implements Serializable {
 
@@ -51,39 +53,32 @@ public class Service implements Serializable {
     @GeneratedValue( strategy = GenerationType.TABLE, generator = "sequence_service" )   
     @Column(name = "SERVICE_T_ID")
     private Long serviceTId;
-    
     @Size(max = 50)
     @Column(name = "CATEGORY")
     private String category;
-    
     @Size(max = 10)
     @Column(name = "KIND")
     private String kind;
-    
     @Column(name = "PUBLISHED")
     private Short published;
-    
     @Size(max = 50)
     @Column(name = "SERVICENAME")
     private String servicename;
-    
     @Size(max = 50)
     @Column(name = "SERVICEREFERENCE")
     private String servicereference;
-    
-    @Size(max = 50)
-    @Column(name = "SUBCATEGORY")
-    private String subcategory;
-    
     @Size(max = 20)
     @Column(name = "TYPE_")
     private String type;
-    
     @OneToMany(mappedBy = "serviceFk")
     private List<Item> itemList;
+            @Transient
+    private boolean edited = false;
+
     
         public final static String KIND_HOUSEHOLD      = "HOUSE_HOLD";
 	public final static String KIND_WORKPLACE      = "WORK_PLACE";	
+        
 	public final static String TYPE_ADMINISTRATION = "ADMINISTRATION";
 	public final static String TYPE_BEAUTY         = "BEAUTY";
 	public final static String TYPE_EDUCATION      = "EDUCATION";
@@ -147,18 +142,20 @@ public class Service implements Serializable {
         return servicereference;
     }
 
-    public void setServicereference(String servicereference) {
-        this.servicereference = servicereference;
+    public void setServicereference() {
+        System.out.println("In setServicereference, kind: "+kind+ ", type: "+type+ ", servicename: "+ servicename+ ", category: "+category);
+          List the_crc_key = new ArrayList();
+          the_crc_key.add(getKind());
+          the_crc_key.add(Global.REFERENCE_SPLITTER);
+          the_crc_key.add(getType());
+          the_crc_key.add(Global.REFERENCE_SPLITTER);
+          the_crc_key.add(getServicename());
+          the_crc_key.add(Global.REFERENCE_SPLITTER);
+          the_crc_key.add(getCategory());
+          this.servicereference = (new CRC32StringCollection(the_crc_key)).hashCode() + Global.STR_EMPTY;   
+          System.out.println("In setServicereference, servicereference: "+servicereference);
     }
-
-    public String getSubcategory() {
-        return subcategory;
-    }
-
-    public void setSubcategory(String subcategory) {
-        this.subcategory = subcategory;
-    }
-
+    
     public String getType() {
         return type;
     }
@@ -176,7 +173,7 @@ public class Service implements Serializable {
         this.itemList = itemList;
     }
     
-    public void addItemToList(Item anItem) {
+      public void addItemToList(Item anItem) {
         if (!getItemList().contains(anItem)) {
             getItemList().add(anItem);
             if (anItem.getServiceFk() != null) {
@@ -209,6 +206,14 @@ public class Service implements Serializable {
     @Override
     public String toString() {
         return "org.lhedav.pp.business.model.service.Service[ serviceTId=" + serviceTId + " ]";
+    }
+    
+    public boolean isEdited(){
+        return edited;
+    }
+    
+    public void setEdited(boolean aBool){
+        edited = aBool;
     }
     
 }

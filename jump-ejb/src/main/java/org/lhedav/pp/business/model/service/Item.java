@@ -26,9 +26,12 @@ import javax.persistence.TableGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import org.lhedav.pp.business.model.common.CRC32StringCollection;
+import org.lhedav.pp.business.model.common.Global;
 
 /**
  *
@@ -45,20 +48,19 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Item.findByItemreference", query = "SELECT i FROM Item i WHERE i.itemreference = :itemreference")
     , @NamedQuery(name = "Item.findByPrice", query = "SELECT i FROM Item i WHERE i.price = :price")
     , @NamedQuery(name = "Item.findByQty", query = "SELECT i FROM Item i WHERE i.qty = :qty")
-    , @NamedQuery(name = "Item.findByVirtual", query = "SELECT i FROM Item i WHERE i.virtual = :virtual")})
+    , @NamedQuery(name = "Item.findByVirtual", query = "SELECT i FROM Item i WHERE i.virtual = :virtual")
+})
 public class Item implements Serializable {
-
-    @OneToMany(mappedBy = "itemFk")
-    private List<Itemdata> itemdataList;
 
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
     @TableGenerator( name = "sequence_item", table = "SEQUENCE", pkColumnName = "SEQ_NAME", pkColumnValue = "ITEM_T_ID", valueColumnName = "SEQ_COUNT", initialValue = 0, allocationSize = 1 )
-    @GeneratedValue( strategy = GenerationType.TABLE, generator = "sequence_item" )    
+    @GeneratedValue( strategy = GenerationType.TABLE, generator = "sequence_item" ) 
     @Column(name = "ITEM_T_ID")
     private Long itemTId;
     @Basic(optional = false)
+    @NotNull
     @Column(name = "CDATE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date cdate;
@@ -74,25 +76,27 @@ public class Item implements Serializable {
     private Long qty;
     @Column(name = "VIRTUAL_")
     private Short virtual;
+    @OneToMany(mappedBy = "itemFk")
+    private List<Itemdata> itemdataList;
     @JoinColumn(name = "SERVICE_FK", referencedColumnName = "SERVICE_T_ID")
     @ManyToOne(cascade = CascadeType.ALL)
     private Service serviceFk;
-    @Transient
-    private boolean edited;
+        @Transient
+    private boolean edited = false;
 
     public Item() {
         itemdataList = new ArrayList();
     }
 
     public Item(Long itemTId) {
-        this.itemTId = itemTId;
         itemdataList = new ArrayList();
+        this.itemTId = itemTId;
     }
 
     public Item(Long itemTId, Date cdate) {
+        itemdataList = new ArrayList();
         this.itemTId = itemTId;
         this.cdate = cdate;
-        itemdataList = new ArrayList();
     }
 
     public Long getItemTId() {
@@ -123,8 +127,20 @@ public class Item implements Serializable {
         return itemreference;
     }
 
-    public void setItemreference(String itemreference) {
-        this.itemreference = itemreference;
+    public void setItemreference(String aKind, String aType, String aService, String aCategory) {
+        System.out.println("In setItemreference, aKind: "+aKind+ ", aType: "+aType+ ", aService: "+ aService+ ", aCategory: "+aCategory + ", itemname: "+itemname);
+        List<String> theList = new ArrayList();
+          theList.add(aKind);
+          theList.add(Global.REFERENCE_SPLITTER);
+          theList.add(aType);
+          theList.add(Global.REFERENCE_SPLITTER);
+          theList.add(aService);
+          theList.add(Global.REFERENCE_SPLITTER);
+          theList.add(aCategory);
+          theList.add(Global.REFERENCE_SPLITTER);
+          theList.add(getItemname());
+          this.itemreference = ((new CRC32StringCollection(theList)).hashCode())+Global.STR_EMPTY; 
+          System.out.println("In setItemreference: "+itemreference);
     }
 
     public Long getPrice() {
@@ -149,6 +165,25 @@ public class Item implements Serializable {
 
     public void setVirtual(Short virtual) {
         this.virtual = virtual;
+    }
+
+    @XmlTransient
+    public List<Itemdata> getItemdataList() {
+        return itemdataList;
+    }
+
+    public void setItemdataList(List<Itemdata> itemdataList) {
+        this.itemdataList = itemdataList;
+    }
+    
+    public void addItemDataToList(Itemdata anItemData) {
+        if (!getItemdataList().contains(anItemData)) {
+            getItemdataList().add(anItemData);
+            if (anItemData.getItemFk() != null) {
+                anItemData.getItemFk().getItemdataList().remove(anItemData);
+            }
+            anItemData.setItemFk(this);
+        }
     }
 
     public Service getServiceFk() {
@@ -190,25 +225,6 @@ public class Item implements Serializable {
     @Override
     public String toString() {
         return "org.lhedav.pp.business.model.service.Item[ itemTId=" + itemTId + " ]";
-    }
-
-    @XmlTransient
-    public List<Itemdata> getItemdataList() {
-        return itemdataList;
-    }
-
-    public void setItemdataList(List<Itemdata> itemdataList) {
-        this.itemdataList = itemdataList;
-    }
-    
-    public void addItemDataToList(Itemdata anItemData) {
-        if (!getItemdataList().contains(anItemData)) {
-            getItemdataList().add(anItemData);
-            if (anItemData.getItemFk() != null) {
-                anItemData.getItemFk().getItemdataList().remove(anItemData);
-            }
-            anItemData.setItemFk(this);
-        }
     }
     
 }

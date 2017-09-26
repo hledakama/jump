@@ -5,18 +5,21 @@
  */
 package org.lhedav.pp.backing_beans.provider.services;
 
-import org.lhedav.pp.business.logic.ServiceEJB;
+import org.lhedav.pp.business.logic.ProviderEJB;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
-//import javax.faces.event.ValueChangeEvent;
+import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.CollectionDataModel;
 import javax.inject.Named;
-import org.lhedav.pp.business.model.common.CRC32StringCollection;
+import org.lhedav.pp.business.data.ServiceKind;
+import org.lhedav.pp.business.data.ServiceType;
+import org.lhedav.pp.business.data.Services;
 import org.lhedav.pp.business.model.common.Global;
 import static org.lhedav.pp.business.model.common.Global.GLOBAL_DISPLAY_MESSAGE;
 import org.lhedav.pp.business.model.service.Item;
@@ -31,10 +34,10 @@ import org.lhedav.pp.business.model.service.Service;
 @RequestScoped
 public class PublishService {
     private Service service = new Service();
-    static private String[] servicesKinds = {Service.KIND_HOUSEHOLD, Service.KIND_WORKPLACE};//= new String[3];      // to be xml populated at boot up
-    static private String[] servicesTypes = {Service.TYPE_ADMINISTRATION, Service.TYPE_BEAUTY, Service.TYPE_EDUCATION, Service.TYPE_ENTERTAINMENT, Service.TYPE_FOOD, Service.TYPE_HEALTH, Service.TYPE_MAINTENANCE, Service.TYPE_SECURITY, Service.TYPE_TRANSPORTATION};//= new String[3]; // to be xml populated at boot up
-    static private String[] servicesNames = {"Coiffure homme", "Coiffure dame", "Manicure", "Pédicure", "Manucure"};//= new String[3];      // to be xml populated at boot up
-    static private String[] categoriesNames = {"Africaine", "Occidentale"};//categories pour coiffures dames
+    private List<String> servicesKinds   = new ArrayList();
+    private List<String> servicesTypes   = new ArrayList();
+    private List<String> servicesNames   = new ArrayList();
+    private List<String> categoriesNames = new ArrayList();
     // make a HashMap servicesNames/categoriesNames from the parsed XML 
     private String pageTitle = "Publishing service";
     private String nav1 = "User account";
@@ -46,7 +49,8 @@ public class PublishService {
     private String name = "Service";
     private String category = "Category";
     private String status = "Subscribed";
-    private String itemReference = "Reference";    
+    private String itemReference = "Item";  
+    private String serviceReference = "Service"; 
     private String itemName = "Name";
     private String itemDate = "Date";
     private String itemPrice = "Price";
@@ -55,19 +59,57 @@ public class PublishService {
     private String addServiceButtonLabel = "Add service";
     private String modifyServiceButtonLabel = "Modify service";
     private String publishButtonLabel = "Publish service";
-    private List<String> m_crc_key;
             @EJB
-    private ServiceEJB m_service_ejb;
-    private SortedDataModel<Item> sortedDataModel;
-    private String reference_;
+    private ProviderEJB m_provider_services;
+    private SortedDataModel<Item> sortedItemModel;
+    private SortedDataModel<Service> sortedServiceModel;
     private boolean publishChecked;
     
     
     PublishService(){ 
-        service.setKind(servicesKinds[0]);
-        service.setType(servicesTypes[0]);
-        service.setServicename(servicesNames[0]);
-        service.setCategory(categoriesNames[0]);
+    }
+    //https://community.oracle.com/thread/1726468
+    @PostConstruct
+    public void init() {
+        List<ServiceKind>  theKinds    = m_provider_services.getServiceKinds();
+        List<ServiceType> theTypes     = m_provider_services.getServiceTypes();
+        List<Services> theServicesData = m_provider_services.getServicesData();
+        
+        int theKindSize = theKinds.size(); 
+           for(int index = 0; index < theKindSize; index++){
+               String theString = theKinds.get(index).getKind();
+               if(servicesKinds.contains(theString)) continue;
+               servicesKinds.add(theString);
+           }
+        int theTypeSize = theTypes.size();
+            for(int index = 0; index < theTypeSize; index++){
+                String theString = theTypes.get(index).getType();
+               if(servicesTypes.contains(theString)) continue;
+                servicesTypes.add(theTypes.get(index).getType());
+            } 
+         
+        int theServicesSize = theServicesData.size();
+            for(int index = 0; index < theServicesSize; index++){
+                String theString = theServicesData.get(index).getName();
+               if(servicesNames.contains(theString)) continue;
+                servicesNames.add(theServicesData.get(index).getName());
+            }
+            
+        
+            for(int index = 0; index < theServicesSize; index++){
+               String theString = theServicesData.get(index).getCategory();
+               if(categoriesNames.contains(theString)) continue;
+                categoriesNames.add(theServicesData.get(index).getCategory());
+            }
+        
+        service.setKind(servicesKinds.get(0));
+        service.setType(servicesTypes.get(0));
+        service.setServicename(servicesNames.get(0));
+        service.setCategory(categoriesNames.get(0));
+        System.out.println("setServicereference from PublishService.init");
+        service.setServicereference();
+        
+        updateAddModifyButton();
     }
     
     public Service getService(){
@@ -79,9 +121,9 @@ public class PublishService {
     }
     
     public boolean isServiceEmpty(){
-        setReference_();
-        java.lang.System.out.println("getReference_(): "+getReference_());
-        Collection<Item>   theItems = m_service_ejb.getItemsListByServiceReference(getReference_());
+        System.out.println("setServicereference from PublishService.isServiceEmpty");
+        service.setServicereference();
+        Collection<Item>   theItems = m_provider_services.getItemsListByServiceReference(service.getServicereference());
         boolean isNotEmpty = (theItems != null) && (theItems.size() > 0);
         if(theItems != null){
             java.lang.System.out.println("listSize: "+theItems.size()+", ");
@@ -90,37 +132,37 @@ public class PublishService {
         return !isNotEmpty;
     }
     
-     public String[] getServicesKinds(){
+     public List<String> getServicesKinds(){
         return servicesKinds;
     }
         
-        public void setServicesKinds(String[] someKinds){
+        public void setServicesKinds(List<String> someKinds){
             servicesKinds = someKinds;            
         }
         
-         public String[] getServicesTypes(){
+         public List<String> getServicesTypes(){
         return servicesTypes;
     }
         
-        public void setServicesTypes(String[] someTypes){
+        public void setServicesTypes(List<String> someTypes){
             servicesTypes = someTypes;
         }
       
-    public String[] getServicesNames(){
+    public List<String> getServicesNames(){
         return servicesNames;
     }
         
-        public void setServicesNames(String[] someNames){
-            setName(servicesNames[0]);
+        public void setServicesNames(List<String> someNames){
+           servicesNames =  someNames;
         }
 	
 	 
-        public String[] getCategoriesNames(){
+        public List<String> getCategoriesNames(){
             return categoriesNames;
         }
         
-        public void setCategoriesNames(String[] someNames){            
-            setCategory(categoriesNames[0]);
+        public void setCategoriesNames(List<String> someNames){            
+            categoriesNames = someNames;
         }
         
         public String getPageTitle(){
@@ -211,6 +253,14 @@ public class PublishService {
            itemReference = aReference;
        }
        
+       public String getServiceReference(){
+            return serviceReference;
+       }
+        
+       public void setServiceReference(String aReference){
+           serviceReference = aReference;
+       }
+       
        public String getItemDate(){
             return itemDate;
        }
@@ -293,17 +343,15 @@ public class PublishService {
         serviceNameChanged = anEvent.getNewValue().toString();
     }*/
          
-           public SortedDataModel<Item> getSortedDataModel() {
-             //  setReference_();
+           public SortedDataModel<Item> getSortedItemModel() {
            List<Service>   theServices;
            System.out.println("service.getServicename(): "+service.getServicename());
            System.out.println("service.getKind(): "+service.getKind());
            System.out.println("service.getType(): "+service.getType());
-           theServices = m_service_ejb.getItemsFromServiceByService(service.getServicename(), service.getKind(), service.getType());
+           theServices = m_provider_services.getItemsFromServices(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
            List<Item> theItems = new ArrayList();
            if(theServices != null) {
-              for(int index = 0; index< theServices.size();index++) {
-              Service theService = theServices.get(index);
+              for(Service theService: theServices) {
               List<Item> theTempResult = theService.getItemList();
               if(theTempResult == null) continue;
            
@@ -313,33 +361,28 @@ public class PublishService {
               }           
             }
            }
-           sortedDataModel = new SortedDataModel<>(new CollectionDataModel<>(theItems));
+           //System.out.println("theServices.size(): "+theServices.size()+ ", theItems.size(): "+theItems.size());;
+           sortedItemModel = new SortedDataModel<>(new CollectionDataModel<>(theItems));
            /* } catch (ParseException ex) {
             Logger.getLogger(AddModifyItem.class.getName()).log(Level.SEVERE, null, ex);
            }*/
-           return sortedDataModel;
+           return sortedItemModel;
     }
-           
-           public String getReference_(){
-           return reference_;
-       }
-        
-       public void setReference_(){
-          m_crc_key = new ArrayList();
-          m_crc_key.add(service.getKind());
-          m_crc_key.add(Global.REFERENCE_SPLITTER);
-          m_crc_key.add(service.getType());
-          m_crc_key.add(Global.REFERENCE_SPLITTER);
-          m_crc_key.add(service.getServicename());
-          m_crc_key.add(Global.REFERENCE_SPLITTER);
-          m_crc_key.add(service.getCategory());
-          m_crc_key.add(Global.REFERENCE_SPLITTER);
-        //  m_crc_key.add("todo username");
-          reference_ = (new CRC32StringCollection(m_crc_key)).hashCode() + Global.STR_EMPTY;
-          System.out.println("getkind(): "+service.getKind()+", getType: "+service.getType());
-          System.out.println("getName_(): "+service.getServicename()+", getCategory: "+service.getCategory());
-          System.out.println("reference_: "+reference_);
-       }
+    
+           public SortedDataModel<Service> getSortedServiceModel() {
+           List<Service>   theServices;
+           System.out.println("--service.getServicename(): "+service.getServicename());
+           System.out.println("--service.getKind(): "+service.getKind());
+           System.out.println("--service.getType(): "+service.getType());
+           theServices = m_provider_services.getItemsFromServices(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
+
+           //System.out.println("theServices.size(): "+theServices.size()+ ", theServices.size(): "+theServices.size());;
+           sortedServiceModel = new SortedDataModel<>(new CollectionDataModel<>(theServices));
+           /* } catch (ParseException ex) {
+            Logger.getLogger(AddModifyItem.class.getName()).log(Level.SEVERE, null, ex);
+           }*/
+           return sortedServiceModel;
+    }
        
     public String publish(){
         FacesContext theCtx = FacesContext.getCurrentInstance();
@@ -349,11 +392,12 @@ public class PublishService {
                                                                         "Current service is empty or already published!"));
              return Global.STAY_ON_CURRENT_PAGE;
          }
-         setReference_();
-         Service theRetrived = m_service_ejb.getServiceByServiceReference(getReference_());
+         System.out.println("setServicereference from PublishService.Publish");
+         service.setServicereference();
+         Service theRetrived = m_provider_services.getServiceByServiceReference(service.getServicereference());
          theRetrived.setPublished((short)1);
          
-         if(m_service_ejb.updateService(service)){
+         if(m_provider_services.updateService(service)){
              theCtx.addMessage(GLOBAL_DISPLAY_MESSAGE, new FacesMessage(FacesMessage.SEVERITY_INFO, 
                                                                         "Publishing service.",
                                                                         "The service is published successfully"));
@@ -383,7 +427,86 @@ public class PublishService {
             publishChecked = checked;        
             service.setPublished(publishChecked ? (short)1 : (short)0);
         }        
-    }       
+    }
+    
+    
+    public void onKindChanged(ValueChangeEvent anEvent){
+       System.out.println("onKindChanged start, getServicereference: "+service.getServicereference()+ ", anEvent.getOldValue(): "+anEvent.getOldValue());
+       String theNewKind = (String) anEvent.getNewValue();
+       service.setKind(theNewKind);
+       System.out.println("setServicereference from PublishService.onKindChanged");
+       service.setServicereference();
+       System.out.println("onKindChanged end, getServicereference: "+service.getServicereference()+ ", theNewKind: "+theNewKind);
+       updateAddModifyButton();
+    }
+    //In setServicereference, kind: BEAUTY, type: ADMINISTRATION, servicename: COIFFURE HOMME, category: AFRICAINE
+     public void onTypeChanged(ValueChangeEvent anEvent){
+       System.out.println("onTypeChanged start, getServicereference: "+service.getServicereference()+ ", anEvent.getOldValue(): "+anEvent.getOldValue());
+       String theNewType = (String) anEvent.getNewValue();
+       service.setType(theNewType);
+       System.out.println("setServicereference from PublishService.onTypeChanged");
+       service.setServicereference();
+       System.out.println("onTypeChanged end, getServicereference: "+service.getServicereference()+", theNewType: "+theNewType);
+       updateAddModifyButton();
+    }
+     
+     
+    public void onNameChanged(ValueChangeEvent anEvent){
+       System.out.println("onNameChanged start, getServicereference: "+service.getServicereference()+ ", anEvent.getOldValue(): "+anEvent.getOldValue());
+       String theNewName = (String) anEvent.getNewValue();
+       service.setServicename(theNewName);
+       System.out.println("setServicereference from PublishService.onNameChanged");
+       service.setServicereference();
+       System.out.println("onNameChanged end, getServicereference: "+service.getServicereference()+", theNewName: "+theNewName);
+       updateAddModifyButton();
+    }
+    
+    
+    public void onCategoryChanged(ValueChangeEvent anEvent){
+       System.out.println("onCategoryChanged start, getServicereference: "+service.getServicereference()+ ", anEvent.getOldValue(): "+anEvent.getOldValue());
+       String theNewCategory = (String) anEvent.getNewValue();
+       service.setCategory(theNewCategory);
+       System.out.println("setServicereference from PublishService.onCategoryChanged");
+       service.setServicereference();
+       System.out.println("onCategoryChanged end, getServicereference: "+service.getServicereference()+", theNewCategory: "+theNewCategory);
+       updateAddModifyButton();
+    }
+    
+    public String editItemRow(Item anItem) {
+        anItem.setEdited(true);
+        m_provider_services.updateItem(anItem);
+      return Global.STAY_ON_CURRENT_PAGE;        
+    }
        
+    public String deleteItemRow(Item anItem) {
+        m_provider_services.deleteItem(anItem);
+        m_provider_services.updateItem(anItem);
+      return Global.STAY_ON_CURRENT_PAGE;       
+    }
+    
+    
+    public String editServiceRow(Service aService) {
+        aService.setEdited(true);
+        m_provider_services.updateService(aService);
+      return Global.STAY_ON_CURRENT_PAGE;        
+    }
+       
+    public String deleteServiceRow(Service aService) {
+        m_provider_services.deleteService(aService);
+        m_provider_services.updateService(aService);
+      return Global.STAY_ON_CURRENT_PAGE;       
+    }
+    
+    public void updateAddModifyButton(){
+        service.setServicereference();
+        Service theRegistered = m_provider_services.getServiceByServiceReference(service.getServicereference());
+        if(theRegistered == null){
+            // display add label
+        }
+        else{
+            // display modify label
+        }
+                
+    }
     
 }

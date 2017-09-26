@@ -46,7 +46,7 @@ public class SortedDataModel<T> extends CollectionDataModel<T> {
             Arrays.sort(rows, rowc);
          }
     
-        private T getData(int row) {
+        public T getData(int row) {
             if( m_model == null) return null;
             int baseRowIndex = m_model.getRowIndex();
             m_model.setRowIndex(row);

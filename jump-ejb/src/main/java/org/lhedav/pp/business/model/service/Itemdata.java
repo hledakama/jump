@@ -43,7 +43,8 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Itemdata.findByAvatar", query = "SELECT i FROM Itemdata i WHERE i.avatar = :avatar")
     , @NamedQuery(name = "Itemdata.findByComment", query = "SELECT i FROM Itemdata i WHERE i.comment = :comment")
     , @NamedQuery(name = "Itemdata.findByDuration", query = "SELECT i FROM Itemdata i WHERE i.duration = :duration")
-    , @NamedQuery(name = "Itemdata.findByUnit", query = "SELECT i FROM Itemdata i WHERE i.unit = :unit")})
+    , @NamedQuery(name = "Itemdata.findByUnit", query = "SELECT i FROM Itemdata i WHERE i.unit = :unit")
+})
 public class Itemdata implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -80,8 +81,8 @@ public class Itemdata implements Serializable {
     }
 
     public Itemdata(Long itemdataTId) {
-        providerAddressList = new ArrayList();
         this.itemdataTId = itemdataTId;
+        providerAddressList = new ArrayList();
     }
 
     public Itemdata(Long itemdataTId, Date mdate) {

@@ -6,7 +6,7 @@ import java.security.NoSuchAlgorithmException;
 public class Global {
 	
 	public static final String STR_EMPTY = "";
-	public static final String PERSISTENCE_UNIT = "lhe_PU_2017"; // if changed, please update the persitence.xml too
+	public static final String PERSISTENCE_UNIT = "org.lhedav.pp_jump-ejb_PU"; // if changed, please update the persitence.xml too
 	public static final String CUSTOMER_RATING = "CUSTOMER_RATING";
 	public static final String PROVIDER_RATING = "PROVIDER_RATING";
 	public static final int NUMBER_OF_PROVIDER_RATING_CRITERIAS = 6;

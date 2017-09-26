@@ -11,14 +11,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.CollectionDataModel;
 import javax.inject.Named;
 import javax.validation.constraints.NotNull;
-import org.lhedav.pp.business.logic.ServiceEJB;
-import org.lhedav.pp.business.model.common.CRC32StringCollection;
+import org.lhedav.pp.business.data.Services;
+import org.lhedav.pp.business.logic.ProviderEJB;
 import org.lhedav.pp.business.model.common.Global;
 import org.lhedav.pp.business.model.service.Item;
 import org.lhedav.pp.business.model.service.Service;
@@ -63,18 +64,36 @@ public class AddItem {
     private SortedDataModel<Item> sortitemmodel;
     private String sortType;
     private boolean virtualItem;
-
-    private String itemCRC;
             @EJB
-    private ServiceEJB serviceEjb;
+    private ProviderEJB provider_services;
     private boolean itemNameChanged = false;
-    private static String[] itemsNames = { "Boule-boole","Meche","Nattes","Batonnets","Tresse enfant", "Tissage"};      // to be xml populated at boot up
+    //private static String[] itemsNames = { "Boule-boole","Meche","Nattes","Batonnets","Tresse enfant", "Tissage"};      // to be xml populated at boot up
     private static final String[] providerAddresses = {"37 Duhamel, Gatineau, QC Canada", "11-1 Tasse, Gatineau, QC Canada", "52 Isabelle, Gatineau, QC Canada", "52 Des scouts, Gatineau, QC Canada"}; 
-    private static final String[] unitsList = { "day(s)", "hour(s)", "min(s)", "week(s)", "month(s)"}; 
+    //private static final String[] unitsList = { "day(s)", "hour(s)", "min(s)", "week(s)", "month(s)"}; 
+    private List<String> itemsNames  = new ArrayList(); 
+    private List<String> unitsList = new ArrayList();
+    
     
     AddItem(){
-        item.setItemname(itemsNames[0]); 
-        //item.setItemreference(getItemCRC()); 
+    }
+    
+    @PostConstruct
+    public void init() {
+        List<Services> theServicesData = provider_services.getServicesData();
+        
+        int theServicesSize = theServicesData.size();
+                for(int index = 0; index < theServicesSize; index++){
+                    String theString = theServicesData.get(index).getItem();
+                    if(itemsNames.contains(theString)) continue;
+                itemsNames.add(theString);
+        }
+                
+        //unitsList  = provider_services.getItemUnits();
+        item.setItemname(itemsNames.get(0)); 
+        System.out.println("setItemreference from AddItem.init");
+        item.setItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
+        System.out.println("setServicereference from AddItem.init");
+        service.setServicereference();
     }
 
     
@@ -158,36 +177,8 @@ public class AddItem {
        
        public void setStrCategory(String aCategory){
            strCategory = aCategory;
-       }
-            
-       public String getItemCRC(){
-           setItemCRC(null);
-           return itemCRC;
-       }
-        
-       public void setItemCRC(String aValue){
-           List<String> theList = new ArrayList();
-          theList.add(service.getKind());
-          theList.add(Global.REFERENCE_SPLITTER);
-          theList.add(service.getType());
-          theList.add(Global.REFERENCE_SPLITTER);
-          theList.add(service.getServicename());
-          theList.add(Global.REFERENCE_SPLITTER);
-          theList.add(service.getCategory());
-          theList.add(Global.REFERENCE_SPLITTER);
-          theList.add(item.getItemname());
-          theList.add(Global.REFERENCE_SPLITTER);
-         // theList.add("todo username");
-          itemCRC = ((new CRC32StringCollection(theList)).hashCode())+Global.STR_EMPTY;
-         /* System.out.println("service.getKind(): "+service.getKind());
-          System.out.println("service.getType(): "+service.getType());
-          System.out.println("service.getServicename(): "+service.getServicename());
-          System.out.println("service.getCategory(): "+service.getCategory());
-          System.out.println("item.getItemname()++: "+item.getItemname());
-          System.out.println("CRC: "+itemCRC);*/
-          
-       }
-       
+       }            
+              
        public String getServiceKind(){
            return serviceKind;
        }
@@ -252,12 +243,12 @@ public class AddItem {
            virtual = aStatus;
        }
        
-       public String[] getItemsNames(){
+       public List<String> getItemsNames(){
           
         return itemsNames;
        }
        
-              public void setItemsNames(String[] someNames){
+       public void setItemsNames(List<String> someNames){
             itemsNames = someNames;
        }
        
@@ -327,13 +318,13 @@ public class AddItem {
            // providerAddresses = someAddresses;
        }
        
-       public String[] getUnitsList(){
+       public List<String> getUnitsList(){
            
         return unitsList;
        }
         
-       public void setUnitsList(String[] someUnits){          
-          //  unitsList = someUnits;
+       public void setUnitsList(List<String> someUnits){          
+          unitsList = someUnits;
        }
        
        public String getNextItemLabel(){
@@ -375,7 +366,9 @@ public class AddItem {
        }*/
        
        public String sortItemByReference(final String dir) {
-           Collection<Item> theCollection = serviceEjb.getItemsListByServiceReference(service.getServicereference());
+           System.out.println("setServicereference from AddItem.sortItemByReference");
+           service.setServicereference();
+           Collection<Item> theCollection = provider_services.getItemsListByServiceReference(service.getServicereference());
            List theList = new ArrayList(theCollection);
            Collections.sort(theList, new Comparator<Item>() {
             @Override
@@ -411,10 +404,10 @@ public class AddItem {
        
         public void setSortitemmodel() {
             Collection<Item> theList;
-            theList = serviceEjb.getItemsListByServiceReference(service.getServicereference());
-            System.out.println("theList == null: "+(theList == null) +", service.getServicereference(): "+service.getServicereference());
+            System.out.println("setServicereference from AddItem.setSortitemmodel");
+            service.setServicereference();
+            theList = provider_services.getItemsListByServiceReference(service.getServicereference());
             if((theList != null) && (!theList.isEmpty())){
-                //System.out.println("getItemname from theList: "+(theList.get(0).getItemname())+", theSize: "+theList.size());
                 sortitemmodel = new SortedDataModel<>(new CollectionDataModel<>(theList));
             }
            
@@ -438,14 +431,14 @@ public class AddItem {
     }
         
     public String removeRowList(@NotNull Item anItem) {
-            serviceEjb.deleteItem(anItem);
+            provider_services.deleteItem(anItem);
         return Global.STAY_ON_CURRENT_PAGE;
     }
     
        
     public String editRowItem(@NotNull Item anItem) { 
-          anItem.setEdited(false);
-          serviceEjb.updateItem(anItem);
+          anItem.setEdited(true);
+          provider_services.updateItem(anItem);
       return Global.STAY_ON_CURRENT_PAGE;         
     }
     
@@ -480,10 +473,16 @@ public class AddItem {
        }
        
        private String addItem(){ 
-          item.setItemreference(getItemCRC());
-          service.setSubcategory(item.getItemname());
+           if(sortitemmodel != null){
+              for(Item theItem: sortitemmodel){
+                  theItem.setEdited(false);
+              }
+           }
+
+          System.out.println("setItemreference from AddItem.addItem");
+          item.setItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
           service.addItemToList(item);
-          serviceEjb.createService(service, item); 
+          provider_services.createService(service, item); 
           return Global.STAY_ON_CURRENT_PAGE;
   
        }
@@ -495,16 +494,21 @@ public class AddItem {
         for (Item theItem : theModel) {
             if(theItem.isEdited()){               
                 theItem.setEdited(false);
-                serviceEjb.updateItem(theItem);
+                provider_services.updateItem(theItem);
             }        
        }
         return Global.STAY_ON_CURRENT_PAGE;
        }
        
-       
-    public void ItemNameChanged(ValueChangeEvent anEvent){
-        if(anEvent == null) return;
+    //https://www.mkyong.com/jsf2/jsf-2-valuechangelistener-example/   
+    public void onNameChanged(ValueChangeEvent anEvent){
+       System.out.println("ItemNameChanged start, getItemreference: "+item.getItemreference()+ ", anEvent.getOldValue(): "+anEvent.getOldValue());
+       String theNewItemName = (String) anEvent.getNewValue();
+       item.setItemname(theNewItemName);
+       System.out.println("setItemreference from AddItem.onNameChanged");
+       item.setItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
        itemNameChanged = true;
+       System.out.println("ItemNameChanged end, getItemreference: "+item.getItemreference()+ ", theNewItemName: "+theNewItemName);
     }
     
        public void ItemAddressChanged(ValueChangeEvent anEvent){

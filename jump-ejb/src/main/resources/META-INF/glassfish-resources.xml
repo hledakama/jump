@@ -8,7 +8,6 @@
     <property name="URL" value="jdbc:mysql://localhost:3306/jump_projects_DS?zeroDateTimeBehavior=convertToNull"/>
     <property name="User" value="root"/>
     <property name="Password" value="LheDav@2004"/>
-    <property name="DeploymentOrder" value="7"/>
     
   </jdbc-connection-pool>
 </resources>

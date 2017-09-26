@@ -13,9 +13,13 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
+import org.lhedav.pp.business.model.common.Global;
 import org.lhedav.pp.business.model.service.Item;
 import org.lhedav.pp.business.model.service.Itemdata;
 import org.lhedav.pp.business.model.service.Service;
+import org.lhedav.pp.business.data.ServiceKind;
+import org.lhedav.pp.business.data.ServiceType;
+import org.lhedav.pp.business.data.Services;
 
 /**
  *
@@ -24,11 +28,59 @@ import org.lhedav.pp.business.model.service.Service;
 
 @Stateless
 @LocalBean
-public class ServiceEJB {
+public class ProviderEJB {
     
     
-    @PersistenceContext(unitName = "org.lhedav.pp_jump-ejb_PU")
+    @PersistenceContext(unitName = Global.PERSISTENCE_UNIT)
     private EntityManager em;
+    //https://stackoverflow.com/questions/17231535/java-lang-classcastexception-sametype-cannot-be-cast-to-sametype
+    public List<ServiceKind> getServiceKinds(){ 
+        List<ServiceKind> theKinds;
+        try{
+        TypedQuery<ServiceKind> theQuery;
+        theQuery = em.createNamedQuery("ServiceKind.findAll", ServiceKind.class);
+        theKinds = theQuery.getResultList();
+        }        
+        catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
+
+        return theKinds;
+    }
+    
+    public List<ServiceType> getServiceTypes(){
+        List<ServiceType> theTypes;
+        try{        
+        TypedQuery<ServiceType> theQuery;
+        theQuery = em.createNamedQuery("ServiceType.findAll", ServiceType.class);
+        theTypes = theQuery.getResultList();
+    }
+        catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
+        return theTypes;
+    }
+        
+    public List<Services> getServicesData(){
+       List<Services> theServices ;
+        try{
+        TypedQuery<Services> theQuery;
+        theQuery = em.createNamedQuery("Services.findAll", Services.class);
+        theServices = theQuery.getResultList();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
+        return theServices;
+    }
+    
+    public List<String> getItemUnits(){
+        List<String> theResult = new ArrayList();
+        return theResult;
+    }
     
     
      //***************************  Service   *********************************************
@@ -50,13 +102,12 @@ public class ServiceEJB {
         return true;
     }
         
-          public boolean createService(@NotNull Service aService){
+    public boolean createService(@NotNull Service aService){
            
             System.out.println("getCategory: "+aService.getCategory());
             System.out.println("getKind: "+aService.getKind());
             System.out.println("getServicename: "+aService.getServicename());
             System.out.println("getServicereference: "+aService.getServicereference());
-            System.out.println("getSubcategory: "+aService.getSubcategory());
             System.out.println("getType: "+aService.getType());
             System.out.println("toString: "+aService.toString());
             System.out.println("getId: "+aService.getServiceTId());
@@ -70,7 +121,7 @@ public class ServiceEJB {
     }   
      
     
-     public Service getServiceByServiceReference(@NotNull String aReference){
+    public Service getServiceByServiceReference(@NotNull String aReference){
          try{
         TypedQuery<Service> theQuery;
         theQuery = em.createNamedQuery("Service.findByServicereference", Service.class);
@@ -86,13 +137,14 @@ public class ServiceEJB {
          }
     }
      
-    public List<Service> getItemsFromServiceByService(@NotNull String aServiceName, @NotNull String aKind, @NotNull String aType){
+    public List<Service> getItemsFromServices(@NotNull String aKind, @NotNull String aType, @NotNull String aServiceName, @NotNull String aCategory){
        try{
         TypedQuery<Service> theQuery;
-        theQuery = em.createNamedQuery("Service.findByServiceNameKindType", Service.class);
-        theQuery.setParameter("servicename", aServiceName);
+        theQuery = em.createNamedQuery("Service.findByServiceNameKindTypeCategory", Service.class);        
         theQuery.setParameter("kind", aKind);
         theQuery.setParameter("type", aType);
+        theQuery.setParameter("servicename", aServiceName);
+        theQuery.setParameter("category", aCategory);
         return theQuery.getResultList();
          }
          catch(javax.persistence.NoResultException e){
@@ -168,10 +220,22 @@ public class ServiceEJB {
     }
     
     public boolean deleteItem(@NotNull Item anItem){
-        em.remove(em.merge(anItem));
-        return false;
+        try{em.remove(em.merge(anItem));
+        }
+        catch(Exception e){
+            return false;
+        }
+        return true;
     }
-    
+
+        public boolean deleteService(@NotNull Service aService){
+        try{em.remove(em.merge(aService));
+        }
+        catch(Exception e){
+            return false;
+        }
+        return true;
+    }
     
     public boolean PersistItem(@NotNull Item anItem){
         em.persist(anItem);

@@ -19,6 +19,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -38,7 +39,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "ProviderAddress.findByCity", query = "SELECT p FROM ProviderAddress p WHERE p.city = :city")
     , @NamedQuery(name = "ProviderAddress.findByState", query = "SELECT p FROM ProviderAddress p WHERE p.state = :state")
     , @NamedQuery(name = "ProviderAddress.findByZipcode", query = "SELECT p FROM ProviderAddress p WHERE p.zipcode = :zipcode")
-    , @NamedQuery(name = "ProviderAddress.findByCountry", query = "SELECT p FROM ProviderAddress p WHERE p.country = :country")})
+    , @NamedQuery(name = "ProviderAddress.findByCountry", query = "SELECT p FROM ProviderAddress p WHERE p.country = :country")
+})
 public class ProviderAddress implements Serializable {
 
     private static final long serialVersionUID = 1L;

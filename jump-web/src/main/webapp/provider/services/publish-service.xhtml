@@ -29,76 +29,157 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
             <!-- add required content here-->
             <h:messages infoStyle="color:blue" warnStyle="color:orange" errorStyle="color:red"/>
             <h:form>
+            <h:dataTable value="#{publishService.sortedServiceModel}" var="model_service">
+                <h:column>                        
+                    <f:facet name="header">#{publishService.serviceReference}</f:facet>                        
+                    #{model_service.servicereference}
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">#{publishService.status}</f:facet>                        
+                    <h:selectBooleanCheckbox disabled="true" readonly="true" id = "publish_status" value="#{publishService.publishChecked}" rendered="#{model_service.edited}"/>
+                    <h:outputText value="#{model_service.published}" rendered="#{not model_service.edited}" />
+                </h:column>
+                
+                <h:column>
+                    <f:facet name="header">#{publishService.kind}</f:facet>                        
+                    <h:selectOneMenu id = "service_kind" required="true" value="#{publishService.service.kind}"
+                        onchange="submit()" valueChangeListener="#{publishService.onKindChanged}" rendered="#{model_service.edited}">
+                    <f:selectItems value="#{publishService.servicesKinds}" />
+                    </h:selectOneMenu>
+                    <h:outputText value="#{model_service.kind}" rendered="#{not model_service.edited}" />
+                </h:column>
+                
+                <h:column>
+                    <f:facet name="header">#{publishService.type}</f:facet>                        
+                    <h:selectOneMenu id = "service_type" required="true" value="#{publishService.service.type}"
+                        onchange="submit()" valueChangeListener="#{publishService.onTypeChanged}" rendered="#{model_service.edited}">
+                    <f:selectItems value="#{publishService.servicesTypes}" />
+                    </h:selectOneMenu>
+                    <h:outputText value="#{model_service.type}" rendered="#{not model_service.edited}" />
+                </h:column>
+                
+                <h:column>
+                    <f:facet name="header">#{publishService.name}</f:facet>                        
+                    <h:selectOneMenu id = "service_name" required="true" value="#{publishService.service.servicename}"
+                        onchange="submit()" valueChangeListener="#{publishService.onNameChanged}" rendered="#{model_service.edited}">
+                    <f:selectItems value="#{publishService.servicesNames}" />
+                    </h:selectOneMenu>
+                    <h:outputText value="#{model_service.servicename}" rendered="#{not model_service.edited}" />
+                </h:column>
+                
+                <h:column>
+                    <f:facet name="header">#{publishService.category}</f:facet>                        
+                    <h:selectOneMenu id = "service_category" required="true" value="#{publishService.service.category}"
+                        onchange="submit()" valueChangeListener="#{publishService.onCategoryChanged}" rendered="#{model_service.edited}">
+                    <f:selectItems value="#{publishService.categoriesNames}" />
+                    </h:selectOneMenu>
+                    <h:outputText value="#{model_service.category}" rendered="#{not model_service.edited}" />
+                </h:column> 
+                
+                <h:column>
+                    <f:facet name="header">Edit</f:facet>
+                    <h:commandLink value="Edit" action="#{publishService.editServiceRow(model_service)}" rendered="#{not model_service.edited}" />
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">Delete</f:facet>
+                    <h:commandLink value="Delete" action="#{publishService.deleteServiceRow(model_service)}" />
+                </h:column>
+            </h:dataTable>
+                
             <h:panelGrid columns="3">
+                <h:outputLabel value="#{publishService.serviceReference}"/>
+                <h:outputText id = "service_reference_add" value="#{publishService.service.servicereference}"/>
+                    
                 <h:outputLabel value="#{publishService.kind}"/>
-                <h:selectOneMenu id = "service_kind" required="true" value="#{publishService.service.kind}"
-                                 onchange="submit()" >
+                <h:selectOneMenu id = "service_kind_add" required="true" value="#{publishService.service.kind}"
+                                 onchange="submit()" valueChangeListener="#{publishService.onKindChanged}">
                     <f:selectItems value="#{publishService.servicesKinds}" />
                 </h:selectOneMenu>
-                <h:message for="service_kind"/>
+                <h:message for="service_kind_add"/>
                 
                 <h:outputLabel value="#{publishService.type}"/>
-                <h:selectOneMenu id = "service_type" required="true" value="#{publishService.service.type}"
-                                 onchange="submit()" >
+                <h:selectOneMenu id = "service_type_add" required="true" value="#{publishService.service.type}"
+                                 onchange="submit()" valueChangeListener="#{publishService.onTypeChanged}">
                     <f:selectItems value="#{publishService.servicesTypes}" />
                 </h:selectOneMenu>
-                <h:message for="service_type"/>
+                <h:message for="service_type_add"/>
                 
                 <h:outputLabel value="#{publishService.name}"/>
-                <h:selectOneMenu id = "service_name" required="true" value="#{publishService.service.servicename}"
-                                 onchange="submit()" >
+                <h:selectOneMenu id = "service_name_add" required="true" value="#{publishService.service.servicename}"
+                                 onchange="submit()" valueChangeListener="#{publishService.onNameChanged}" >
                     <f:selectItems value="#{publishService.servicesNames}" />
                 </h:selectOneMenu>
-                <h:message for="service_name"/>
+                <h:message for="service_name_add"/>
                 
                 <h:outputLabel value="#{publishService.category}"/>
-                <h:selectOneMenu id = "category_name" required="true" value="#{publishService.service.category}"
-                                 onchange="submit()" >
+                <h:selectOneMenu id = "category_name_add" required="true" value="#{publishService.service.category}"
+                                 onchange="submit()" valueChangeListener="#{publishService.onCategoryChanged}">
                     <f:selectItems value="#{publishService.categoriesNames}" />
                 </h:selectOneMenu>
-                <h:message for="category_name"/>
+                <h:message for="category_name_add"/>
                 
                 <h:outputLabel value="#{publishService.status}"/>
-                <h:selectBooleanCheckbox disabled="true" readonly="true" id = "publish_status" value="#{publishService.publishChecked}"/>
-                <h:message for="publish_status"/>
+                <h:selectBooleanCheckbox disabled="true" readonly="true" id = "publish_status_add" value="#{publishService.publishChecked}"/>
+                <h:message for="publish_status_add"/>
             </h:panelGrid>
+                
+                
             <hr/>
-                <h:dataTable value="#{publishService.sortedDataModel}" var="model">
-                    <h:column>
-                        
-                        <f:facet name="header">#{publishService.itemReference}</f:facet>
-                        
-                        #{model.itemreference}
+            
+            
+                <h:dataTable value="#{publishService.sortedItemModel}" var="model_item">
+                    <h:column>                        
+                        <f:facet name="header">#{publishService.itemReference}</f:facet>                        
+                        #{model_item.itemreference}
                     </h:column>
 
                     <h:column>
                         <f:facet name="header">#{publishService.itemName}</f:facet>
-                        #{model.itemname}
+                        #{model_item.itemname}
                     </h:column>
 
                     <h:column>
-                        <f:facet name="header">#{publishService.itemPrice}</f:facet>
-                        #{model.price}
+                        <f:facet name="header">#{publishService.itemPrice}</f:facet>                        
+                        <h:inputText value="#{model_item.price}" size="10" rendered="#{model_item.edited}" />
+                        <h:outputText value="#{model_item.price}" rendered="#{not model_item.edited}" />
                     </h:column>
                     
                     <h:column>
                         <f:facet name="header">#{publishService.itemQty}</f:facet>
-                        #{model.qty}
+                        <h:inputText value="#{model_item.qty}" size="10" rendered="#{model_item.edited}" />
+                        <h:outputText value="#{model_item.qty}" rendered="#{not model_item.edited}" />
                     </h:column>
-                    
+
+                    <h:column>
+                        <f:facet name="header">#{publishService.itemVirtual}</f:facet>
+                        <h:inputText value="#{model_item.virtual}" size="10" rendered="#{model_item.edited}" />
+                        <h:outputText value="#{model_item.virtual}" rendered="#{not model_item.edited}" />
+                    </h:column>                    
                                         
                     <h:column>
                         <f:facet name="header">#{publishService.itemDate}</f:facet>
-                        #{model.cdate}
+                        #{model_item.cdate}
+                    </h:column> 
+                    
+                    <h:column>
+                        <f:facet name="header">Edit</f:facet>
+                        <h:commandLink value="Edit" action="#{publishService.editItemRow(model_item)}" rendered="#{not model_item.edited}" />
                     </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">Delete</f:facet>
+                        <h:commandLink value="Delete" action="#{publishService.deleteItemRow(model_item)}" />
+                    </h:column>
+
                 </h:dataTable>
             
-                <h:button value="#{publishService.addServiceButtonLabel}" outcome="add-item">
+                <h:button value="#{publishService.addServiceButtonLabel}" outcome="add-item" > 
                     <f:param name="kind" value="#{publishService.service.kind}"/>
                     <f:param name="type" value="#{publishService.service.type}"/>
                     <f:param name="service" value="#{publishService.service.servicename}"/>
                     <f:param name="category" value="#{publishService.service.category}"/>
-                    <f:param name="serviceReference" value="#{publishService.reference_}"/>
                 </h:button>
                 <h:commandButton disabled="true" value="#{publishService.modifyServiceButtonLabel}"/>
             <h:commandButton disabled="#{publishService.publishChecked}" value="#{publishService.publishButtonLabel}" action="#{publishService.publish()}"/>
