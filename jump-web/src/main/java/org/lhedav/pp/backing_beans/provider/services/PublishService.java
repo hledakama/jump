@@ -24,6 +24,7 @@ import org.lhedav.pp.business.model.common.Global;
 import static org.lhedav.pp.business.model.common.Global.GLOBAL_DISPLAY_MESSAGE;
 import org.lhedav.pp.business.model.service.Item;
 import org.lhedav.pp.business.model.service.Service;
+import org.lhedav.pp.business.model.service.SortedDataModel;
 
 /**
  *

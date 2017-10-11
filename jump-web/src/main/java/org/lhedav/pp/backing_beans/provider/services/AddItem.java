@@ -14,15 +14,21 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
+import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.CollectionDataModel;
 import javax.inject.Named;
+import javax.json.JsonArray;
 import javax.validation.constraints.NotNull;
 import org.lhedav.pp.business.data.Services;
+import org.lhedav.pp.business.json.ItemdataJsonBuilder;
 import org.lhedav.pp.business.logic.ProviderEJB;
 import org.lhedav.pp.business.model.common.Global;
 import org.lhedav.pp.business.model.service.Item;
+import org.lhedav.pp.business.model.service.Itemdata;
+import org.lhedav.pp.business.model.service.ProviderAddress;
 import org.lhedav.pp.business.model.service.Service;
+import org.lhedav.pp.business.model.service.SortedDataModel;
 
 
 /**
@@ -61,7 +67,7 @@ public class AddItem {
     private String nextItemLabel = "Add new line";
     private String saveItemLabel = "Save item";
     private String date_ = "Date";
-    private SortedDataModel<Item> sortitemmodel;
+    private SortedDataModel<Itemdata> sortitemdatamodel;
     private String sortType;
     private boolean virtualItem;
             @EJB
@@ -72,6 +78,15 @@ public class AddItem {
     //private static final String[] unitsList = { "day(s)", "hour(s)", "min(s)", "week(s)", "month(s)"}; 
     private List<String> itemsNames  = new ArrayList(); 
     private List<String> unitsList = new ArrayList();
+    private SortedDataModel<ProviderAddress> sortAddressesPerProvider;
+    private String street1 = "Street1";
+    private String street2 = "Street2";
+    private String streetNumber = "streetNumber";
+    private String city = "city";
+    private String state = "state";
+    private String zipcode = "zipcode";
+    private String country = "country";
+    private String showhide = "ShowHide";
     
     
     AddItem(){
@@ -360,11 +375,6 @@ public class AddItem {
            browse = anImage;
        }
        
-      /* public String sortItemByRanking(final int dir) {
-            Collections.sort(serviceEjb.getItemsListByServiceReference(service.getServicereference()), (Item key_1, Item key_2) -> (int) (dir * (key_1.getId() - key_2.getId())));
-            return null;
-       }*/
-       
        public String sortItemByReference(final String dir) {
            System.out.println("setServicereference from AddItem.sortItemByReference");
            service.setServicereference();
@@ -384,45 +394,35 @@ public class AddItem {
           });
        return null;
        }
-
-       /*
-       public String sortItemByDate(final String dir) {
-            Collections.sort(serviceEjb.getItemsListByServiceReference(service.getServicereference()), (Item key_1, Item key_2) -> {
-                if (dir.equals("asc")) {
-                    return key_1.getCdate().compareTo(key_2.getCdate());
-                } else {
-                    return key_2.getCdate().compareTo(key_1.getCdate());
-                }
-            });
-            return null;
-      }*/
        
-       public SortedDataModel<Item> getSortitemmodel() {
-           setSortitemmodel();
-           return sortitemmodel;
-    }
+       public SortedDataModel<Itemdata> getSortitemdatamodel() {
+           setSortitemdatamodel();
+           return sortitemdatamodel;
+       }
        
-        public void setSortitemmodel() {
-            Collection<Item> theList;
+        public void setSortitemdatamodel() {
+            List<Itemdata> theList = null;
             System.out.println("setServicereference from AddItem.setSortitemmodel");
-            service.setServicereference();
-            theList = provider_services.getItemsListByServiceReference(service.getServicereference());
-            if((theList != null) && (!theList.isEmpty())){
-                sortitemmodel = new SortedDataModel<>(new CollectionDataModel<>(theList));
+            item.setItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
+            Item theItem = provider_services.getItemByItemReference(item.getItemreference());
+            if(theItem != null) {
+                theList = theItem.getItemdataList();
             }
-           
+            if((theList != null) && (!theList.isEmpty())){
+                sortitemdatamodel = new SortedDataModel<>(new CollectionDataModel<>(theList));
+            }          
            
     }
        
         public String sortItemById() {
 
-        sortitemmodel.sortThis(new Comparator<Item>() {
+        sortitemdatamodel.sortThis(new Comparator<Itemdata>() {
             @Override
-            public int compare(Item key_1, Item key_2) {
+            public int compare(Itemdata key_1, Itemdata key_2) {
                 if (sortType.equals("asc")) {
-                    return (int) (key_1.getItemTId()- key_2.getItemTId());
+                    return (int) (key_1.getItemdataTId()- key_2.getItemdataTId());
                 } else {
-                    return (-1) * (int) (key_1.getItemTId() - key_2.getItemTId());
+                    return (-1) * (int) (key_1.getItemdataTId() - key_2.getItemdataTId());
                 }
             }
         });
@@ -430,24 +430,36 @@ public class AddItem {
         return sortType;
     }
         
-    public String removeRowList(@NotNull Item anItem) {
-            provider_services.deleteItem(anItem);
+    public String removeRowItem(@NotNull Itemdata anItemdata) {
+            provider_services.deleteItemdata(anItemdata);
         return Global.STAY_ON_CURRENT_PAGE;
     }
     
        
-    public String editRowItem(@NotNull Item anItem) { 
-          anItem.setEdited(true);
-          provider_services.updateItem(anItem);
+    public String editRowItem(@NotNull Itemdata anItemdata) { 
+          anItemdata.setEdited(true);
+          provider_services.updateItemdata(anItemdata);
+      return Global.STAY_ON_CURRENT_PAGE;         
+    }
+    
+    public String removeRowAddress(@NotNull ProviderAddress anAddress) {
+            //provider_services.deleteItemdata(anAddress);
+        return Global.STAY_ON_CURRENT_PAGE;
+    }
+    
+       
+    public String editRowAddress(@NotNull ProviderAddress anAddress) { 
+          anAddress.setEdited(true);
+         // provider_services.updateItemdata(anAddress);
       return Global.STAY_ON_CURRENT_PAGE;         
     }
     
     
     private boolean isThereAnyEditRequest(){
-        SortedDataModel<Item> theModel = getSortitemmodel();
+        SortedDataModel<Itemdata> theModel = getSortitemdatamodel();
         int theSize = theModel.getRowCount(); 
         if(theSize == 0) return false;
-        for(Item theItem : theModel) {
+        for(Itemdata theItem : theModel) {
            if(theItem.isEdited()){
                 return true;
             }
@@ -473,9 +485,9 @@ public class AddItem {
        }
        
        private String addItem(){ 
-           if(sortitemmodel != null){
-              for(Item theItem: sortitemmodel){
-                  theItem.setEdited(false);
+           if(sortitemdatamodel != null){
+              for(Itemdata theItemdata: sortitemdatamodel){
+                  theItemdata.setEdited(false);
               }
            }
 
@@ -490,11 +502,11 @@ public class AddItem {
        
        public String modifyItems(){
            if(!isThereAnyEditRequest()) return Global.STAY_ON_CURRENT_PAGE;
-           CollectionDataModel<Item> theModel = getSortitemmodel();
-        for (Item theItem : theModel) {
-            if(theItem.isEdited()){               
-                theItem.setEdited(false);
-                provider_services.updateItem(theItem);
+           CollectionDataModel<Itemdata> theModel = getSortitemdatamodel();
+        for (Itemdata theItemdata : theModel) {
+            if(theItemdata.isEdited()){               
+                theItemdata.setEdited(false);
+                provider_services.updateItemdata(theItemdata);
             }        
        }
         return Global.STAY_ON_CURRENT_PAGE;
@@ -528,5 +540,108 @@ public class AddItem {
             virtualItem = virtual;        
             item.setVirtual(virtualItem ? (short)1 : (short)0);
          }
-    } 
+    }
+    
+    public String ModifyAddresses(){
+        //returns the list of address modification page for a given item
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        String theItemId = facesContext.getExternalContext().getRequestParameterMap().get("itemId");
+        return null;
+    }
+    
+    /*https://stackoverflow.com/questions/15332733/how-to-convert-list-data-into-json-in-java
+    https://roneiv.wordpress.com/2007/12/21/using-json-with-jsf/
+    https://netbeans.org/kb/docs/web/ajax-quickstart.html
+    https://www.journaldev.com/2315/java-json-example
+    https://gist.github.com/madan712/4000063
+    http://www.oracle.com/webfolder/technetwork/tutorials/obe/java/HomeWebsocket/WebsocketHome.html
+    http://hmkcode.com/java-servlet-send-receive-json-using-jquery-ajax/
+    http://www.mysamplecode.com/2012/04/jquery-ajax-request-response-java.html
+    http://jsfiddle.net/mjaric/sEwM6/
+    https://www.javacodegeeks.com/2013/02/jquery-datatables-and-java-integration.html
+    http://zetcode.com/articles/javaservletjson/
+    https://stackoverflow.com/questions/14800398/why-does-ajax-and-jsf-work-nicely-together-how-do-ajax-lifecycle-plug-in-with-n
+    */
+    public JsonArray ShowHideDetails(@NotNull Itemdata anItemdata){
+        provider_services.updateItemData(anItemdata);
+	JsonArray jsonDetails = ItemdataJsonBuilder.buildProviderAddress(anItemdata);
+        return jsonDetails;
+    }
+    
+    public SortedDataModel<ProviderAddress> getSortAddressesPerProvider(@NotNull Itemdata anItemdata) {
+        setSortAddressesPerProvider(anItemdata);
+        return sortAddressesPerProvider;
+    }
+    
+    public void setSortAddressesPerProvider(@NotNull Itemdata anItemdata) {
+            List<ProviderAddress> theAddressesList = anItemdata.getProviderAddressList();
+            if((theAddressesList != null) && (!theAddressesList.isEmpty())){
+                sortAddressesPerProvider = new SortedDataModel<>(new CollectionDataModel<>(theAddressesList));
+            } 
+       }
+    
+    public String getStreetNumber(){
+        return streetNumber;
+    }
+    
+    public String setStreetNumber(String aNumber){
+        return streetNumber = aNumber;
+    }
+    
+    public String getStreet1(){
+      return street1;
+    }
+    
+    public String setStreet1(String aStreet){
+        return street1 = aStreet;
+    }
+    
+        public String getStreet2(){
+        return street2;
+    }
+    
+    public String setStreet2(String aStreet){
+        return street2 = aStreet;
+    }
+    
+        public String getCity(){
+        return city;
+    }
+    
+    public String setCity(String aCity){
+        return city = aCity;
+    }
+    
+        public String getState(){
+        return state;
+    }
+    
+    public String setState(String aState){
+        return state = aState;
+    }
+    
+        public String getZipcode(){
+        return zipcode;
+    }
+    
+    public String setZipCode(String aZipCode){
+        return zipcode = aZipCode;
+    }
+    
+        public String getCountry(){
+        return country;
+    }
+    
+    public String setCountry(String aCountry){
+        return country = aCountry;
+    }
+       
+    public String getShowhide(){
+            return showhide;
+        }
+        
+       public void setShowhide(String aShow){
+           showhide = aShow;
+       }
+    
 }

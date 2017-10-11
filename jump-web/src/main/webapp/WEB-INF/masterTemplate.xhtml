@@ -10,7 +10,9 @@
         <h:outputStylesheet name="css/cssLayout.css"/>
         <!--
     using h:head will auto include your javascript resources-->
-    <h:outputScript library="javax.faces" name="jsf.js" target="body" />
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script src="js/jquery/1.11.1"></script>
+        <h:outputScript library="javax.faces" name="jsf.js" target="body" />
     
         <title>
             <ui:insert name="title">Template title</ui:insert>

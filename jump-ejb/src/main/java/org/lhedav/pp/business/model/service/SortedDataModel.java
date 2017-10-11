@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.lhedav.pp.backing_beans.provider.services;
+package org.lhedav.pp.business.model.service;
 
 import java.util.Arrays;
 import java.util.Comparator;

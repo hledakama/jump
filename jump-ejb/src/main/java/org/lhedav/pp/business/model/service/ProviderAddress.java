@@ -19,7 +19,6 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -74,6 +73,7 @@ public class ProviderAddress implements Serializable {
     @JoinColumn(name = "ITEMDATA_FK", referencedColumnName = "ITEMDATA_T_ID")
     @ManyToOne(cascade = CascadeType.ALL)
     private Itemdata itemdataFk;
+    private boolean edited = false;
 
     public ProviderAddress() {
     }
@@ -176,7 +176,17 @@ public class ProviderAddress implements Serializable {
 
     @Override
     public String toString() {
-        return "org.lhedav.pp.business.model.service.ProviderAddress[ providerAddressTId=" + providerAddressTId + " ]";
+        //return "org.lhedav.pp.business.model.service.ProviderAddress[ providerAddressTId=" + providerAddressTId + " ]";
+        return streetNumber +", "+ street1 + ", "+ city + ", "+ state + ", "+ "\n"+ country+ ", "+ zipcode + "\n";
+        
+    }
+    
+    public boolean isEdited(){
+        return edited;
+    }
+    
+    public void setEdited(boolean aBool){
+        edited = aBool;
     }
     
 }

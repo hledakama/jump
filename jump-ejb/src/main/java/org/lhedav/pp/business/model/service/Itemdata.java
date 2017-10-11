@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.faces.model.CollectionDataModel;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -24,10 +25,12 @@ import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import org.lhedav.pp.business.model.common.Global;
 
 /**
  *
@@ -75,6 +78,10 @@ public class Itemdata implements Serializable {
     private Item itemFk;
     @OneToMany(mappedBy = "itemdataFk")
     private List<ProviderAddress> providerAddressList;
+        @Transient
+    private boolean edited = false;
+        @Transient
+    private String addressSring = Global.STR_EMPTY;
 
     public Itemdata() {
         providerAddressList = new ArrayList();
@@ -189,6 +196,26 @@ public class Itemdata implements Serializable {
     @Override
     public String toString() {
         return "org.lhedav.pp.business.model.service.Itemdata[ itemdataTId=" + itemdataTId + " ]";
+    }
+    
+    public boolean isEdited(){
+        return edited;
+    }
+    
+    public void setEdited(boolean aBool){
+        edited = aBool;
+    }
+    
+    public String getAddressString(){
+        return addressSring;
+    }
+    
+    public void setAddressString(){        
+        if(providerAddressList == null) return;
+        addressSring = "";
+        for(ProviderAddress theAddress: providerAddressList){
+           addressSring +=  theAddress.toString();
+        }
     }
     
 }

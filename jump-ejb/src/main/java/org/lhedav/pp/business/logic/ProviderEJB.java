@@ -172,9 +172,20 @@ public class ProviderEJB {
         
     public Item getItemByItemReference(@NotNull String aReference){
         TypedQuery<Item> theQuery;
+        try{        
         theQuery = em.createNamedQuery("Item.findByItemreference", Item.class);
         theQuery.setParameter("itemreference", aReference);
         return theQuery.getSingleResult();
+        }
+        
+        catch(javax.persistence.NoResultException e){
+             return null;
+        }
+         
+        catch(Exception e){
+             e.printStackTrace();
+             return null;
+        }        
     }
     
     public List<Item> getItemsListByServiceReference(@NotNull String aReference){
@@ -184,16 +195,7 @@ public class ProviderEJB {
         System.out.println("@@@aReference: "+aReference);
         theQuery = em.createNamedQuery("Service.findByServicereference", Service.class);
         theList = theQuery.setParameter("servicereference", aReference).getResultList();
-        }
-         
-        catch(javax.persistence.NoResultException e){
-             return null;
-        }
-         
-        catch(Exception e){
-             e.printStackTrace();
-             return null;
-        }
+
         
         if(theList == null) return null;
         
@@ -211,10 +213,33 @@ public class ProviderEJB {
                 }           
         }      
         return theResult;
+                }
+         
+        catch(javax.persistence.NoResultException e){
+             return null;
+        }
+         
+        catch(Exception e){
+             e.printStackTrace();
+             return null;
+        }
     }
     
+    public boolean updateItemdata(@NotNull Itemdata anItemdata){
+        em.merge(anItemdata);            
+            return true;
+    }
     
-        public boolean updateItem(@NotNull Item anItem){
+    public boolean deleteItemdata(@NotNull Itemdata anItemdata){
+        try{em.remove(em.merge(anItemdata));
+        }
+        catch(Exception e){
+            return false;
+        }
+        return true;
+    }
+    
+    public boolean updateItem(@NotNull Item anItem){
         em.merge(anItem);            
             return true;
     }
@@ -257,9 +282,36 @@ public class ProviderEJB {
     
     public Itemdata getItemdataByReference(@NotNull String aReference){
         TypedQuery<Itemdata> theQuery;
+        try{
         theQuery = em.createNamedQuery("Itemdata.findByItemdatareference", Itemdata.class);
         theQuery.setParameter("itemdatareference", aReference);
         return theQuery.getSingleResult();
+        }
+        catch(javax.persistence.NoResultException e){
+             return null;
+        }
+         
+        catch(Exception e){
+             e.printStackTrace();
+             return null;
+        }
+    }
+    
+    public Itemdata getItemdataById(@NotNull String anItemDataId){
+        TypedQuery<Itemdata> theQuery;
+        try{
+        Long theId = Long.parseLong(anItemDataId);
+        theQuery = em.createNamedQuery("Itemdata.findByItemdataTId", Itemdata.class);
+        theQuery.setParameter("itemdataTId", theId);
+        return theQuery.getSingleResult();
+        }
+         catch(javax.persistence.NoResultException e){
+             return null;
+        }         
+        catch(Exception e){
+             e.printStackTrace();
+             return null;
+        }
     }
     
     public boolean PersistItemdata(@NotNull Itemdata anItemData){
