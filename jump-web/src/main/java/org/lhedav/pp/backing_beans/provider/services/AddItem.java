@@ -561,11 +561,16 @@ public class AddItem {
     https://www.javacodegeeks.com/2013/02/jquery-datatables-and-java-integration.html
     http://zetcode.com/articles/javaservletjson/
     https://stackoverflow.com/questions/14800398/why-does-ajax-and-jsf-work-nicely-together-how-do-ajax-lifecycle-plug-in-with-n
+    http://memorynotfound.com/jsf-2-2-table-crud-ajax-example/
+    <!--h:outputScript library="javax.faces" name="jsf.js" target="body" /-- not needed when h:head exists
+        http://memorynotfound.com/jsf-2-2-basic-ajax-example/-->
+    
+    
     */
-    public JsonArray ShowHideDetails(@NotNull Itemdata anItemdata){
+    public String ShowHideDetails(@NotNull Itemdata anItemdata){
         provider_services.updateItemData(anItemdata);
 	JsonArray jsonDetails = ItemdataJsonBuilder.buildProviderAddress(anItemdata);
-        return jsonDetails;
+        return Global.STAY_ON_CURRENT_PAGE;
     }
     
     public SortedDataModel<ProviderAddress> getSortAddressesPerProvider(@NotNull Itemdata anItemdata) {

@@ -22,60 +22,14 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
  </f:metadata>
     
     <ui:composition template="/WEB-INF/masterTemplate.xhtml">        
+        <!--
+            https://stackoverflow.com/questions/8367421/how-to-reference-css-js-image-resource-in-facelets-template
         
-        <ui:define name="title"> 
             
-        <script type="text/javascript">
-            function jsRowDetailsMonitoring(data) {              
-                // get inputs
-    var article = new Object();
-    article.title = $('#title').val();
-    article.url = $('#url').val();
-    article.categories = $('#categories').val().split(";");
-    article.tags = $('#tags').val().split(";");
- 
-    $.ajax({
-        url: "provider_servlet",
-        type: 'POST',
-        dataType: 'json',
-        data: JSON.stringify(article),
-        contentType: 'application/json',
-        mimeType: 'application/json',
-        
-        success: function (data) {
-            $("tr:has(td)").remove();
- 
-            $.each(data, function (index, article) {
- 
-                var td_categories = $("<td/>");
-                $.each(article.categories, function (i, tag) {
-                    var span = $("<span class='label label-info' style='margin:4px;padding:4px' />");
-                    span.text(tag);
-                    td_categories.append(span);
-                });
- 
-                var td_tags = $("<td/>");
-                $.each(article.tags, function (i, tag) {
-                    var span = $("<span class='label' style='margin:4px;padding:4px' />");
-                    span.text(tag);
-                    td_tags.append(span);
-                });
- 
-                $("#added-articles").append($('<tr/>')
-                        .append($('<td/>').html("<a href='"+article.url+"'>"+article.title+"</a>"))
-                        .append(td_categories)
-                        .append(td_tags)
-                );
- 
-            }); 
-        },
-        error:function(data,status,er) {
-            alert("error: "+data+" status: "+status+" er:"+er);
-        }
-    });
-}
-
-        </script>
+        -->
+        <ui:define name="title"> 
+            <h:outputStylesheet name="css/datatable_styles.css" />
+            <h:outputScript name="js/jsRowDetails_script.js" />
             <h:outputText value="#{addItem.pageTitle}"/> 
         </ui:define> 
         

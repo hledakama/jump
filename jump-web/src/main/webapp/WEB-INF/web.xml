@@ -9,10 +9,6 @@
         <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
-    <servlet>
-        <servlet-name>provider_servlet</servlet-name>
-        <servlet-class>org.lhedav.pp.provider_servlet</servlet-class>
-    </servlet>
     <servlet-mapping>
         <servlet-name>Faces Servlet</servlet-name>
         <url-pattern>*.xhtml</url-pattern>
@@ -28,10 +24,4 @@
         <param-name>javax.faces.FACELETS_SKIP_COMMENTS</param-name>
         <param-value>true</param-value>
     </context-param>
-    <servlet-mapping>
-        <servlet-name>provider_servlet</servlet-name>
-        <url-pattern>/itemdata_details</url-pattern>
-        <url-pattern>/itemdata_todo1</url-pattern>
-        <url-pattern>/itemdata_todo2</url-pattern>
-    </servlet-mapping>
 </web-app>
