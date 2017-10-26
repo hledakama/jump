@@ -34,7 +34,7 @@ public class Profile implements Shareable, Serializable{
 	private char m_gender;	
 	private Date m_login_date;
 	private boolean m_is_logged_in;
-	private List<Avatar> m_avatars;	
+//	private List<Avatar> m_avatars;	
 	private List<Address> m_addresses;
 	
 	public Profile(){
@@ -58,7 +58,7 @@ public class Profile implements Shareable, Serializable{
 		setPassword(aPassword);
 		setGender(aGender);
 		setConnectionDate(aConnection_date);
-		setAvatar(new ArrayList<Avatar>());
+//		setAvatar(new ArrayList<Avatar>());
 		setAddress(new ArrayList<Address>());		
 	}
 	
@@ -165,7 +165,7 @@ public class Profile implements Shareable, Serializable{
 	public List<Address> getAddress(){
 		return m_addresses;
 	}	
-	
+	/*
 	public void setAvatar(List<Avatar> someAvatars){
 		m_avatars = someAvatars;
 	}
@@ -175,7 +175,8 @@ public class Profile implements Shareable, Serializable{
 	//@OrderBy("m_id ASC")// m_id is the id of an Avatar
 	public List<Avatar> getAvatar(){
 		return m_avatars;
-	}	
+	}
+        */
 	
 	@Override
 	public boolean SendTo(DataOutputStream os) {

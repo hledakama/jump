@@ -35,14 +35,14 @@ public static JsonObject buildItemdata(@NotNull Itemdata anItemdata) {
 	providerAddressBuilder.add(AddressJsonBuilder.builderAddress(aProviderAddress));
       }
      
-     itemdataBuilder.add("Itemdata", Json.createObjectBuilder()
+     itemdataBuilder.add("Itemdata_row", Json.createObjectBuilder()
         .add("itemdataTId", m_itemdata.getItemdataTId())
         .add("mdate", m_itemdata.getMdate().toString())
-        .add("avatar", m_itemdata.getAvatar())
+   //     .add("avatar", m_itemdata.getAvatar())
         .add("comment", m_itemdata.getComment())
         .add("duration", m_itemdata.getDuration())
         .add("unit", m_itemdata.getUnit()));
-     itemdataBuilder.add("provider_addresses", providerAddressBuilder);
+     itemdataBuilder.add("provider_addresses_details", providerAddressBuilder);
      
      return itemdataBuilder.build();
 }
@@ -56,7 +56,6 @@ public static JsonArray  buildProviderAddress(@NotNull Itemdata anItemdata) {
       }     
      return providerAddressBuilder.build();
 }
-
     
 }
 

@@ -460,8 +460,7 @@ public class PublishService {
        service.setServicereference();
        System.out.println("onNameChanged end, getServicereference: "+service.getServicereference()+", theNewName: "+theNewName);
        updateAddModifyButton();
-    }
-    
+    }    
     
     public void onCategoryChanged(ValueChangeEvent anEvent){
        System.out.println("onCategoryChanged start, getServicereference: "+service.getServicereference()+ ", anEvent.getOldValue(): "+anEvent.getOldValue());

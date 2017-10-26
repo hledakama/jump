@@ -20,6 +20,7 @@ import org.lhedav.pp.business.model.service.Service;
 import org.lhedav.pp.business.data.ServiceKind;
 import org.lhedav.pp.business.data.ServiceType;
 import org.lhedav.pp.business.data.Services;
+import org.lhedav.pp.business.model.service.ProviderAvatar;
 
 /**
  *
@@ -80,25 +81,24 @@ public class ProviderEJB {
     public List<String> getItemUnits(){
         List<String> theResult = new ArrayList();
         return theResult;
-    }
-    
+    }    
     
      //***************************  Service   *********************************************
-    public boolean createService(@NotNull Service aService, @NotNull Item anItem, @NotNull Itemdata anItemFata){
-        /*anItemFata.setItemFk(anItem.getId());
-        anItem.setServiceFk(aService.getId());
+    public boolean createService(@NotNull Service aService, 
+                                 @NotNull Item anItem, 
+                                 @NotNull Itemdata anItemFata,
+                                 @NotNull ProviderAvatar anAvatar){ 
+        em.persist(anAvatar);
         em.persist(anItemFata);
         em.persist(anItem);
-        em.persist(aService);*/
+        em.persist(aService);
         return true;
     }
     
-        public boolean createService(@NotNull Service aService, @NotNull Item anItem){
-            
-            em.persist(aService);
-            em.persist(anItem);
-            em.flush(); //force insert to receive the id of the aService
-        
+    public boolean createService(@NotNull Service aService, @NotNull Item anItem){
+        em.persist(aService);
+        em.persist(anItem);
+        em.flush();       
         return true;
     }
         
@@ -265,21 +265,18 @@ public class ProviderEJB {
     public boolean PersistItem(@NotNull Item anItem){
         em.persist(anItem);
         return true;
-    }
+    }    
     
-    
-        //***************************  ItemData   *********************************************
+    //***************************  ItemData   *********************************************
     
     public boolean updateItemData(@NotNull Itemdata anItemData){
         em.merge(anItemData);
             return true;
     }
-    
     public boolean deleteItemData(Itemdata aData){
         em.remove(em.merge(aData));
         return false;
     }
-    
     public Itemdata getItemdataByReference(@NotNull String aReference){
         TypedQuery<Itemdata> theQuery;
         try{
@@ -296,7 +293,6 @@ public class ProviderEJB {
              return null;
         }
     }
-    
     public Itemdata getItemdataById(@NotNull String anItemDataId){
         TypedQuery<Itemdata> theQuery;
         try{
@@ -312,21 +308,15 @@ public class ProviderEJB {
              e.printStackTrace();
              return null;
         }
-    }
-    
+    }    
     public boolean PersistItemdata(@NotNull Itemdata anItemData){
         em.persist(anItemData);
         return true;
     }    
-    
     public EntityManager getEm(){
         return em;
     }
-    
     public void setEm(EntityManager anEm){
         em = anEm;
-    }
-    
-    
-    
+    }    
 }

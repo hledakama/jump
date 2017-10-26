@@ -38,15 +38,14 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "ProviderAddress.findByCity", query = "SELECT p FROM ProviderAddress p WHERE p.city = :city")
     , @NamedQuery(name = "ProviderAddress.findByState", query = "SELECT p FROM ProviderAddress p WHERE p.state = :state")
     , @NamedQuery(name = "ProviderAddress.findByZipcode", query = "SELECT p FROM ProviderAddress p WHERE p.zipcode = :zipcode")
-    , @NamedQuery(name = "ProviderAddress.findByCountry", query = "SELECT p FROM ProviderAddress p WHERE p.country = :country")
-})
+    , @NamedQuery(name = "ProviderAddress.findByCountry", query = "SELECT p FROM ProviderAddress p WHERE p.country = :country")})
 public class ProviderAddress implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
     @TableGenerator( name = "sequence_provider_address", table = "SEQUENCE", pkColumnName = "SEQ_NAME", pkColumnValue = "PROVIDER_ADDRESS_T_ID", valueColumnName = "SEQ_COUNT", initialValue = 0, allocationSize = 1 )
-    @GeneratedValue( strategy = GenerationType.TABLE, generator = "sequence_provider_address" ) 
+    @GeneratedValue( strategy = GenerationType.TABLE, generator = "sequence_provider_address" )     
     @Column(name = "PROVIDER_ADDRESS_T_ID")
     private Long providerAddressTId;
     @Size(max = 50)
@@ -188,5 +187,7 @@ public class ProviderAddress implements Serializable {
     public void setEdited(boolean aBool){
         edited = aBool;
     }
+    
+
     
 }

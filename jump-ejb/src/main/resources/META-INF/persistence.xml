@@ -6,7 +6,6 @@
     <jar-file>jump-ejb-1.0-SNAPSHOT.jar</jar-file>
     <class>org.lhedav.pp.business.model.service.Service</class>
     <class>org.lhedav.pp.business.model.service.Item</class>
-    <class>org.lhedav.pp.business.model.service.Itemdata</class>
     <class>org.lhedav.pp.business.model.service.ProviderAddress</class>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties>

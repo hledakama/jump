@@ -52,7 +52,7 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                 <h:column>
                     <f:facet name="header">#{publishService.type}</f:facet>                        
                     <h:selectOneMenu id = "service_type" required="true" value="#{publishService.service.type}"
-                        onchange="submit()" valueChangeListener="#{publishService.onTypeChanged}" rendered="#{model_service.edited}">
+                        valueChangeListener="#{publishService.onTypeChanged}" rendered="#{model_service.edited}">
                     <f:selectItems value="#{publishService.servicesTypes}" />                    
                     </h:selectOneMenu>
                     <h:outputText value="#{model_service.type}" rendered="#{not model_service.edited}" />
@@ -61,7 +61,7 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                 <h:column>
                     <f:facet name="header">#{publishService.name}</f:facet>                        
                     <h:selectOneMenu id = "service_name" required="true" value="#{publishService.service.servicename}"
-                        onchange="submit()" valueChangeListener="#{publishService.onNameChanged}" rendered="#{model_service.edited}">
+                        valueChangeListener="#{publishService.onNameChanged}" rendered="#{model_service.edited}">
                     <f:selectItems value="#{publishService.servicesNames}" />                    
                     </h:selectOneMenu>
                     <h:outputText value="#{model_service.servicename}" rendered="#{not model_service.edited}" />
@@ -70,7 +70,7 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                 <h:column>
                     <f:facet name="header">#{publishService.category}</f:facet>                        
                     <h:selectOneMenu id = "service_category" required="true" value="#{publishService.service.category}"
-                        onchange="submit()" valueChangeListener="#{publishService.onCategoryChanged}" rendered="#{model_service.edited}">
+                        valueChangeListener="#{publishService.onCategoryChanged}" rendered="#{model_service.edited}">
                     <f:selectItems value="#{publishService.categoriesNames}" />                    
                     </h:selectOneMenu>
                     <h:outputText value="#{model_service.category}" rendered="#{not model_service.edited}" />
@@ -178,7 +178,7 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
                 </h:dataTable>
             
-                <h:button value="#{publishService.addServiceButtonLabel}" outcome="add-item" > 
+                <h:button id = "toward_item" value="#{publishService.addServiceButtonLabel}" outcome="add-item" > 
                     <f:param name="kind" value="#{publishService.service.kind}"/>
                     <f:param name="type" value="#{publishService.service.type}"/>
                     <f:param name="service" value="#{publishService.service.servicename}"/>

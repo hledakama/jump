@@ -13,12 +13,11 @@ xmlns:h="http://xmlns.jcp.org/jsf/html"
 xmlns:f="http://xmlns.jcp.org/jsf/core"
 xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
     
-     <f:metadata>
-     <f:viewParam name="kind"     value="#{addItem.service.kind}"/>
-     <f:viewParam name="type"     value="#{addItem.service.type}"/>
-     <f:viewParam name="service"  value="#{addItem.service.servicename}"/> 
-     <f:viewParam name="category" value="#{addItem.service.category}"/>
-    
+ <f:metadata>
+   <f:viewParam name="kind"     value="#{addItem.service.kind}"/>
+   <f:viewParam name="type"     value="#{addItem.service.type}"/>
+   <f:viewParam name="service"  value="#{addItem.service.servicename}"/> 
+   <f:viewParam name="category" value="#{addItem.service.category}"/>    
  </f:metadata>
     
     <ui:composition template="/WEB-INF/masterTemplate.xhtml">        
@@ -29,7 +28,6 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
         -->
         <ui:define name="title"> 
             <h:outputStylesheet name="css/datatable_styles.css" />
-            <h:outputScript name="js/jsRowDetails_script.js" />
             <h:outputText value="#{addItem.pageTitle}"/> 
         </ui:define> 
         
@@ -47,7 +45,7 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
         <ui:define name="content">
             <!-- add required content here-->            
             <h:form id="add_item_form_id" enctype="multipart/form-data">
-                <h:messages infoStyle="color:blue" warnStyle="color:orange" errorStyle="color:red"/>
+                <h:messages id= "globalMessagesId" infoStyle="color:blue" warnStyle="color:orange" errorStyle="color:red"/>
                 <h:panelGrid columns="3">
                     <h:outputLabel value="#{addItem.serviceKind}"/>
                     <h:outputText id = "service_kind" value="#{addItem.service.kind}"/>
@@ -61,14 +59,13 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                     <h:outputLabel value="#{addItem.itemReference}"/>
                     <h:outputText id = "item_reference" value="#{addItem.item.itemreference}"/>
                     
-                    <h:outputLabel value="#{addItem.name}"/>
-                    
                     <!--https://stackoverflow.com/questions/14824178/getting-selected-value-of-a-selectonemenu-->
-                    
+                    <h:outputLabel value="#{addItem.name}"/>
                     <h:selectOneMenu id = "item_name" required="true" value="#{addItem.item.itemname}"
-                                     onchange="submit()" valueChangeListener="#{addItem.onNameChanged}">
+                                     valueChangeListener="#{addItem.onNameChanged}">
                         <f:selectItems value="#{addItem.itemsNames}" />
                         <f:validateLength minimum="3" maximum="50"/>
+                        <f:ajax render="item_reference"/>
                     </h:selectOneMenu>                    
                     <h:message for="item_name"/>
                     
@@ -89,50 +86,53 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                     <h:message for="item_virtual"/>
                     
                 </h:panelGrid>
+                <!-- https://datatables.net/reference/option/
+                     https://datatables.net/reference/index
+                     https://datatables.net/reference/option/ajax
+                     https://www.packtpub.com/books/content/data-tables-and-datatables-plugin-jquery-13-php
+                     https://www.sitepoint.com/working-jquery-datatables/
+                     https://www.packtpub.com/books/content/calendars-jquery-13-php-using-jquery-week-calendar-plugin-part-1
+                     https://www.packtpub.com/books/content/calendars-jquery-13-php-using-jquery-week-calendar-plugin-part-2
+                     https://stackoverflow.com/questions/18867599/jquery-inarray-how-to-use-it-right
+                     https://avinmathew.com/tag/datatables/
+                     https://stackoverflow.com/questions/25211553/datatables-custom-response-handling
+                     https://www.sitepoint.com/use-jquerys-ajax-function/
                 
+                Finally there won't be address editing here. When created, an item data will fetch list of addresses from
+                provider account. Later if provider is willing to modify the address per item data, he will do it from his.
+                account. i.e. provider address must have at least one address registered before being be able to publish a service.
+              
+                If address does not exist here, redirect the provider to his account for creation before being back here.
+                -->
             
                 
                 <h:dataTable id="itemdata_table" value="#{addItem.sortitemdatamodel}" var="model_item_data">
-                    
-                    <!--h:column>
-                    https://coderanch.com/t/580472/java/Row-Expansion-JSF-datatable
-                        <f:facet name="header">#{addItem.address}</f:facet>
-                        <h:commandLink value="#{model_item_data.addressString}" action="#{addItem.modifyAddresses}" > 
-                            <f:param name="itemId" value="#{model_item_data.itemFk}"/>
-                        </h:commandLink>
-                   </h:column-->
-                    <h:column>
-                        <f:facet name="header"> #{addItem.showhide}  </f:facet> 
-                        <h:commandLink action="#{addItem.showHideDetails(model_item_data)}" >                             
-                            <h:graphicImage value="#{resource['images/common/green_plus.png']}"/>
-                            <f:ajax execute ="@this" render="@this" onevent="jsRowDetailsMonitoring">
-                                <f:param name="itemId" value="#{model_item_data.itemFk}"/>
-                            </f:ajax>
-                        </h:commandLink>
-                    </h:column>
-                    
-                    
                     <h:column>
                         <f:facet name="header"> #{addItem.date_}  </f:facet> 
                         #{model_item_data.mdate}
-                   </h:column>
+                    </h:column>
                     
                     <h:column>
-                        <f:facet name="header"> #{addItem.avatar}   </f:facet>                         
-                      <h:outputText value="#{model_item_data.avatar}" rendered="#{not model_item_data.edited}" />
-                        
-                      <!--h:selectOneMenu required="true" value="" rendered="#{model_item_data.edited}">
-                            <f:selectItems value="#{addItem.itemsNames}" />
-                        </h:selectOneMenu-->                         
-                                             
-                   </h:column>
+                        <f:facet name="header"> #{model_item_data.currentAvatar}   </f:facet>                         
+                      <h:graphicImage id ="existing_model_avatar" value="#{resource['images/common/nav_arrow.png']}" alt="avatar is missing will use default" rendered="#{not model_item_data.edited}"/> 
+                    </h:column>
                     
-                   <h:column>
+                    <h:column>
+                        <f:facet name="header"> #{addItem.avatar}</f:facet>                         
+                      <h:graphicImage id="model_file_preview" value="/PreviewServlet/#{header['Content-Length']}" alt="avatar is missing will use default" rendered="#{model_item_data.edited}"/>                        
+                      <h:inputFile id="model_file" required="false" requiredMessage="No file selected ..."
+                                   value="#{model_item_data.file}" rendered="#{model_item_data.edited}">                                
+                          <f:ajax listener="#{model_item_data.validateFile()}" render="model_file_preview"/> 
+                      </h:inputFile>
+                                                                    
+                    </h:column>
+                    
+                    <h:column>
                        <f:facet name="header">#{addItem.comment}</f:facet> 
                        <h:outputText value="#{model_item_data.comment}"   rendered="#{not model_item_data.edited}"/>                      
                        <h:inputText value="#{model_item_data.comment}" rendered="#{model_item_data.edited}">
                       </h:inputText>                      
-                   </h:column>
+                    </h:column>
                     
                     <h:column>
                         <f:facet name="header">#{addItem.duration}</f:facet>  
@@ -140,92 +140,50 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                       
                         <h:inputText value="#{model_item_data.duration}" rendered="#{model_item_data.edited}">
                       </h:inputText>
-                   </h:column>
+                    </h:column>
                     
                     <h:column>
                         <f:facet name="header">#{addItem.unit}</f:facet> 
                         <h:outputText value="#{model_item_data.unit}"  rendered="#{not model_item_data.edited}"/>
                       
-                        <h:selectOneMenu id = "unit" required="true" value="#{model_item_data.unit}" onchange="submit()" rendered="#{model_item_data.edited}">
+                        <h:selectOneMenu id = "unit" required="true" value="#{model_item_data.unit}" rendered="#{model_item_data.edited}">
                             <f:selectItems value="#{addItem.unitsList}" />
                         </h:selectOneMenu>
-                   </h:column>  
-                    
+                    </h:column> 
                   
                     <h:column>
                       <f:facet name="header">#{addItem.remove}</f:facet>
-                      <h:commandButton image="#{resource['images/common/red_minus.png']}" action="#{addItem.removeRowItem(model_item_data)}" rendered="#{not model_item_data.edited}"/> 
-                   </h:column>
+                      <h:commandButton image="#{resource['images/common/red_minus.png']}" action="#{addItem.removeRowItemdata(model_item_data)}" /> 
+                    </h:column>
                     
-                   <h:column>
+                    <h:column>
                       <f:facet name="header">#{addItem.edit}</f:facet>
-                      <h:commandButton image="#{resource['images/common/green_plus.png']}" action="#{addItem.editRowItem(model_item_data)}"/> 
-                  </h:column>
-                    <hr/>
-                        <!--datatable value="#{addItem.sortAddressesPerProvider(model_item_data)}" var="model_provider_address">
-                            <h:column>
-                                <f:facet name="header">#{addItem.streetNumber}</f:facet> 
-                                <h:outputText value="#{model_provider_address.streetNumber}" rendered="#{not model_provider_address.edited}"/>                      
-                                <h:inputText value="#{model_provider_address.streetNumber}" rendered="#{model_provider_address.edited}">
-                                </h:inputText>                      
-                            </h:column>
-                            
-                            <h:column>
-                                <f:facet name="header">#{addItem.street1}</f:facet> 
-                                <h:outputText value="#{model_provider_address.street1}" rendered="#{not model_provider_address.edited}"/>                      
-                                <h:inputText value="#{model_provider_address.steet1}" rendered="#{model_provider_address.edited}">
-                                </h:inputText>                      
-                            </h:column>
-                            
-                            <h:column>
-                                <f:facet name="header">#{addItem.street2}</f:facet> 
-                                <h:outputText value="#{model_provider_address.street2}" rendered="#{not model_provider_address.edited}"/>                      
-                                <h:inputText value="#{model_provider_address.street2}" rendered="#{model_provider_address.edited}">
-                                </h:inputText>                      
-                            </h:column>
-                            
-                            <h:column>
-                                <f:facet name="header">#{addItem.city}</f:facet> 
-                                <h:outputText value="#{model_provider_address.city}" rendered="#{not model_provider_address.edited}"/>                      
-                                <h:inputText value="#{model_provider_address.city}" rendered="#{model_provider_address.edited}">
-                                </h:inputText>                      
-                            </h:column>
-                            
-                            <h:column>
-                                <f:facet name="header">#{addItem.state}</f:facet> 
-                                <h:outputText value="#{model_provider_address.state}" rendered="#{not model_provider_address.edited}"/>                      
-                                <h:inputText value="#{model_provider_address.state}" rendered="#{model_provider_address.edited}">
-                                </h:inputText>                      
-                            </h:column>
-                            
-                            <h:column>
-                                <f:facet name="header">#{addItem.zipcode}</f:facet> 
-                                <h:outputText value="#{model_provider_address.zipcode}" rendered="#{not model_provider_address.edited}"/>                      
-                                <h:inputText value="#{model_provider_address.zipcode}" rendered="#{model_provider_address.edited}">
-                                </h:inputText>                      
-                            </h:column>
-                            
-                            <h:column>
-                                <f:facet name="header">#{addItem.country}</f:facet> 
-                                <h:outputText value="#{model_provider_address.country}" rendered="#{not model_provider_address.edited}"/>                      
-                                <h:inputText value="#{model_provider_address.country}" rendered="#{model_provider_address.edited}">
-                                </h:inputText>                      
-                            </h:column>
-                            
-                   <h:column>
-                      <f:facet name="header">#{addItem.remove}</f:facet>
-                      <h:commandButton image="#{resource['images/common/red_minus.png']}" action="#{addItem.removeRowAddress(model_provider_address)}" rendered="#{not model_provider_address.edited}"/> 
-                   </h:column>
-                    
-                   <h:column>
-                      <f:facet name="header">#{addItem.edit}</f:facet>
-                      <h:commandButton image="#{resource['images/common/green_plus.png']}" action="#{addItem.editRowAddress(model_provider_address)}"/> 
-                  </h:column>
-                            
-                        </datatable-->
+                      <h:commandButton image="#{resource['images/common/green_plus.png']}" action="#{addItem.editRowItemdata(model_item_data)}" rendered="#{not model_item_data.edited}"/> 
+                    </h:column>
                 </h:dataTable>
+                
+                <h:panelGrid columns="5">
+                    <h:outputLabel value="#{addItem.avatar}"/>
+                    <h:outputLabel value="#{addItem.upload}"/>
+                    <h:outputLabel value="#{addItem.comment}"/>
+                    <h:outputLabel value="#{addItem.duration}"/>
+                    <h:outputLabel value="#{addItem.unit}"/>
+                    
+                    <h:graphicImage id="previewImgId" value="/PreviewServlet/#{header['Content-Length']}" width="#{addItem.itemdata.file.size gt 0 ? 100 : 0}" height="#{addItem.itemdata.file.size gt 0 ? 100 : 0}"/>                    
+                    <h:inputFile id="fileToUpload_itemdata" required="false" requiredMessage="No file selected ..." value="#{addItem.itemdata.file}">
+                        <f:ajax render="previewImgId" listener="#{addItem.itemdata.validateFile()}"/>           
+                    </h:inputFile>
+                    <h:inputText id = "comment_itemdata" value="#{addItem.itemdata.comment}"/>   
+                    <h:inputText id = "durataion_itemdata" value="#{addItem.itemdata.duration}"/>
+                    <h:selectOneMenu id = "unit_itemdata" required="true" value="#{addItem.itemdata.unit}">
+                        <f:selectItems value="#{addItem.unitsList}" />
+                    </h:selectOneMenu>                    
+                </h:panelGrid>
                  
-                 <h:commandButton value="#{addItem.saveItemLabel}" action="#{addItem.saveItem()}"/>
+                 <h:commandButton value="#{addItem.saveItemLabel}" action="#{addItem.saveItem()}">
+                     <!-- <f:ajax execute="fileToUpload" render="@all"/> use @all in JSF 2.2.0 -->
+                     <f:ajax execute="@form" render="@form"/> <!-- works in JSF 2.2.5 -->
+                 </h:commandButton>>
             
             </h:form>
             
