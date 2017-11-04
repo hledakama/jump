@@ -103,6 +103,13 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                 account. i.e. provider address must have at least one address registered before being be able to publish a service.
               
                 If address does not exist here, redirect the provider to his account for creation before being back here.
+                
+                https://stackoverflow.com/questions/3008395/jsf-facelets-sometimes-i-see-the-url-is-jsf-and-sometimes-xhtml-why
+                https://stackoverflow.com/questions/19139426/how-to-write-a-file-to-resource-images-folder-of-the-app
+                https://stackoverflow.com/questions/14211843/how-to-save-uploaded-file-in-jsf
+                
+                
+                
                 -->
             
                 
@@ -119,7 +126,11 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                     
                     <h:column>
                         <f:facet name="header"> #{addItem.avatar}</f:facet>                         
-                      <h:graphicImage id="model_file_preview" value="/PreviewServlet/#{header['Content-Length']}" alt="avatar is missing will use default" rendered="#{model_item_data.edited}"/>                        
+                      <h:graphicImage id="model_file_preview" value="/PreviewServlet/#{header['Content-Length']}" 
+                                      alt="avatar is missing will use default" rendered="#{model_item_data.edited}" 
+                                      width="#{model_item_data.file.size gt 0 ? 100 : 0}" 
+                                      height="#{model_item_data.file.size gt 0 ? 100 : 0}"/>  
+                      
                       <h:inputFile id="model_file" required="false" requiredMessage="No file selected ..."
                                    value="#{model_item_data.file}" rendered="#{model_item_data.edited}">                                
                           <f:ajax listener="#{model_item_data.validateFile()}" render="model_file_preview"/> 
@@ -183,7 +194,7 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                  <h:commandButton value="#{addItem.saveItemLabel}" action="#{addItem.saveItem()}">
                      <!-- <f:ajax execute="fileToUpload" render="@all"/> use @all in JSF 2.2.0 -->
                      <f:ajax execute="@form" render="@form"/> <!-- works in JSF 2.2.5 -->
-                 </h:commandButton>>
+                 </h:commandButton>
             
             </h:form>
             

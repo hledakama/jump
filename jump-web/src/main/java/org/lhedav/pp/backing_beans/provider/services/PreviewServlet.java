@@ -9,6 +9,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
+import javax.ejb.EJB;
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -18,6 +19,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
+import org.lhedav.pp.business.logic.ProviderEJB;
+import org.lhedav.pp.business.model.service.Itemdata;
 
 /**
  *
@@ -27,6 +30,8 @@ import javax.servlet.http.Part;
 public class PreviewServlet extends HttpServlet {
 @Inject
 private AddItem additemBean;
+    @EJB
+private ProviderEJB provider_services;
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -44,14 +49,22 @@ private AddItem additemBean;
         response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
         response.addHeader("Cache-Control", "post-check=0, pre-check=0");
         response.setHeader("Pragma", "no-cache");
-       
+        
+        String model_id = request.getParameter("id");
         try {
             //https://stackoverflow.com/questions/2633112/get-jsf-managed-bean-by-name-in-any-servlet-related-class
             System.out.println("preview1");
             HttpSession session = request.getSession(false);
             if (additemBean != null) {
-                System.out.println("preview2");
-                Part theFile = additemBean.getItemdata().getFile();
+                System.out.println("preview2");                
+                Part theFile = null;
+                if((model_id != null) && (!model_id.equals("-1"))){
+                    Itemdata theItemdata = provider_services.getItemdataById(model_id);
+                    theFile = theItemdata.getFile();                  
+                }
+                else{                    
+                    theFile = additemBean.getItemdata().getFile(); 
+                }
                 if (theFile != null) {
                     System.out.println("preview3");
                     BufferedImage image = ImageIO.read(theFile.getInputStream());

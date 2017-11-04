@@ -10,11 +10,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.persistence.Basic;
@@ -38,6 +43,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import org.apache.commons.io.FilenameUtils;
 import org.lhedav.pp.business.model.common.Global;
 
 /**
@@ -72,7 +78,7 @@ public class Itemdata implements Serializable {
     private String comment;
     @Column(name = "DURATION")
     private Long duration;
-    @Size(max = 3)
+    @Size(max = 10)
     @Column(name = "UNIT")
     private String unit;
     @JoinColumn(name = "ITEM_FK", referencedColumnName = "ITEM_T_ID")
@@ -272,52 +278,82 @@ public class Itemdata implements Serializable {
         if (name.length() == 0) {
             resetFile();
             setUploadValidated(false);
+            System.out.println("validateFile1-->isUploadValidated(): "+isUploadValidated());
             return isUploadValidated();
            // FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Upload Error: Cannot determine the file name !"));
         } else if (name.length() > 25) {
             resetFile();
             setUploadValidated(false);
+            System.out.println("validateFile2-->isUploadValidated(): "+isUploadValidated());
             return isUploadValidated();
             //FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Upload Error: The file name is to long !"));
         } else //VALIDATE FILE CONTENT TYPE
         if ((!"image/png".equals(file.getContentType())) && (!"image/jpeg".equals(file.getContentType()))) {
             resetFile();
             setUploadValidated(false);
+            System.out.println("validateFile3-->isUploadValidated(): "+isUploadValidated());
             return isUploadValidated();
            // FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Upload Error: Only images can be uploaded (PNGs and JPGs) !"));
         } else //VALIDATE FILE SIZE (not bigger than 1 MB)        
         if (file.getSize() > 1048576) {
             resetFile();
             setUploadValidated(false);
+            System.out.println("validateFile4-->isUploadValidated(): "+isUploadValidated());
             return isUploadValidated();
             //FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Upload Error: Cannot upload files larger than 1 MB !"));
         }
         setUploadValidated(true);
+        System.out.println("validateFile-->isUploadValidated(): "+isUploadValidated());        
         return isUploadValidated();
     }
 
     public ProviderAvatar saveFileToDisk() {
         ProviderAvatar theAvatar = null;
+        System.out.println("saveFileToDisk, file== null: "+(file == null));
         if (file != null) {
-            String theLocation = "images" + File.separator + "todo_user_name" + File.separator + "provider" + File.separator + "itemdata" + File.separator + "todo_time_stamp" + File.separator + file.getSubmittedFileName();
-            try (InputStream inputStream = file.getInputStream();
-                FileOutputStream outputStream = new FileOutputStream(theLocation)) {
+            System.out.println("getFileName: "+file.getName());//inputfile tag id, here = fileToUpload_itemdata
+              System.out.println("getMimeType: "+file.getContentType());
+               System.out.println("getSubmitedFileName: "+file.getSubmittedFileName());
+                                    
+            try {
+                System.out.println("123");
+               // Path folder = Paths.get(Global.LOCATION_PROVIDER_ITEMDATA_IMAGE);
+                String[] theSplitted = (file.getSubmittedFileName()).split(Pattern.quote(Global.FILE_DOT));
+                String filename = theSplitted[0]; //https://stackoverflow.com/questions/3481828/how-to-split-a-string-in-java
+                System.out.println("filename: "+filename);
+                String extension = theSplitted[1];
+                System.out.println("filenamek: "+filename+ ", extension: "+extension);
+                //File  output = File.createTempFile(filename + "-", "." + extension, new File(Global.LOCATION_PROVIDER_ITEMDATA_IMAGE));
+               // File output = new File(Global.LOCATION_PROVIDER_ITEMDATA_IMAGE+filename+extension);
+                Path path = Paths.get(Global.LOCATION_PROVIDER_ITEMDATA_IMAGE);
+                //if directory exists?
+                Global.CheckCreateDirectories();
+                //https://stackoverflow.com/questions/6233541/java-set-file-permissions-to-777-while-creating-a-file-object
+                System.out.println("qw");
+                InputStream inputStream = file.getInputStream();
+                System.out.println("qwer");
+                FileOutputStream outputStream = Global.openItemdataForWrite( file.getSubmittedFileName() );
+                System.out.println("qwerty");
                 int bytesRead;
                 final byte[] chunck = new byte[1024];
-                while ((bytesRead = inputStream.read(chunck)) != -1) {
+                while ((bytesRead = inputStream.read(chunck)) != -1){
+                    //System.out.println("abc");
                     outputStream.write(chunck, 0, bytesRead);
                 }
+                outputStream.close();
+                System.out.println("789, output: "+path.toString());
                 theAvatar = new ProviderAvatar();
                 theAvatar.setFileName(file.getName());
                 theAvatar.setFileSize(file.getSize());
-                theAvatar.setLocation(theLocation);
+                theAvatar.setLocation(path.toString());
                 theAvatar.setMimeType(file.getContentType());
                 theAvatar.setSubmitedFileName(file.getSubmittedFileName());
                 addProviderAvatarToList(theAvatar);
                 resetFile();
-               // FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Upload successfully ended!"));
-            } catch (IOException e) {
-               // FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Upload failed!"));
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Upload successfully ended!"));
+            } catch (IOException e) {                
+                e.printStackTrace();
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Upload failed!"));
             }
         }
         return theAvatar;

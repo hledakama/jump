@@ -20,6 +20,7 @@ import org.lhedav.pp.business.model.service.Service;
 import org.lhedav.pp.business.data.ServiceKind;
 import org.lhedav.pp.business.data.ServiceType;
 import org.lhedav.pp.business.data.Services;
+import org.lhedav.pp.business.data.Unit;
 import org.lhedav.pp.business.model.service.ProviderAvatar;
 
 /**
@@ -78,10 +79,29 @@ public class ProviderEJB {
         return theServices;
     }
     
-    public List<String> getItemUnits(){
+    public List<Unit> getItemUnits(){
+       List<Unit> theUnits ;
+        try{
+        TypedQuery<Unit> theQuery;
+        theQuery = em.createNamedQuery("Unit.findAll", Unit.class);
+        theUnits = theQuery.getResultList();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
+        return theUnits;
+    } 
+    
+    public List<String> getItemUnits(List<Unit> aList){
+        if(aList == null) return null;
         List<String> theResult = new ArrayList();
+        for(Unit aUnit: aList){
+            theResult.add(aUnit.getUnit());
+        }
         return theResult;
-    }    
+    }
+        
     
      //***************************  Service   *********************************************
     public boolean createService(@NotNull Service aService, 
@@ -118,8 +138,7 @@ public class ProviderEJB {
             em.flush(); 
         
         return true;
-    }   
-     
+    }
     
     public Service getServiceByServiceReference(@NotNull String aReference){
          try{

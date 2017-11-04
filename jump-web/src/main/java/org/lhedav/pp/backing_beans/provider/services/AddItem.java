@@ -5,31 +5,23 @@
  */
 package org.lhedav.pp.backing_beans.provider.services;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
-import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.CollectionDataModel;
 import javax.inject.Named;
 import javax.json.JsonArray;
-import javax.servlet.http.Part;
 import javax.validation.constraints.NotNull;
 import org.lhedav.pp.business.data.Services;
+import org.lhedav.pp.business.data.Unit;
 import org.lhedav.pp.business.json.ItemdataJsonBuilder;
 import org.lhedav.pp.business.logic.ProviderEJB;
 import org.lhedav.pp.business.model.common.Global;
@@ -49,12 +41,12 @@ import org.lhedav.pp.business.model.service.SortedDataModel;
 @SessionScoped
 public class AddItem implements Serializable{
 
-    private String pageTitle = "Add or modify item";
+    private String pageTitle = "Add";
     private String Nav1 = "User account";
     private String Nav2 = "Services";
     private String Nav3 = "Provider";
     private String Nav4 = "Publish service";
-    private String Nav5 = "Add or modify item";
+    private String Nav5 = "Add";
     private String address = "Address";
     private String avatar = "Avatar";
     private String browse = "Browse";
@@ -99,7 +91,6 @@ public class AddItem implements Serializable{
     private String zipcode = "zipcode";
     private String country = "country";
     private String showhide = "ShowHide";
-    //private Part file;
     private String upload = "Upload";
     private String submitRow = "submitRow";
 
@@ -109,22 +100,28 @@ public class AddItem implements Serializable{
     @PostConstruct
     public void init() {
         List<Services> theServicesData = provider_services.getServicesData();
-
         int theServicesSize = theServicesData.size();
+         
         for (int index = 0; index < theServicesSize; index++) {
             String theString = theServicesData.get(index).getItem();
-            if (itemsNames.contains(theString)) {
+            if (itemsNames.contains(theString) /*|| isItemExists(theString)*/) {
                 continue;
             }
             itemsNames.add(theString);
-        }
-
-        //unitsList  = provider_services.getItemUnits();
-        /*item.setItemname(itemsNames.get(0)); 
+        } 
+        unitsList= provider_services.getItemUnits(provider_services.getItemUnits());        
         System.out.println("setItemreference from AddItem.init");
-        item.setItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
-        System.out.println("setServicereference from AddItem.init");
-        service.setServicereference();*/
+    }
+    
+    public boolean isItemExists(@NotNull String anItemName){
+        List<Item> theItems = provider_services.getItemsListByServiceReference(service.getServicereference());
+        if(theItems == null) return false;
+        for(Item theItem: theItems){
+            if(theItem.getItemname().equals(anItemName)){
+                return true;
+            }                
+        }
+        return false;
     }
 
     public String getNav1() {
@@ -280,7 +277,7 @@ public class AddItem implements Serializable{
     }
 
     public List<String> getItemsNames() {
-
+        //List<Item> theItems = provider_services.getItemsListByServiceReference(service.getServicereference());
         return itemsNames;
     }
 
@@ -508,8 +505,16 @@ public class AddItem implements Serializable{
     private String addItem() {
         // Single upload management
        ProviderAvatar theAvatar = itemdata.saveFileToDisk();
-       if(theAvatar != null){ 
+       System.out.println("theAvatar == null: "+(theAvatar==null));
+       if(theAvatar != null){            
            itemdata.addProviderAvatarToList(theAvatar);
+            System.out.println("getFileName: "+theAvatar.getFileName());
+             System.out.println("getLocation: "+theAvatar.getLocation());
+              System.out.println("getMimeType: "+theAvatar.getMimeType());
+               System.out.println("getSubmitedFileName: "+theAvatar.getSubmitedFileName());
+       }
+       else{
+           theAvatar = new ProviderAvatar();
        }
        // Reset datatable to default display
         if (sortitemdatamodel != null) {
@@ -689,48 +694,6 @@ public class AddItem implements Serializable{
     public String setUpload(String anUpload) {
         return upload = anUpload;
     }
-/*
-    public void UploadingFile() {
-
-    }
-
-    public ProviderAvatar upload(@NotNull Itemdata anItemdata) {
-        ProviderAvatar theAvatar = null;
-        Logger logger = Logger.getLogger(AddItem.class.getName());
-        if (file != null) {
-
-            logger.info("File Details:");
-            logger.log(Level.INFO, "File component id:{0}", file.getName());
-            logger.log(Level.INFO, "Content type:{0}", file.getContentType());
-            logger.log(Level.INFO, "Submitted file name:{0}", file.getSubmittedFileName());
-            logger.log(Level.INFO, "File size:{0}", file.getSize());
-            try {
-                InputStream inputStream = file.getInputStream();
-                String theLocation = "images" + File.separator + "todo_user_name" + File.separator + "provider" + File.separator + "itemdata" + File.separator + "todo_time_stamp" + File.separator + file.getSubmittedFileName();
-                FileOutputStream outputStream = new FileOutputStream(theLocation);
-                int bytesRead = 0;
-                final byte[] chunck = new byte[1024];
-                while ((bytesRead = inputStream.read(chunck)) != -1) {
-                    outputStream.write(chunck, 0, bytesRead);
-                }
-                theAvatar = new ProviderAvatar();
-                theAvatar.setFileName(file.getName());
-                theAvatar.setFileSize(file.getSize());
-                theAvatar.setLocation(theLocation);
-                theAvatar.setMimeType(file.getContentType());
-                theAvatar.setSubmitedFileName(file.getSubmittedFileName());
-                // FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Upload successfully ended!"));
-            } catch (IOException e) {
-                e.printStackTrace();
-                // FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Upload failed!"));
-            }
-        }
-        return theAvatar;
-    }
-
-    public void upload() {
-
-    }*/
 
     public String getSubmitRow() {
         return submitRow;
@@ -739,69 +702,4 @@ public class AddItem implements Serializable{
     public String setSubmitRow(String aRowSubmit) {
         return submitRow = aRowSubmit;
     }
-
-   /* public Part getFile() {
-        return file;
-    }
-
-    public void setFile(Part file) {
-        this.file = file;
-    }
-    
-    public void validateFile() {
-        //VALIDATE FILE NAME LENGTH
-        String name = file.getSubmittedFileName();
-        if (name.length() == 0) {
-            resetFile();
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Upload Error: Cannot determine the file name !"));
-        } else if (name.length() > 25) {
-            resetFile();
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Upload Error: The file name is to long !"));
-        } else //VALIDATE FILE CONTENT TYPE
-        if ((!"image/png".equals(file.getContentType())) && (!"image/jpeg".equals(file.getContentType()))) {
-            resetFile();
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Upload Error: Only images can be uploaded (PNGs and JPGs) !"));
-        } else //VALIDATE FILE SIZE (not bigger than 1 MB)        
-        if (file.getSize() > 1048576) {
-            resetFile();
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Upload Error: Cannot upload files larger than 1 MB !"));
-        }
-    }
-
-    public ProviderAvatar saveFileToDisk() {
-        ProviderAvatar theAvatar = null;
-        if (file != null) {
-            String theLocation = "images" + File.separator + "todo_user_name" + File.separator + "provider" + File.separator + "itemdata" + File.separator + "todo_time_stamp" + File.separator + file.getSubmittedFileName();
-            try (InputStream inputStream = file.getInputStream();
-                FileOutputStream outputStream = new FileOutputStream(theLocation)) {
-                int bytesRead;
-                final byte[] chunck = new byte[1024];
-                while ((bytesRead = inputStream.read(chunck)) != -1) {
-                    outputStream.write(chunck, 0, bytesRead);
-                }
-                theAvatar = new ProviderAvatar();
-                theAvatar.setFileName(file.getName());
-                theAvatar.setFileSize(file.getSize());
-                theAvatar.setLocation(theLocation);
-                theAvatar.setMimeType(file.getContentType());
-                theAvatar.setSubmitedFileName(file.getSubmittedFileName());
-                resetFile();                
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Upload successfully ended!"));
-            } catch (IOException e) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Upload failed!"));
-            }
-        }
-        return theAvatar;
-    }
-
-    public void resetFile() {
-        try {
-            if (file != null) {
-                file.delete();
-            }
-        } catch (IOException ex) {
-            Logger.getLogger(AddItem.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        file = null;
-    }*/
 }

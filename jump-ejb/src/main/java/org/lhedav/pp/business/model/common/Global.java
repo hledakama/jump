@@ -1,5 +1,8 @@
 package org.lhedav.pp.business.model.common;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -23,6 +26,14 @@ public class Global {
         public static final String REFERENCE_SPLITTER = "#";
         public static String GLOBAL_DISPLAY_MESSAGE = null;
         public static String STAY_ON_CURRENT_PAGE = null;
+        public static String LOCATION_PROVIDER_ITEMDATA_IMAGE = "/usr/lhedav/images/provider/itemdata";
+        public static String FILE_DOT = ".";
+        public static File diropt = new File(File.separator + "opt");
+        public static File dirlhedav;
+        public static File dirimages;
+        public static File dirprovider;
+        public static File diritemdata;
+        
         
         public static byte[] getHash(String aRawData){
             MessageDigest m=null;
@@ -38,4 +49,39 @@ public class Global {
             }
             return m.digest();
         }
+        
+        private static File CheckDirCreateDir(File container,  String strPathName ){         
+            File theDir = new File( container, strPathName );
+            if( !theDir.exists() ){
+                    theDir.mkdirs();
+            }
+            return theDir;
+	}
+        
+        public static void CheckCreateDirectories(){
+            System.out.println("dirlhedav creation");
+            dirlhedav   = CheckDirCreateDir( diropt, "lhedav");
+            System.out.println("dirimages creation");
+            dirimages   = CheckDirCreateDir( dirlhedav, "images");
+            System.out.println("dirprovider creation");
+            dirprovider = CheckDirCreateDir( dirimages, "provider");
+            System.out.println("diritemdata creation");
+            diritemdata = CheckDirCreateDir( dirprovider, "itemdata");
+            System.out.println("CheckCreateDirectories end");
+        }
+        
+        public static FileOutputStream openItemdataForWrite( String aName ){
+            System.out.println("openItemdataForWrite, aName: "+aName);
+            FileOutputStream Filos = null ;
+            String thePath = diritemdata.getPath();
+            try{
+                Filos = new FileOutputStream( thePath+File.separator+aName );
+            } catch( IOException e ){
+                    return null;
+            }
+            System.out.println("openItemdataForWrite, thePath: "+thePath);
+            return Filos;
+	}
+        
 }
+
