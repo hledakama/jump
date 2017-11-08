@@ -26,13 +26,17 @@ public class Global {
         public static final String REFERENCE_SPLITTER = "#";
         public static String GLOBAL_DISPLAY_MESSAGE = null;
         public static String STAY_ON_CURRENT_PAGE = null;
-        public static String LOCATION_PROVIDER_ITEMDATA_IMAGE = "/usr/lhedav/images/provider/itemdata";
         public static String FILE_DOT = ".";
         public static File diropt = new File(File.separator + "opt");
         public static File dirlhedav;
         public static File dirimages;
         public static File dirprovider;
         public static File diritemdata;
+        public static String FILE_SPITTER = "_";
+        public static String PNG_FILE_TYPE = "image/png";
+        public static String JPEG_FILE_TYPE = "image/jpeg";
+        public static int MAX_IMAGE_FILE_SIZE = 1048576;// 1Mbytes
+        public static int MAX_IMAGE_FILE_NAME_LENGTH = 255;
         
         
         public static byte[] getHash(String aRawData){
@@ -72,7 +76,7 @@ public class Global {
         
         public static FileOutputStream openItemdataForWrite( String aName ){
             System.out.println("openItemdataForWrite, aName: "+aName);
-            FileOutputStream Filos = null ;
+            FileOutputStream Filos;
             String thePath = diritemdata.getPath();
             try{
                 Filos = new FileOutputStream( thePath+File.separator+aName );

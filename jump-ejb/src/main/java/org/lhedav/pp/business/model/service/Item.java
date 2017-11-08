@@ -76,6 +76,7 @@ public class Item implements Serializable {
     private Long qty;
     @Column(name = "VIRTUAL_")
     private Short virtual;
+    @XmlTransient
     @OneToMany(mappedBy = "itemFk")
     private List<Itemdata> itemdataList;
     @JoinColumn(name = "SERVICE_FK", referencedColumnName = "SERVICE_T_ID")
@@ -166,8 +167,7 @@ public class Item implements Serializable {
     public void setVirtual(Short virtual) {
         this.virtual = virtual;
     }
-
-    @XmlTransient
+    
     public List<Itemdata> getItemdataList() {
         return itemdataList;
     }

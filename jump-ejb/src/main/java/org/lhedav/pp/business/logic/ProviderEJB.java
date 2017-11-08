@@ -108,10 +108,30 @@ public class ProviderEJB {
                                  @NotNull Item anItem, 
                                  @NotNull Itemdata anItemFata,
                                  @NotNull ProviderAvatar anAvatar){ 
-        em.persist(anAvatar);
-        em.persist(anItemFata);
-        em.persist(anItem);
+       
         em.persist(aService);
+        /*System.out.println("createService.getItemname: "+anItem.getItemname());
+        System.out.println("createService.getItemreference: "+anItem.getItemreference());
+        System.out.println("createService.getCdate: "+anItem.getCdate());
+        System.out.println("createService.getItemTId: "+anItem.getItemTId());
+        System.out.println("createService.getPrice: "+anItem.getPrice());
+        System.out.println("createService.getQty: "+anItem.getQty());
+        System.out.println("createService.getServiceFk: "+anItem.getServiceFk());
+        System.out.println("createService.getVirtual: "+anItem.getVirtual());
+        System.out.println("createService.isEdited: "+anItem.isEdited());*/
+        em.persist(anItem);
+        System.out.println("createService.getAddressString: "+anItemFata.getAddressString());
+        System.out.println("createService.getComment: "+anItemFata.getComment());
+        System.out.println("createService.getUnit: "+anItemFata.getUnit());
+        System.out.println("createService.getDuration: "+anItemFata.getDuration());
+        System.out.println("createService.getItemFk: "+anItemFata.getItemFk());
+        System.out.println("createService.getItemdataTId: "+anItemFata.getItemdataTId());
+        System.out.println("createService.getMdate: "+anItemFata.getMdate());
+        System.out.println("createService.isEdited: "+anItemFata.isEdited());
+        System.out.println("createService.isUploadValidated: "+anItemFata.isUploadValidated());
+        em.persist(anItemFata);
+        em.persist(anAvatar);
+        em.flush(); 
         return true;
     }
     

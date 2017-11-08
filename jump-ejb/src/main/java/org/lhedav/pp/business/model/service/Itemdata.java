@@ -5,21 +5,15 @@
  */
 package org.lhedav.pp.business.model.service;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.persistence.Basic;
@@ -43,7 +37,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-import org.apache.commons.io.FilenameUtils;
 import org.lhedav.pp.business.model.common.Global;
 
 /**
@@ -84,6 +77,7 @@ public class Itemdata implements Serializable {
     @JoinColumn(name = "ITEM_FK", referencedColumnName = "ITEM_T_ID")
     @ManyToOne
     private Item itemFk;
+    @XmlTransient
     @OneToMany(mappedBy = "itemdataFk")
     private List<ProviderAddress> providerAddressList;
     @OneToMany(mappedBy = "itemdataFk")
@@ -173,7 +167,7 @@ public class Itemdata implements Serializable {
         this.currentAvatar = anAvatar;
     }
 
-    @XmlTransient
+    
     public List<ProviderAddress> getProviderAddressList() {
         return providerAddressList;
     }
@@ -273,86 +267,55 @@ public class Itemdata implements Serializable {
     }
     
     public boolean validateFile() {
-        //VALIDATE FILE NAME LENGTH
         String name = file.getSubmittedFileName();
         if (name.length() == 0) {
             resetFile();
             setUploadValidated(false);
-            System.out.println("validateFile1-->isUploadValidated(): "+isUploadValidated());
-            return isUploadValidated();
-           // FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Upload Error: Cannot determine the file name !"));
-        } else if (name.length() > 25) {
+            return isUploadValidated();           
+        } else if (name.length() > Global.MAX_IMAGE_FILE_NAME_LENGTH) {
             resetFile();
             setUploadValidated(false);
-            System.out.println("validateFile2-->isUploadValidated(): "+isUploadValidated());
             return isUploadValidated();
-            //FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Upload Error: The file name is to long !"));
-        } else //VALIDATE FILE CONTENT TYPE
-        if ((!"image/png".equals(file.getContentType())) && (!"image/jpeg".equals(file.getContentType()))) {
+        } else if ((!Global.PNG_FILE_TYPE.equals(file.getContentType())) && (!Global.JPEG_FILE_TYPE.equals(file.getContentType()))) {
+            resetFile();
+            setUploadValidated(false);            
+            return isUploadValidated();
+        } else if (file.getSize() > Global.MAX_IMAGE_FILE_SIZE) {
             resetFile();
             setUploadValidated(false);
-            System.out.println("validateFile3-->isUploadValidated(): "+isUploadValidated());
             return isUploadValidated();
-           // FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Upload Error: Only images can be uploaded (PNGs and JPGs) !"));
-        } else //VALIDATE FILE SIZE (not bigger than 1 MB)        
-        if (file.getSize() > 1048576) {
-            resetFile();
-            setUploadValidated(false);
-            System.out.println("validateFile4-->isUploadValidated(): "+isUploadValidated());
-            return isUploadValidated();
-            //FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Upload Error: Cannot upload files larger than 1 MB !"));
         }
-        setUploadValidated(true);
-        System.out.println("validateFile-->isUploadValidated(): "+isUploadValidated());        
+        setUploadValidated(true);        
         return isUploadValidated();
     }
 
     public ProviderAvatar saveFileToDisk() {
         ProviderAvatar theAvatar = null;
-        System.out.println("saveFileToDisk, file== null: "+(file == null));
-        if (file != null) {
-            System.out.println("getFileName: "+file.getName());//inputfile tag id, here = fileToUpload_itemdata
-              System.out.println("getMimeType: "+file.getContentType());
-               System.out.println("getSubmitedFileName: "+file.getSubmittedFileName());
-                                    
-            try {
-                System.out.println("123");
-               // Path folder = Paths.get(Global.LOCATION_PROVIDER_ITEMDATA_IMAGE);
-                String[] theSplitted = (file.getSubmittedFileName()).split(Pattern.quote(Global.FILE_DOT));
-                String filename = theSplitted[0]; //https://stackoverflow.com/questions/3481828/how-to-split-a-string-in-java
-                System.out.println("filename: "+filename);
-                String extension = theSplitted[1];
-                System.out.println("filenamek: "+filename+ ", extension: "+extension);
-                //File  output = File.createTempFile(filename + "-", "." + extension, new File(Global.LOCATION_PROVIDER_ITEMDATA_IMAGE));
-               // File output = new File(Global.LOCATION_PROVIDER_ITEMDATA_IMAGE+filename+extension);
-                Path path = Paths.get(Global.LOCATION_PROVIDER_ITEMDATA_IMAGE);
-                //if directory exists?
+        if (file != null) {                                    
+            try { 
+                //https://stackoverflow.com/questions/3481828/how-to-split-a-string-in-java
                 Global.CheckCreateDirectories();
                 //https://stackoverflow.com/questions/6233541/java-set-file-permissions-to-777-while-creating-a-file-object
-                System.out.println("qw");
                 InputStream inputStream = file.getInputStream();
-                System.out.println("qwer");
-                FileOutputStream outputStream = Global.openItemdataForWrite( file.getSubmittedFileName() );
-                System.out.println("qwerty");
-                int bytesRead;
-                final byte[] chunck = new byte[1024];
-                while ((bytesRead = inputStream.read(chunck)) != -1){
-                    //System.out.println("abc");
-                    outputStream.write(chunck, 0, bytesRead);
+                String theSubmitedFileName = (new Date()).getTime()+Global.FILE_SPITTER+file.getSubmittedFileName();
+                try (FileOutputStream outputStream = Global.openItemdataForWrite( theSubmitedFileName )) {
+                    int bytesRead;
+                    final byte[] chunck = new byte[1024];
+                    while ((bytesRead = inputStream.read(chunck)) != -1){
+                        outputStream.write(chunck, 0, bytesRead);
+                    }
                 }
-                outputStream.close();
-                System.out.println("789, output: "+path.toString());
                 theAvatar = new ProviderAvatar();
                 theAvatar.setFileName(file.getName());
                 theAvatar.setFileSize(file.getSize());
-                theAvatar.setLocation(path.toString());
+                theAvatar.setLocation(Global.diritemdata.getAbsolutePath());
                 theAvatar.setMimeType(file.getContentType());
-                theAvatar.setSubmitedFileName(file.getSubmittedFileName());
+                theAvatar.setSubmitedFileName(theSubmitedFileName);
                 addProviderAvatarToList(theAvatar);
                 resetFile();
+                setMdate(new Date());
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Upload successfully ended!"));
             } catch (IOException e) {                
-                e.printStackTrace();
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Upload failed!"));
             }
         }

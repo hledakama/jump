@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -530,6 +531,7 @@ public class AddItem implements Serializable{
         }
         // Persisting ProviderAvatar, Itemdata, Item and Service
         item.addItemDataToList(itemdata);
+        item.setCdate(new Date());
         System.out.println("setItemreference from AddItem.addItem");
         item.setItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
         service.addItemToList(item);

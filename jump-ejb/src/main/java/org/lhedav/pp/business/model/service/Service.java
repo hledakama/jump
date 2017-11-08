@@ -70,9 +70,10 @@ public class Service implements Serializable {
     @Size(max = 20)
     @Column(name = "TYPE_")
     private String type;
+    @XmlTransient
     @OneToMany(mappedBy = "serviceFk")
     private List<Item> itemList;
-            @Transient
+    @Transient
     private boolean edited = false;
 
     
@@ -164,7 +165,7 @@ public class Service implements Serializable {
         this.type = type;
     }
 
-    @XmlTransient
+    
     public List<Item> getItemList() {
         return itemList;
     }
