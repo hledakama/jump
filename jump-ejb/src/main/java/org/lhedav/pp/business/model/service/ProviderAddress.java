@@ -19,6 +19,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
+import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -72,6 +73,7 @@ public class ProviderAddress implements Serializable {
     @JoinColumn(name = "ITEMDATA_FK", referencedColumnName = "ITEMDATA_T_ID")
     @ManyToOne(cascade = CascadeType.ALL)
     private Itemdata itemdataFk;
+    @Transient
     private boolean edited = false;
 
     public ProviderAddress() {

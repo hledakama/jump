@@ -77,7 +77,7 @@ public class Item implements Serializable {
     @Column(name = "VIRTUAL_")
     private Short virtual;
     @XmlTransient
-    @OneToMany(mappedBy = "itemFk")
+    @OneToMany(mappedBy = "itemFk", cascade = CascadeType.ALL)
     private List<Itemdata> itemdataList;
     @JoinColumn(name = "SERVICE_FK", referencedColumnName = "SERVICE_T_ID")
     @ManyToOne(cascade = CascadeType.ALL)
@@ -169,6 +169,9 @@ public class Item implements Serializable {
     }
     
     public List<Itemdata> getItemdataList() {
+        for(Itemdata thedata: itemdataList){
+            System.out.println("getItemdataList-->thedata.getItemFk(): "+thedata.getItemFk());
+        }
         return itemdataList;
     }
 
@@ -177,6 +180,7 @@ public class Item implements Serializable {
     }
     
     public void addItemDataToList(Itemdata anItemData) {
+        System.out.println("addItemDataToList, this: "+this);
         if (!getItemdataList().contains(anItemData)) {
             getItemdataList().add(anItemData);
             if (anItemData.getItemFk() != null) {

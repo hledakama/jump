@@ -398,7 +398,7 @@ public class PublishService {
          Service theRetrived = m_provider_services.getServiceByServiceReference(service.getServicereference());
          theRetrived.setPublished((short)1);
          
-         if(m_provider_services.updateService(service)){
+         if(m_provider_services.PersistService(service)){
              theCtx.addMessage(GLOBAL_DISPLAY_MESSAGE, new FacesMessage(FacesMessage.SEVERITY_INFO, 
                                                                         "Publishing service.",
                                                                         "The service is published successfully"));
@@ -487,13 +487,13 @@ public class PublishService {
     
     public String editServiceRow(Service aService) {
         aService.setEdited(true);
-        m_provider_services.updateService(aService);
+        m_provider_services.PersistService(aService);
       return Global.STAY_ON_CURRENT_PAGE;        
     }
        
     public String deleteServiceRow(Service aService) {
         m_provider_services.deleteService(aService);
-        m_provider_services.updateService(aService);
+        m_provider_services.PersistService(aService);
       return Global.STAY_ON_CURRENT_PAGE;       
     }
     

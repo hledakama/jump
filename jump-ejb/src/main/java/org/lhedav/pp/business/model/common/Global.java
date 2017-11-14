@@ -32,13 +32,17 @@ public class Global {
         public static File dirimages;
         public static File dirprovider;
         public static File diritemdata;
+        public static File dirprofile;
         public static String FILE_SPITTER = "_";
         public static String PNG_FILE_TYPE = "image/png";
         public static String JPEG_FILE_TYPE = "image/jpeg";
         public static int MAX_IMAGE_FILE_SIZE = 1048576;// 1Mbytes
         public static int MAX_IMAGE_FILE_NAME_LENGTH = 255;
-        
-        
+        public static String DEFAULT_PROFILE_IMAGE_NAME = "default_profile_image.jpg";
+        public static String DEFAULT_SHOPPING_IMAGE_NAME = "default_shopping_image.jpg";
+        public static File default_shopping_file;
+        public static File default_profile_file;
+                
         public static byte[] getHash(String aRawData){
             MessageDigest m=null;
             try {
@@ -62,7 +66,7 @@ public class Global {
             return theDir;
 	}
         
-        public static void CheckCreateDirectories(){
+        public static void CheckCreateDirectories(){            
             System.out.println("dirlhedav creation");
             dirlhedav   = CheckDirCreateDir( diropt, "lhedav");
             System.out.println("dirimages creation");
@@ -71,6 +75,10 @@ public class Global {
             dirprovider = CheckDirCreateDir( dirimages, "provider");
             System.out.println("diritemdata creation");
             diritemdata = CheckDirCreateDir( dirprovider, "itemdata");
+            dirprofile = CheckDirCreateDir( dirprovider, "profile");
+            //https://www.mkyong.com/java/how-to-get-file-size-in-java/
+            default_shopping_file =new File(diritemdata.getAbsolutePath()+DEFAULT_SHOPPING_IMAGE_NAME);
+            default_profile_file =new File(dirprofile.getAbsolutePath()+DEFAULT_PROFILE_IMAGE_NAME);
             System.out.println("CheckCreateDirectories end");
         }
         

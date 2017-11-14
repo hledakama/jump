@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -71,7 +72,7 @@ public class Service implements Serializable {
     @Column(name = "TYPE_")
     private String type;
     @XmlTransient
-    @OneToMany(mappedBy = "serviceFk")
+    @OneToMany(mappedBy = "serviceFk", cascade = CascadeType.ALL)
     private List<Item> itemList;
     @Transient
     private boolean edited = false;
@@ -167,6 +168,9 @@ public class Service implements Serializable {
 
     
     public List<Item> getItemList() {
+        for(Item theitem: itemList){
+            System.out.println("getItemList-->theitem.getServiceFk(): "+theitem.getServiceFk());
+        }
         return itemList;
     }
 
@@ -175,6 +179,7 @@ public class Service implements Serializable {
     }
     
       public void addItemToList(Item anItem) {
+          System.out.println("addItemToList, this: "+this);
         if (!getItemList().contains(anItem)) {
             getItemList().add(anItem);
             if (anItem.getServiceFk() != null) {

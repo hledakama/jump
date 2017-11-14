@@ -22,9 +22,9 @@ import javax.inject.Named;
 import javax.json.JsonArray;
 import javax.validation.constraints.NotNull;
 import org.lhedav.pp.business.data.Services;
-import org.lhedav.pp.business.data.Unit;
 import org.lhedav.pp.business.json.ItemdataJsonBuilder;
 import org.lhedav.pp.business.logic.ProviderEJB;
+import org.lhedav.pp.business.model.common.CRC32StringCollection;
 import org.lhedav.pp.business.model.common.Global;
 import org.lhedav.pp.business.model.service.Item;
 import org.lhedav.pp.business.model.service.Itemdata;
@@ -100,6 +100,7 @@ public class AddItem implements Serializable{
 
     @PostConstruct
     public void init() {
+         System.out.println("PostConstruct init");
         List<Services> theServicesData = provider_services.getServicesData();
         int theServicesSize = theServicesData.size();
          
@@ -110,8 +111,38 @@ public class AddItem implements Serializable{
             }
             itemsNames.add(theString);
         } 
-        unitsList= provider_services.getItemUnits(provider_services.getItemUnits());        
-        System.out.println("setItemreference from AddItem.init");
+        unitsList= provider_services.getItemUnits(provider_services.getItemUnits());
+    }
+    //https://stackoverflow.com/questions/6341462/initializng-a-backing-bean-with-parameters-on-page-load-with-jsf-2-0
+    public void loadService(){
+        String theCrc = CRC32StringCollection.getServicereference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
+        System.out.println("loadService from AddItem.init, service-->theCrc: "+theCrc);
+        Service theSavedService = provider_services.getServiceByServiceReference(theCrc);
+        if(theSavedService != null){
+            System.out.println("service != null");
+            service = theSavedService;
+        }
+        service.setServicereference();
+        if(item.getItemname() == null){
+            loadItem(unitsList.get(0));
+        }
+        else{
+           loadItem(item.getItemname()) ;
+        }        
+    }
+    
+        public void loadItem(String anItemName){
+        String theCrc = CRC32StringCollection.getItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory(), anItemName);
+        System.out.println("loadService from AddItem.init, item-->theCrc: "+theCrc);
+        Item theSavedItem = provider_services.getItemByItemReference(theCrc);
+        if(theSavedItem != null){
+            item = theSavedItem;
+        } 
+        else{
+            item = new Item();
+            item.setItemname(anItemName);
+        }
+        item.setItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
     }
     
     public boolean isItemExists(@NotNull String anItemName){
@@ -424,10 +455,9 @@ public class AddItem implements Serializable{
         if (theItem != null) {
             theList = theItem.getItemdataList();
         }
-        if ((theList != null) && (!theList.isEmpty())) {
+       // if ((theList != null) && (!theList.isEmpty())) {
             sortitemdatamodel = new SortedDataModel<>(new CollectionDataModel<>(theList));
-        }
-
+       // }
     }
 
     public String sortItemById() {
@@ -507,16 +537,6 @@ public class AddItem implements Serializable{
         // Single upload management
        ProviderAvatar theAvatar = itemdata.saveFileToDisk();
        System.out.println("theAvatar == null: "+(theAvatar==null));
-       if(theAvatar != null){            
-           itemdata.addProviderAvatarToList(theAvatar);
-            System.out.println("getFileName: "+theAvatar.getFileName());
-             System.out.println("getLocation: "+theAvatar.getLocation());
-              System.out.println("getMimeType: "+theAvatar.getMimeType());
-               System.out.println("getSubmitedFileName: "+theAvatar.getSubmitedFileName());
-       }
-       else{
-           theAvatar = new ProviderAvatar();
-       }
        // Reset datatable to default display
         if (sortitemdatamodel != null) {
             for (Itemdata theItemdata : sortitemdatamodel) {
@@ -530,12 +550,20 @@ public class AddItem implements Serializable{
             }
         }
         // Persisting ProviderAvatar, Itemdata, Item and Service
+        itemdata.addProviderAvatarToList(theAvatar);
+        System.out.println("getFileName: "+theAvatar.getFileName());
+        System.out.println("getLocation: "+theAvatar.getLocation());
+        System.out.println("getMimeType: "+theAvatar.getMimeType());
+        System.out.println("getSubmitedFileName: "+theAvatar.getSubmitedFileName());
         item.addItemDataToList(itemdata);
         item.setCdate(new Date());
         System.out.println("setItemreference from AddItem.addItem");
         item.setItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
         service.addItemToList(item);
+        service.setServicereference();
         provider_services.createService(service, item, itemdata, theAvatar);
+        itemdata = new Itemdata();
+        item = new Item();
         return Global.STAY_ON_CURRENT_PAGE;
     }
 
@@ -557,9 +585,10 @@ public class AddItem implements Serializable{
     public void onNameChanged(ValueChangeEvent anEvent) {
         System.out.println("ItemNameChanged start, getItemreference: " + item.getItemreference() + ", anEvent.getOldValue(): " + anEvent.getOldValue());
         String theNewItemName = (String) anEvent.getNewValue();
-        item.setItemname(theNewItemName);
+        //item.setItemname(theNewItemName);
         System.out.println("setItemreference from AddItem.onNameChanged");
-        item.setItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
+        loadItem(theNewItemName);
+        //item.setItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
         itemNameChanged = true;
         System.out.println("ItemNameChanged end, getItemreference: " + item.getItemreference() + ", theNewItemName: " + theNewItemName);
     }

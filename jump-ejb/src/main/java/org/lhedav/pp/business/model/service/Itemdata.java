@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -75,12 +76,12 @@ public class Itemdata implements Serializable {
     @Column(name = "UNIT")
     private String unit;
     @JoinColumn(name = "ITEM_FK", referencedColumnName = "ITEM_T_ID")
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private Item itemFk;
     @XmlTransient
-    @OneToMany(mappedBy = "itemdataFk")
+    @OneToMany(mappedBy = "itemdataFk", cascade = CascadeType.ALL)
     private List<ProviderAddress> providerAddressList;
-    @OneToMany(mappedBy = "itemdataFk")
+    @OneToMany(mappedBy = "itemdataFk", cascade = CascadeType.ALL)
     private List<ProviderAvatar> providerAvatarList;
         @Transient
     private boolean edited = false;
@@ -188,6 +189,9 @@ public class Itemdata implements Serializable {
 
     @XmlTransient
     public List<ProviderAvatar> getProviderAvatarList() {
+        for(ProviderAvatar theavatar: providerAvatarList){
+            System.out.println("getProviderAvatarList-->theavatar.getItemdataFk(): "+theavatar.getItemdataFk());
+        }
         return providerAvatarList;
     }
 
@@ -196,6 +200,7 @@ public class Itemdata implements Serializable {
     }
     
     public void addProviderAvatarToList(ProviderAvatar anAvatar) {
+        System.out.println("addProviderAvatarToList, this: "+this);
         if (!getProviderAvatarList().contains(anAvatar)) {
             getProviderAvatarList().add(anAvatar);
             if (anAvatar.getItemdataFk() != null) {
@@ -290,7 +295,7 @@ public class Itemdata implements Serializable {
     }
 
     public ProviderAvatar saveFileToDisk() {
-        ProviderAvatar theAvatar = null;
+        ProviderAvatar theAvatar = new ProviderAvatar();
         if (file != null) {                                    
             try { 
                 //https://stackoverflow.com/questions/3481828/how-to-split-a-string-in-java
@@ -304,8 +309,7 @@ public class Itemdata implements Serializable {
                     while ((bytesRead = inputStream.read(chunck)) != -1){
                         outputStream.write(chunck, 0, bytesRead);
                     }
-                }
-                theAvatar = new ProviderAvatar();
+                }                
                 theAvatar.setFileName(file.getName());
                 theAvatar.setFileSize(file.getSize());
                 theAvatar.setLocation(Global.diritemdata.getAbsolutePath());
@@ -318,6 +322,11 @@ public class Itemdata implements Serializable {
             } catch (IOException e) {                
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Upload failed!"));
             }
+        }
+        else{   
+                theAvatar.setLocation(Global.diritemdata.getAbsolutePath());
+                theAvatar.setSubmitedFileName(Global.DEFAULT_SHOPPING_IMAGE_NAME);
+                addProviderAvatarToList(theAvatar);
         }
         return theAvatar;
     }

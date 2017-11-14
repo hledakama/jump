@@ -5,7 +5,9 @@
  */
 package org.lhedav.pp.business.model.common;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.zip.CRC32;
 
@@ -54,4 +56,32 @@ public class CRC32StringCollection {
         }
         return true;
     }
+    
+    public static String getServicereference(String aKind, String aType, String aServiceName, String aCategory) {
+        System.out.println("In CRC32StringCollection.getServicereference, kind: "+aKind+ ", type: "+aType+ ", servicename: "+ aServiceName+ ", category: "+aCategory);
+          List the_crc_key = new ArrayList();
+          the_crc_key.add(aKind);
+          the_crc_key.add(Global.REFERENCE_SPLITTER);
+          the_crc_key.add(aType);
+          the_crc_key.add(Global.REFERENCE_SPLITTER);
+          the_crc_key.add(aServiceName);
+          the_crc_key.add(Global.REFERENCE_SPLITTER);
+          the_crc_key.add(aCategory);
+          return (new CRC32StringCollection(the_crc_key)).hashCode() + Global.STR_EMPTY; 
+    }
+    
+        public static String getItemreference(String aKind, String aType, String aService, String aCategory, String anItemName) {
+        System.out.println("In CRC32StringCollection.getItemreference, aKind: "+aKind+ ", aType: "+aType+ ", aService: "+ aService+ ", aCategory: "+aCategory + ", anItemName: "+anItemName);
+        List<String> theList = new ArrayList();
+          theList.add(aKind);
+          theList.add(Global.REFERENCE_SPLITTER);
+          theList.add(aType);
+          theList.add(Global.REFERENCE_SPLITTER);
+          theList.add(aService);
+          theList.add(Global.REFERENCE_SPLITTER);
+          theList.add(aCategory);
+          theList.add(Global.REFERENCE_SPLITTER);
+          theList.add(anItemName);
+          return ((new CRC32StringCollection(theList)).hashCode())+ Global.STR_EMPTY;           
+    } 
 }

@@ -9,8 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceException;
 import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
 import org.lhedav.pp.business.model.common.Global;
@@ -100,16 +102,15 @@ public class ProviderEJB {
             theResult.add(aUnit.getUnit());
         }
         return theResult;
-    }
-        
+    }        
     
      //***************************  Service   *********************************************
     public boolean createService(@NotNull Service aService, 
                                  @NotNull Item anItem, 
-                                 @NotNull Itemdata anItemFata,
+                                 @NotNull Itemdata anItemData,
                                  @NotNull ProviderAvatar anAvatar){ 
        
-        em.persist(aService);
+        PersistService(aService);       
         /*System.out.println("createService.getItemname: "+anItem.getItemname());
         System.out.println("createService.getItemreference: "+anItem.getItemreference());
         System.out.println("createService.getCdate: "+anItem.getCdate());
@@ -119,8 +120,8 @@ public class ProviderEJB {
         System.out.println("createService.getServiceFk: "+anItem.getServiceFk());
         System.out.println("createService.getVirtual: "+anItem.getVirtual());
         System.out.println("createService.isEdited: "+anItem.isEdited());*/
-        em.persist(anItem);
-        System.out.println("createService.getAddressString: "+anItemFata.getAddressString());
+       PersistItem(anItem);
+        /*System.out.println("createService.getAddressString: "+anItemFata.getAddressString());
         System.out.println("createService.getComment: "+anItemFata.getComment());
         System.out.println("createService.getUnit: "+anItemFata.getUnit());
         System.out.println("createService.getDuration: "+anItemFata.getDuration());
@@ -128,40 +129,39 @@ public class ProviderEJB {
         System.out.println("createService.getItemdataTId: "+anItemFata.getItemdataTId());
         System.out.println("createService.getMdate: "+anItemFata.getMdate());
         System.out.println("createService.isEdited: "+anItemFata.isEdited());
-        System.out.println("createService.isUploadValidated: "+anItemFata.isUploadValidated());
-        em.persist(anItemFata);
+        System.out.println("createService.isUploadValidated: "+anItemFata.isUploadValidated());*/
+        System.out.println("anItemData persist, anItemData.getItemdataTId(): "+anItemData.getItemdataTId());
+        em.persist(anItemData);
+        System.out.println("anAvatar persist, anAvatar.getProviderAvatarTId(): "+anAvatar.getProviderAvatarTId());
         em.persist(anAvatar);
         em.flush(); 
         return true;
     }
     
     public boolean createService(@NotNull Service aService, @NotNull Item anItem){
-        em.persist(aService);
-        em.persist(anItem);
+        PersistService(aService);         
+        PersistItem(anItem);
         em.flush();       
         return true;
     }
         
-    public boolean createService(@NotNull Service aService){
-           
-            System.out.println("getCategory: "+aService.getCategory());
-            System.out.println("getKind: "+aService.getKind());
-            System.out.println("getServicename: "+aService.getServicename());
-            System.out.println("getServicereference: "+aService.getServicereference());
-            System.out.println("getType: "+aService.getType());
-            System.out.println("toString: "+aService.toString());
-            System.out.println("getId: "+aService.getServiceTId());
-            System.out.println("-----------------isPublished------------: "+aService.getPublished());
+    public boolean createService(@NotNull Service aService){           
+        System.out.println("getCategory: "+aService.getCategory());
+        System.out.println("getKind: "+aService.getKind());
+        System.out.println("getServicename: "+aService.getServicename());
+        System.out.println("getServicereference: "+aService.getServicereference());
+        System.out.println("getType: "+aService.getType());
+        System.out.println("toString: "+aService.toString());
+        System.out.println("getId: "+aService.getServiceTId());
+        System.out.println("-----------------isPublished------------: "+aService.getPublished());           
             
-            
-            em.persist(aService);            
-            em.flush(); 
-        
+        PersistService(aService);
+        em.flush();
         return true;
     }
     
     public Service getServiceByServiceReference(@NotNull String aReference){
-         try{
+        try{
         TypedQuery<Service> theQuery;
         theQuery = em.createNamedQuery("Service.findByServicereference", Service.class);
         theQuery.setParameter("servicereference", aReference);
@@ -196,13 +196,80 @@ public class ProviderEJB {
     }
     
     public boolean PersistService(@NotNull Service aService){
-        em.persist(aService);
+        Service theSavedService = getServiceByServiceReference(aService.getServicereference());
+        if(theSavedService == null){
+             System.out.println("aService persist, aService.getServiceTId(): "+aService.getServiceTId());
+            em.persist(aService);
+        }
+        else{
+            System.out.println("EntityExistsException aService merge, theSavedService.getServiceTId(): "+theSavedService.getServiceTId());
+            aService.setServiceTId(theSavedService.getServiceTId());
+            em.merge(aService);
+        }
+       /* try{
+        //Try to insert your entity by calling persist method 
+            System.out.println("aService persist, aService.getServiceTId(): "+aService.getServiceTId());
+            em.persist(aService);
+        }
+        catch(EntityExistsException e){
+            //Entity you are trying to insert already exist, then call merge method
+            System.out.println("EntityExistsException aService merge");
+            em.merge(aService);
+        }
+        catch(PersistenceException e){
+            //Entity you are trying to insert already exist, then call merge method
+            System.out.println("PersistenceException aService merge");            
+            em.merge(aService);
+        }*/
+        /*Service theSavedService = getServiceByServiceReference(aService.getServicereference());
+        if(theSavedService == null){
+            System.out.println("aService persist");
+            em.persist(aService);
+        }
+        else{
+            System.out.println("aService merge");
+            em.merge(aService);
+        } */
         return true;
     }
     
-    public boolean updateService(@NotNull Service aService){
-            em.merge(aService);
-            return true;
+    public boolean PersistItem(@NotNull Item anItem){
+        //https://stackoverflow.com/questions/15643732/duplicate-entry-for-key-primary-using-jpa-to-persist-into-database
+        Item theSavedItem = getItemByItemReference(anItem.getItemreference());
+        if(theSavedItem == null){
+            System.out.println("anItem persist, anItem.getItemTId()"+ anItem.getItemTId());
+            em.persist(anItem);
+        } 
+        else{
+            System.out.println("anItem merge, anItem.getItemTId()"+ anItem.getItemTId()+", theSavedItem.getItemTId(): "+theSavedItem.getItemTId());
+            anItem.setItemTId(theSavedItem.getItemTId());
+            em.merge(anItem);
+        }
+        /*try{
+        //Try to insert your entity by calling persist method    
+            System.out.println("anItem persist, anItem.getItemTId()"+ anItem.getItemTId());
+            em.persist(anItem);
+        }
+        catch(EntityExistsException e){
+            //Entity you are trying to insert already exist, then call merge method
+            System.out.println("EntityExistsException anItem merge");
+            em.merge(anItem);
+        }
+        catch(PersistenceException e){
+            //Entity you are trying to insert already exist, then call merge method
+            System.out.println("PersistenceException anItem merge");
+            em.merge(anItem);
+        }*/
+        /*Item theSavedItem = getItemByItemReference(anItem.getItemreference());
+        if(theSavedItem == null){
+            System.out.println("anItem persist");
+            em.persist(anItem);
+        } 
+        else{
+            System.out.println("anItem merge");
+            em.merge(anItem);
+        }*/
+        return true;
     }
     
     
@@ -299,12 +366,7 @@ public class ProviderEJB {
             return false;
         }
         return true;
-    }
-    
-    public boolean PersistItem(@NotNull Item anItem){
-        em.persist(anItem);
-        return true;
-    }    
+    } 
     
     //***************************  ItemData   *********************************************
     
