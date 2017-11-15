@@ -72,7 +72,7 @@ public class Service implements Serializable {
     @Column(name = "TYPE_")
     private String type;
     @XmlTransient
-    @OneToMany(mappedBy = "serviceFk", cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "serviceFk", orphanRemoval = true)
     private List<Item> itemList;
     @Transient
     private boolean edited = false;

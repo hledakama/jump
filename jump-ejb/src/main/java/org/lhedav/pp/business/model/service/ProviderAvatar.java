@@ -7,7 +7,6 @@ package org.lhedav.pp.business.model.service;
 
 import java.io.Serializable;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -61,7 +60,7 @@ public class ProviderAvatar implements Serializable {
     @Column(name = "LOCATION")
     private String location;
     @JoinColumn(name = "ITEMDATA_FK", referencedColumnName = "ITEMDATA_T_ID")
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     private Itemdata itemdataFk;
 
     public ProviderAvatar() {

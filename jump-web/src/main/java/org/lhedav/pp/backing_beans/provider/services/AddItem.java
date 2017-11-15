@@ -455,9 +455,7 @@ public class AddItem implements Serializable{
         if (theItem != null) {
             theList = theItem.getItemdataList();
         }
-       // if ((theList != null) && (!theList.isEmpty())) {
-            sortitemdatamodel = new SortedDataModel<>(new CollectionDataModel<>(theList));
-       // }
+        sortitemdatamodel = new SortedDataModel<>(new CollectionDataModel<>(theList));
     }
 
     public String sortItemById() {
@@ -562,8 +560,8 @@ public class AddItem implements Serializable{
         service.addItemToList(item);
         service.setServicereference();
         provider_services.createService(service, item, itemdata, theAvatar);
-        itemdata = new Itemdata();
-        item = new Item();
+       // itemdata = new Itemdata();
+        //item = new Item();
         return Global.STAY_ON_CURRENT_PAGE;
     }
 

@@ -110,31 +110,7 @@ public class ProviderEJB {
                                  @NotNull Itemdata anItemData,
                                  @NotNull ProviderAvatar anAvatar){ 
        
-        PersistService(aService);       
-        /*System.out.println("createService.getItemname: "+anItem.getItemname());
-        System.out.println("createService.getItemreference: "+anItem.getItemreference());
-        System.out.println("createService.getCdate: "+anItem.getCdate());
-        System.out.println("createService.getItemTId: "+anItem.getItemTId());
-        System.out.println("createService.getPrice: "+anItem.getPrice());
-        System.out.println("createService.getQty: "+anItem.getQty());
-        System.out.println("createService.getServiceFk: "+anItem.getServiceFk());
-        System.out.println("createService.getVirtual: "+anItem.getVirtual());
-        System.out.println("createService.isEdited: "+anItem.isEdited());*/
-       PersistItem(anItem);
-        /*System.out.println("createService.getAddressString: "+anItemFata.getAddressString());
-        System.out.println("createService.getComment: "+anItemFata.getComment());
-        System.out.println("createService.getUnit: "+anItemFata.getUnit());
-        System.out.println("createService.getDuration: "+anItemFata.getDuration());
-        System.out.println("createService.getItemFk: "+anItemFata.getItemFk());
-        System.out.println("createService.getItemdataTId: "+anItemFata.getItemdataTId());
-        System.out.println("createService.getMdate: "+anItemFata.getMdate());
-        System.out.println("createService.isEdited: "+anItemFata.isEdited());
-        System.out.println("createService.isUploadValidated: "+anItemFata.isUploadValidated());*/
-        System.out.println("anItemData persist, anItemData.getItemdataTId(): "+anItemData.getItemdataTId());
-        em.persist(anItemData);
-        System.out.println("anAvatar persist, anAvatar.getProviderAvatarTId(): "+anAvatar.getProviderAvatarTId());
-        em.persist(anAvatar);
-        em.flush(); 
+        PersistService(aService);        
         return true;
     }
     
@@ -200,37 +176,14 @@ public class ProviderEJB {
         if(theSavedService == null){
              System.out.println("aService persist, aService.getServiceTId(): "+aService.getServiceTId());
             em.persist(aService);
+            return true;
         }
         else{
             System.out.println("EntityExistsException aService merge, theSavedService.getServiceTId(): "+theSavedService.getServiceTId());
             aService.setServiceTId(theSavedService.getServiceTId());
             em.merge(aService);
+            return false;
         }
-       /* try{
-        //Try to insert your entity by calling persist method 
-            System.out.println("aService persist, aService.getServiceTId(): "+aService.getServiceTId());
-            em.persist(aService);
-        }
-        catch(EntityExistsException e){
-            //Entity you are trying to insert already exist, then call merge method
-            System.out.println("EntityExistsException aService merge");
-            em.merge(aService);
-        }
-        catch(PersistenceException e){
-            //Entity you are trying to insert already exist, then call merge method
-            System.out.println("PersistenceException aService merge");            
-            em.merge(aService);
-        }*/
-        /*Service theSavedService = getServiceByServiceReference(aService.getServicereference());
-        if(theSavedService == null){
-            System.out.println("aService persist");
-            em.persist(aService);
-        }
-        else{
-            System.out.println("aService merge");
-            em.merge(aService);
-        } */
-        return true;
     }
     
     public boolean PersistItem(@NotNull Item anItem){
@@ -239,37 +192,14 @@ public class ProviderEJB {
         if(theSavedItem == null){
             System.out.println("anItem persist, anItem.getItemTId()"+ anItem.getItemTId());
             em.persist(anItem);
+            return true;
         } 
         else{
             System.out.println("anItem merge, anItem.getItemTId()"+ anItem.getItemTId()+", theSavedItem.getItemTId(): "+theSavedItem.getItemTId());
-            anItem.setItemTId(theSavedItem.getItemTId());
-            em.merge(anItem);
+            //anItem.setItemTId(theSavedItem.getItemTId());
+            //em.merge(anItem);
+            return false;
         }
-        /*try{
-        //Try to insert your entity by calling persist method    
-            System.out.println("anItem persist, anItem.getItemTId()"+ anItem.getItemTId());
-            em.persist(anItem);
-        }
-        catch(EntityExistsException e){
-            //Entity you are trying to insert already exist, then call merge method
-            System.out.println("EntityExistsException anItem merge");
-            em.merge(anItem);
-        }
-        catch(PersistenceException e){
-            //Entity you are trying to insert already exist, then call merge method
-            System.out.println("PersistenceException anItem merge");
-            em.merge(anItem);
-        }*/
-        /*Item theSavedItem = getItemByItemReference(anItem.getItemreference());
-        if(theSavedItem == null){
-            System.out.println("anItem persist");
-            em.persist(anItem);
-        } 
-        else{
-            System.out.println("anItem merge");
-            em.merge(anItem);
-        }*/
-        return true;
     }
     
     

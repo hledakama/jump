@@ -71,7 +71,7 @@ public class ProviderAddress implements Serializable {
     @Column(name = "COUNTRY")
     private String country;
     @JoinColumn(name = "ITEMDATA_FK", referencedColumnName = "ITEMDATA_T_ID")
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     private Itemdata itemdataFk;
     @Transient
     private boolean edited = false;

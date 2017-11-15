@@ -77,10 +77,10 @@ public class Item implements Serializable {
     @Column(name = "VIRTUAL_")
     private Short virtual;
     @XmlTransient
-    @OneToMany(mappedBy = "itemFk", cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "itemFk", orphanRemoval = true)
     private List<Itemdata> itemdataList;
     @JoinColumn(name = "SERVICE_FK", referencedColumnName = "SERVICE_T_ID")
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     private Service serviceFk;
         @Transient
     private boolean edited = false;
@@ -183,9 +183,9 @@ public class Item implements Serializable {
         System.out.println("addItemDataToList, this: "+this);
         if (!getItemdataList().contains(anItemData)) {
             getItemdataList().add(anItemData);
-            if (anItemData.getItemFk() != null) {
+            /*if (anItemData.getItemFk() != null) {
                 anItemData.getItemFk().getItemdataList().remove(anItemData);
-            }
+            }*/
             anItemData.setItemFk(this);
         }
     }

@@ -76,12 +76,12 @@ public class Itemdata implements Serializable {
     @Column(name = "UNIT")
     private String unit;
     @JoinColumn(name = "ITEM_FK", referencedColumnName = "ITEM_T_ID")
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     private Item itemFk;
     @XmlTransient
-    @OneToMany(mappedBy = "itemdataFk", cascade = CascadeType.ALL)
+    @OneToMany( cascade = CascadeType.ALL, mappedBy = "itemdataFk", orphanRemoval = true)
     private List<ProviderAddress> providerAddressList;
-    @OneToMany(mappedBy = "itemdataFk", cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "itemdataFk", orphanRemoval = true )
     private List<ProviderAvatar> providerAvatarList;
         @Transient
     private boolean edited = false;
