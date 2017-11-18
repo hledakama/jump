@@ -8,6 +8,7 @@ package org.lhedav.pp.business.model.service;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -21,6 +22,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -76,6 +78,8 @@ public class Service implements Serializable {
     private List<Item> itemList;
     @Transient
     private boolean edited = false;
+    @Transient
+    private boolean merged = false;
 
     
         public final static String KIND_HOUSEHOLD      = "HOUSE_HOLD";
@@ -145,7 +149,7 @@ public class Service implements Serializable {
     }
 
     public void setServicereference() {
-        System.out.println("In setServicereference, kind: "+kind+ ", type: "+type+ ", servicename: "+ servicename+ ", category: "+category);
+       // System.out.println("In setServicereference, kind: "+kind+ ", type: "+type+ ", servicename: "+ servicename+ ", category: "+category);
           List the_crc_key = new ArrayList();
           the_crc_key.add(getKind());
           the_crc_key.add(Global.REFERENCE_SPLITTER);
@@ -155,7 +159,7 @@ public class Service implements Serializable {
           the_crc_key.add(Global.REFERENCE_SPLITTER);
           the_crc_key.add(getCategory());
           this.servicereference = (new CRC32StringCollection(the_crc_key)).hashCode() + Global.STR_EMPTY;   
-          System.out.println("In setServicereference, servicereference: "+servicereference);
+        //  System.out.println("In setServicereference, servicereference: "+servicereference);
     }
     
     public String getType() {
@@ -169,7 +173,7 @@ public class Service implements Serializable {
     
     public List<Item> getItemList() {
         for(Item theitem: itemList){
-            System.out.println("getItemList-->theitem.getServiceFk(): "+theitem.getServiceFk());
+           // System.out.println("getItemList-->theitem.getServiceFk(): "+theitem.getServiceFk());
         }
         return itemList;
     }
@@ -178,15 +182,50 @@ public class Service implements Serializable {
         this.itemList = itemList;
     }
     
-      public void addItemToList(Item anItem) {
-          System.out.println("addItemToList, this: "+this);
+    public void addItemToList(Item anItem) {
+          //System.out.println("addItemToList, this: "+this);
         if (!getItemList().contains(anItem)) {
             getItemList().add(anItem);
-            if (anItem.getServiceFk() != null) {
+            /*if (anItem.getServiceFk() != null) {
                 anItem.getServiceFk().getItemList().remove(anItem);
-            }
+            }*/
             anItem.setServiceFk(this);
         }
+        else{
+            System.out.println("toward theOne");
+            Item theOne = null;
+            for(Item theItem : getItemList()){
+                //System.out.println("theItem.getItemname(): "+theItem.getItemname());
+                if(Objects.equals(theItem.getItemTId(), anItem.getItemTId())){
+                    theOne = theItem;
+                    System.out.println("theOne is: "+theOne.getItemname());
+                    break;
+                }
+            }
+            if(theOne!= null){
+                theOne.setPrice(anItem.getPrice());
+                theOne.setQty(anItem.getQty());
+                theOne.setCdate(anItem.getCdate());
+                theOne.setVirtual(anItem.getVirtual());
+                for(Itemdata theData: anItem.getItemdataList()){
+                   // System.out.println("itemdata in anItem: "+theData.getComment());
+                    if(!theOne.getItemdataList().contains(theData)){
+                        theOne.addItemDataToList(theData);
+                       // System.out.println("itemdata added in theOne: "+theData.getComment());
+                    }
+                }
+            }
+        }
+    }
+    
+    public Item getItemByName(@NotNull String aName) {
+        for(Item theItem: itemList){
+            if(theItem == null) continue;
+            if((theItem.getItemname()).equals(aName)){
+               return theItem;
+           }
+        }
+        return null;
     }
 
     @Override
@@ -220,6 +259,14 @@ public class Service implements Serializable {
     
     public void setEdited(boolean aBool){
         edited = aBool;
+    }
+    
+    public boolean isMerged(){
+        return merged;
+    }
+    
+    public void setMerged(boolean aBool){
+        merged = aBool;
     }
     
 }

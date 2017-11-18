@@ -129,7 +129,7 @@ public class Item implements Serializable {
     }
 
     public void setItemreference(String aKind, String aType, String aService, String aCategory) {
-        System.out.println("In setItemreference, aKind: "+aKind+ ", aType: "+aType+ ", aService: "+ aService+ ", aCategory: "+aCategory + ", itemname: "+itemname);
+        //System.out.println("In setItemreference, aKind: "+aKind+ ", aType: "+aType+ ", aService: "+ aService+ ", aCategory: "+aCategory + ", itemname: "+itemname);
         List<String> theList = new ArrayList();
           theList.add(aKind);
           theList.add(Global.REFERENCE_SPLITTER);
@@ -141,7 +141,7 @@ public class Item implements Serializable {
           theList.add(Global.REFERENCE_SPLITTER);
           theList.add(getItemname());
           this.itemreference = ((new CRC32StringCollection(theList)).hashCode())+Global.STR_EMPTY; 
-          System.out.println("In setItemreference: "+itemreference);
+          //System.out.println("In setItemreference: "+itemreference);
     }
 
     public Long getPrice() {
@@ -170,7 +170,7 @@ public class Item implements Serializable {
     
     public List<Itemdata> getItemdataList() {
         for(Itemdata thedata: itemdataList){
-            System.out.println("getItemdataList-->thedata.getItemFk(): "+thedata.getItemFk());
+            //System.out.println("getItemdataList-->thedata.getItemFk(): "+thedata.getItemFk());
         }
         return itemdataList;
     }
@@ -180,7 +180,7 @@ public class Item implements Serializable {
     }
     
     public void addItemDataToList(Itemdata anItemData) {
-        System.out.println("addItemDataToList, this: "+this);
+        System.out.println("addItemDataToList, this: "+this+", getItemdataList().contains(anItemData): "+getItemdataList().contains(anItemData)+ ", getComment: "+anItemData.getComment());
         if (!getItemdataList().contains(anItemData)) {
             getItemdataList().add(anItemData);
             /*if (anItemData.getItemFk() != null) {

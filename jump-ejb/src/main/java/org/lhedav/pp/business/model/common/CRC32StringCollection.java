@@ -58,7 +58,7 @@ public class CRC32StringCollection {
     }
     
     public static String getServicereference(String aKind, String aType, String aServiceName, String aCategory) {
-        System.out.println("In CRC32StringCollection.getServicereference, kind: "+aKind+ ", type: "+aType+ ", servicename: "+ aServiceName+ ", category: "+aCategory);
+        //System.out.println("In CRC32StringCollection.getServicereference, kind: "+aKind+ ", type: "+aType+ ", servicename: "+ aServiceName+ ", category: "+aCategory);
           List the_crc_key = new ArrayList();
           the_crc_key.add(aKind);
           the_crc_key.add(Global.REFERENCE_SPLITTER);
@@ -71,7 +71,7 @@ public class CRC32StringCollection {
     }
     
         public static String getItemreference(String aKind, String aType, String aService, String aCategory, String anItemName) {
-        System.out.println("In CRC32StringCollection.getItemreference, aKind: "+aKind+ ", aType: "+aType+ ", aService: "+ aService+ ", aCategory: "+aCategory + ", anItemName: "+anItemName);
+        //System.out.println("In CRC32StringCollection.getItemreference, aKind: "+aKind+ ", aType: "+aType+ ", aService: "+ aService+ ", aCategory: "+aCategory + ", anItemName: "+anItemName);
         List<String> theList = new ArrayList();
           theList.add(aKind);
           theList.add(Global.REFERENCE_SPLITTER);

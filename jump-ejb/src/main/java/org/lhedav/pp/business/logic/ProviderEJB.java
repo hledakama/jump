@@ -9,10 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceException;
 import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
 import org.lhedav.pp.business.model.common.Global;
@@ -23,7 +21,6 @@ import org.lhedav.pp.business.data.ServiceKind;
 import org.lhedav.pp.business.data.ServiceType;
 import org.lhedav.pp.business.data.Services;
 import org.lhedav.pp.business.data.Unit;
-import org.lhedav.pp.business.model.service.ProviderAvatar;
 
 /**
  *
@@ -104,37 +101,7 @@ public class ProviderEJB {
         return theResult;
     }        
     
-     //***************************  Service   *********************************************
-    public boolean createService(@NotNull Service aService, 
-                                 @NotNull Item anItem, 
-                                 @NotNull Itemdata anItemData,
-                                 @NotNull ProviderAvatar anAvatar){ 
-       
-        PersistService(aService);        
-        return true;
-    }
     
-    public boolean createService(@NotNull Service aService, @NotNull Item anItem){
-        PersistService(aService);         
-        PersistItem(anItem);
-        em.flush();       
-        return true;
-    }
-        
-    public boolean createService(@NotNull Service aService){           
-        System.out.println("getCategory: "+aService.getCategory());
-        System.out.println("getKind: "+aService.getKind());
-        System.out.println("getServicename: "+aService.getServicename());
-        System.out.println("getServicereference: "+aService.getServicereference());
-        System.out.println("getType: "+aService.getType());
-        System.out.println("toString: "+aService.toString());
-        System.out.println("getId: "+aService.getServiceTId());
-        System.out.println("-----------------isPublished------------: "+aService.getPublished());           
-            
-        PersistService(aService);
-        em.flush();
-        return true;
-    }
     
     public Service getServiceByServiceReference(@NotNull String aReference){
         try{
@@ -172,21 +139,21 @@ public class ProviderEJB {
     }
     
     public boolean PersistService(@NotNull Service aService){
-        Service theSavedService = getServiceByServiceReference(aService.getServicereference());
-        if(theSavedService == null){
+        if(aService.isMerged()){
+            System.out.println("aService merge ");
+            //aService.setServiceTId(theSavedService.getServiceTId());
+            em.merge(aService);
+            return false;
+        }
+        else{
              System.out.println("aService persist, aService.getServiceTId(): "+aService.getServiceTId());
             em.persist(aService);
             return true;
         }
-        else{
-            System.out.println("EntityExistsException aService merge, theSavedService.getServiceTId(): "+theSavedService.getServiceTId());
-            aService.setServiceTId(theSavedService.getServiceTId());
-            em.merge(aService);
-            return false;
-        }
+
     }
     
-    public boolean PersistItem(@NotNull Item anItem){
+   /* public boolean PersistItem(@NotNull Item anItem){
         //https://stackoverflow.com/questions/15643732/duplicate-entry-for-key-primary-using-jpa-to-persist-into-database
         Item theSavedItem = getItemByItemReference(anItem.getItemreference());
         if(theSavedItem == null){
@@ -200,7 +167,7 @@ public class ProviderEJB {
             //em.merge(anItem);
             return false;
         }
-    }
+    }*/
     
     
     //***************************  Item   *********************************************
@@ -212,12 +179,10 @@ public class ProviderEJB {
         theQuery = em.createNamedQuery("Item.findByItemreference", Item.class);
         theQuery.setParameter("itemreference", aReference);
         return theQuery.getSingleResult();
-        }
-        
+        }        
         catch(javax.persistence.NoResultException e){
              return null;
-        }
-         
+        }         
         catch(Exception e){
              e.printStackTrace();
              return null;
@@ -228,7 +193,7 @@ public class ProviderEJB {
        java.util.List<Service> theList = null;
         try{
         TypedQuery<Service> theQuery;
-        System.out.println("@@@aReference: "+aReference);
+       // System.out.println("@@@aReference: "+aReference);
         theQuery = em.createNamedQuery("Service.findByServicereference", Service.class);
         theList = theQuery.setParameter("servicereference", aReference).getResultList();
 
@@ -237,7 +202,7 @@ public class ProviderEJB {
         
         List<Item> theResult = new ArrayList();
         
-        System.out.println("theList,size(): "+theList.size());
+       // System.out.println("theList,size(): "+theList.size());
         for(int index = 0; index< theList.size();index++) {
             Service theService = theList.get(index);
            List<Item> theTempResult = theService.getItemList();

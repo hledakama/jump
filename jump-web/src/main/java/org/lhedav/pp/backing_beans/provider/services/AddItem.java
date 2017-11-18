@@ -96,6 +96,7 @@ public class AddItem implements Serializable{
     private String submitRow = "submitRow";
 
     AddItem() {
+        
     }
 
     @PostConstruct
@@ -111,39 +112,35 @@ public class AddItem implements Serializable{
             }
             itemsNames.add(theString);
         } 
-        unitsList= provider_services.getItemUnits(provider_services.getItemUnits());
+        unitsList = provider_services.getItemUnits(provider_services.getItemUnits());
+        item.setItemname(itemsNames.get(0));
     }
     //https://stackoverflow.com/questions/6341462/initializng-a-backing-bean-with-parameters-on-page-load-with-jsf-2-0
     public void loadService(){
         String theCrc = CRC32StringCollection.getServicereference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
         System.out.println("loadService from AddItem.init, service-->theCrc: "+theCrc);
         Service theSavedService = provider_services.getServiceByServiceReference(theCrc);
-        if(theSavedService != null){
+        if(theSavedService == null){
+            service.setServicereference();
+           /* if(item.getItemname() == null){
+                loadItem(itemsNames.get(0));
+            }  */    
+        }
+        else{
             System.out.println("service != null");
             service = theSavedService;
-        }
-        service.setServicereference();
-        if(item.getItemname() == null){
-            loadItem(unitsList.get(0));
-        }
-        else{
-           loadItem(item.getItemname()) ;
-        }        
+            service.setMerged(true);
+            System.out.println("service.getItemList().size(): "+service.getItemList().size());
+        } 
+        setSortitemdatamodel();
     }
     
-        public void loadItem(String anItemName){
-        String theCrc = CRC32StringCollection.getItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory(), anItemName);
-        System.out.println("loadService from AddItem.init, item-->theCrc: "+theCrc);
-        Item theSavedItem = provider_services.getItemByItemReference(theCrc);
-        if(theSavedItem != null){
-            item = theSavedItem;
-        } 
-        else{
-            item = new Item();
-            item.setItemname(anItemName);
-        }
+    public void loadItem(String anItemName){
+      /*  String theCrc = CRC32StringCollection.getItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory(), anItemName);
+        System.out.println("loadItem from AddItem.init, item-->theCrc: "+theCrc);
+        item.setItemname(anItemName);
         item.setItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
-    }
+   */ }
     
     public boolean isItemExists(@NotNull String anItemName){
         List<Item> theItems = provider_services.getItemsListByServiceReference(service.getServicereference());
@@ -309,8 +306,7 @@ public class AddItem implements Serializable{
     }
 
     public List<String> getItemsNames() {
-        //List<Item> theItems = provider_services.getItemsListByServiceReference(service.getServicereference());
-        return itemsNames;
+      return itemsNames;
     }
 
     public void setItemsNames(List<String> someNames) {
@@ -377,12 +373,10 @@ public class AddItem implements Serializable{
         return providerAddresses;
     }
 
-    public void setProviderAddresses(String[] someAddresses) {
-        // providerAddresses = someAddresses;
+    public void setProviderAddresses(String[] someAddresses) {        
     }
 
     public List<String> getUnitsList() {
-
         return unitsList;
     }
 
@@ -423,7 +417,7 @@ public class AddItem implements Serializable{
     }
 
     public String sortItemByReference(final String dir) {
-        System.out.println("setServicereference from AddItem.sortItemByReference");
+        //System.out.println("setServicereference from AddItem.sortItemByReference");
         service.setServicereference();
         Collection<Item> theCollection = provider_services.getItemsListByServiceReference(service.getServicereference());
         List theList = new ArrayList(theCollection);
@@ -446,15 +440,27 @@ public class AddItem implements Serializable{
         setSortitemdatamodel();
         return sortitemdatamodel;
     }
-
+//https://stackoverflow.com/tags/jsf/info
     public void setSortitemdatamodel() {
         List<Itemdata> theList = null;
-        System.out.println("setServicereference from AddItem.setSortitemmodel");
-        item.setItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
-        Item theItem = provider_services.getItemByItemReference(item.getItemreference());
-        if (theItem != null) {
-            theList = theItem.getItemdataList();
+        if(item.getItemname() == null){
+           // item.setItemname(itemsNames.get(0));
         }
+        Item theItem = null;
+        String theItemName = item.getItemname();
+        if(service.getItemList().size() > 0){
+           theItem = service.getItemByName(theItemName); 
+        }        
+        if(theItem == null){
+            //item = new Item();
+            //item.setItemname(theItemName);
+        }
+        else
+        {
+            theList = theItem.getItemdataList(); 
+            item = theItem;
+        }
+        System.out.println("theList == null: "+(theList == null)+", item.getItemname(): "+item.getItemname()+", theItemName: "+theItemName);
         sortitemdatamodel = new SortedDataModel<>(new CollectionDataModel<>(theList));
     }
 
@@ -534,7 +540,7 @@ public class AddItem implements Serializable{
     private String addItem() {
         // Single upload management
        ProviderAvatar theAvatar = itemdata.saveFileToDisk();
-       System.out.println("theAvatar == null: "+(theAvatar==null));
+       //System.out.println("theAvatar == null: "+(theAvatar==null));
        // Reset datatable to default display
         if (sortitemdatamodel != null) {
             for (Itemdata theItemdata : sortitemdatamodel) {
@@ -547,21 +553,20 @@ public class AddItem implements Serializable{
                 }
             }
         }
-        // Persisting ProviderAvatar, Itemdata, Item and Service
         itemdata.addProviderAvatarToList(theAvatar);
-        System.out.println("getFileName: "+theAvatar.getFileName());
-        System.out.println("getLocation: "+theAvatar.getLocation());
-        System.out.println("getMimeType: "+theAvatar.getMimeType());
-        System.out.println("getSubmitedFileName: "+theAvatar.getSubmitedFileName());
         item.addItemDataToList(itemdata);
         item.setCdate(new Date());
-        System.out.println("setItemreference from AddItem.addItem");
         item.setItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
         service.addItemToList(item);
         service.setServicereference();
-        provider_services.createService(service, item, itemdata, theAvatar);
-       // itemdata = new Itemdata();
-        //item = new Item();
+        provider_services.PersistService(service);
+        
+        //after persisting
+        itemdata = new Itemdata();
+        //String theCurrentItemName = item.getItemname();
+       // item = new Item();
+       // item.setItemname(theCurrentItemName);
+       // item.setItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
         return Global.STAY_ON_CURRENT_PAGE;
     }
 
@@ -584,8 +589,12 @@ public class AddItem implements Serializable{
         System.out.println("ItemNameChanged start, getItemreference: " + item.getItemreference() + ", anEvent.getOldValue(): " + anEvent.getOldValue());
         String theNewItemName = (String) anEvent.getNewValue();
         //item.setItemname(theNewItemName);
-        System.out.println("setItemreference from AddItem.onNameChanged");
-        loadItem(theNewItemName);
+       // System.out.println("setItemreference from AddItem.onNameChanged");
+        //loadItem(theNewItemName);
+        item = new Item();
+        item.setItemname(theNewItemName);
+        item.setItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
+   
         //item.setItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
         itemNameChanged = true;
         System.out.println("ItemNameChanged end, getItemreference: " + item.getItemreference() + ", theNewItemName: " + theNewItemName);

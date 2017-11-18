@@ -190,7 +190,7 @@ public class Itemdata implements Serializable {
     @XmlTransient
     public List<ProviderAvatar> getProviderAvatarList() {
         for(ProviderAvatar theavatar: providerAvatarList){
-            System.out.println("getProviderAvatarList-->theavatar.getItemdataFk(): "+theavatar.getItemdataFk());
+            //System.out.println("getProviderAvatarList-->theavatar.getItemdataFk(): "+theavatar.getItemdataFk());
         }
         return providerAvatarList;
     }
@@ -200,12 +200,12 @@ public class Itemdata implements Serializable {
     }
     
     public void addProviderAvatarToList(ProviderAvatar anAvatar) {
-        System.out.println("addProviderAvatarToList, this: "+this);
+        //System.out.println("addProviderAvatarToList, this: "+this);
         if (!getProviderAvatarList().contains(anAvatar)) {
             getProviderAvatarList().add(anAvatar);
-            if (anAvatar.getItemdataFk() != null) {
+            /*if (anAvatar.getItemdataFk() != null) {
                 anAvatar.getItemdataFk().getProviderAvatarList().remove(anAvatar);
-            }
+            }*/
             anAvatar.setItemdataFk(this);
         }
     }
