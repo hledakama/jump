@@ -231,11 +231,12 @@ public class ProviderEJB {
             return true;
     }
     
-    public boolean deleteItemdata(@NotNull Itemdata anItemdata){
-        try{em.remove(em.merge(anItemdata));
+    public boolean deleteItemdata(@NotNull Service aService, @NotNull Itemdata anItemdata){
+        try{//em.remove(em.merge(anItemdata));
+            
         }
         catch(Exception e){
-            return false;
+            e.printStackTrace();
         }
         return true;
     }

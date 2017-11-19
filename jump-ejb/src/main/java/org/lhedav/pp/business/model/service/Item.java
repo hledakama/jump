@@ -189,6 +189,17 @@ public class Item implements Serializable {
             anItemData.setItemFk(this);
         }
     }
+    
+    public boolean removeItemDataToList(Itemdata anItemData) {
+        System.out.println("removeItemDataToList, this: "+this+", getItemdataList().contains(anItemData): "+getItemdataList().contains(anItemData)+ ", getComment: "+anItemData.getComment());
+        if (getItemdataList().contains(anItemData)) {
+            getItemdataList().remove(anItemData);
+            System.out.println("removeItemDataToList true");
+            return true;
+        }
+        System.out.println("removeItemDataToList false");
+        return false;
+    }
 
     public Service getServiceFk() {
         return serviceFk;

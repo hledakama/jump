@@ -217,6 +217,15 @@ public class Service implements Serializable {
             }
         }
     }
+ public boolean removeItemToList(Item anItem) {
+    System.out.println("removeItemToList, this: "+this);
+    if (getItemList().contains(anItem)) {
+        getItemList().remove(anItem);
+        System.out.println("removeItemToList, item removed ");
+        return true;
+    }  
+    return false;
+}
     
     public Item getItemByName(@NotNull String aName) {
         for(Item theItem: itemList){

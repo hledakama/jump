@@ -481,7 +481,16 @@ public class AddItem implements Serializable{
     }
 
     public String removeRowItemdata(@NotNull Itemdata anItemdata) {
-        provider_services.deleteItemdata(anItemdata);
+        if(item.removeItemDataToList(anItemdata)){
+            String theItemName = item.getItemname();
+            if(item.getItemdataList().isEmpty()){
+                service.removeItemToList(item);
+                item = new Item();
+                item.setItemname(theItemName);
+                item.setItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
+            }
+            provider_services.PersistService(service);
+        }
         return Global.STAY_ON_CURRENT_PAGE;
     }
     //https://www.mkyong.com/jsf2/how-to-update-row-in-jsf-datatable/
