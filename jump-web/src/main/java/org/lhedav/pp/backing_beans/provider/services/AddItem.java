@@ -77,10 +77,7 @@ public class AddItem implements Serializable{
     private boolean virtualItem;
     @EJB
     private ProviderEJB provider_services;
-    private boolean itemNameChanged = false;
-    //private static String[] itemsNames = { "Boule-boole","Meche","Nattes","Batonnets","Tresse enfant", "Tissage"};      // to be xml populated at boot up
-    private static final String[] providerAddresses = {"37 Duhamel, Gatineau, QC Canada", "11-1 Tasse, Gatineau, QC Canada", "52 Isabelle, Gatineau, QC Canada", "52 Des scouts, Gatineau, QC Canada"};
-    //private static final String[] unitsList = { "day(s)", "hour(s)", "min(s)", "week(s)", "month(s)"}; 
+    private boolean itemNameChanged = false; 
     private List<String> itemsNames = new ArrayList();
     private List<String> unitsList = new ArrayList();
     private SortedDataModel<ProviderAddress> sortAddressesPerProvider;
@@ -107,13 +104,13 @@ public class AddItem implements Serializable{
          
         for (int index = 0; index < theServicesSize; index++) {
             String theString = theServicesData.get(index).getItem();
-            if (itemsNames.contains(theString) /*|| isItemExists(theString)*/) {
+            if (itemsNames.contains(theString)) {
                 continue;
             }
             itemsNames.add(theString);
         } 
-        unitsList = provider_services.getItemUnits(provider_services.getItemUnits());
-        item.setItemname(itemsNames.get(0));
+        resetItem(itemsNames.get(0));
+        unitsList = provider_services.getItemUnits(provider_services.getItemUnits());        
     }
     //https://stackoverflow.com/questions/6341462/initializng-a-backing-bean-with-parameters-on-page-load-with-jsf-2-0
     public void loadService(){
@@ -122,9 +119,6 @@ public class AddItem implements Serializable{
         Service theSavedService = provider_services.getServiceByServiceReference(theCrc);
         if(theSavedService == null){
             service.setServicereference();
-           /* if(item.getItemname() == null){
-                loadItem(itemsNames.get(0));
-            }  */    
         }
         else{
             System.out.println("service != null");
@@ -133,26 +127,255 @@ public class AddItem implements Serializable{
             System.out.println("service.getItemList().size(): "+service.getItemList().size());
         } 
         setSortitemdatamodel();
-    }
-    
-    public void loadItem(String anItemName){
-      /*  String theCrc = CRC32StringCollection.getItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory(), anItemName);
-        System.out.println("loadItem from AddItem.init, item-->theCrc: "+theCrc);
-        item.setItemname(anItemName);
-        item.setItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
-   */ }
-    
-    public boolean isItemExists(@NotNull String anItemName){
-        List<Item> theItems = provider_services.getItemsListByServiceReference(service.getServicereference());
-        if(theItems == null) return false;
-        for(Item theItem: theItems){
-            if(theItem.getItemname().equals(anItemName)){
-                return true;
-            }                
-        }
-        return false;
+    }    
+   
+    public String sortItemByReference(final String dir) {
+        service.setServicereference();
+        Collection<Item> theCollection = provider_services.getItemsListByServiceReference(service.getServicereference());
+        List theList = new ArrayList(theCollection);
+        Collections.sort(theList, new Comparator<Item>() {
+            @Override
+            public int compare(Item key_1, Item key_2) {
+                if (dir.equals("asc")) {
+                    return key_1.getItemreference().
+                            compareTo(key_2.getItemreference());
+                } else {
+                    return key_2.getItemreference().
+                            compareTo(key_1.getItemreference());
+                }
+            }
+        });
+        return null;
+    }    
+
+    public String sortItemById() {
+
+        sortitemdatamodel.sortThis(new Comparator<Itemdata>() {
+            @Override
+            public int compare(Itemdata key_1, Itemdata key_2) {
+                if (sortType.equals("asc")) {
+                    return (int) (key_1.getItemdataTId() - key_2.getItemdataTId());
+                } else {
+                    return (-1) * (int) (key_1.getItemdataTId() - key_2.getItemdataTId());
+                }
+            }
+        });
+        sortType = (sortType.equals("asc")) ? "dsc" : "asc";
+        return sortType;
     }
 
+    public String removeRowItemdata(@NotNull Itemdata anItemdata) {
+        if(item.removeItemDataToList(anItemdata)){
+            String theItemName = item.getItemname();
+            if(item.getItemdataList().isEmpty()){
+                service.removeItemToList(item);
+                resetItem(theItemName);
+            }
+            provider_services.PersistService(service);
+        }
+        return Global.STAY_ON_CURRENT_PAGE;
+    }
+    
+    public void resetItem(String anItemName){
+        item = new Item();
+        item.setItemname(anItemName);
+        item.setItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
+    }
+    //https://www.mkyong.com/jsf2/how-to-update-row-in-jsf-datatable/
+
+    public String editRowItemdata(@NotNull Itemdata anItemdata) {
+        anItemdata.setEdited(true);
+        return Global.STAY_ON_CURRENT_PAGE;
+    }
+
+    public String submitRowItemdata(@NotNull Itemdata anItemdata) {
+        // validation must be performed before here
+        provider_services.updateItemdata(anItemdata);
+        anItemdata.setEdited(false);
+        return Global.STAY_ON_CURRENT_PAGE;
+    }
+
+     public String editRowAddress(@NotNull ProviderAddress anAddress) {
+        anAddress.setEdited(true);
+        // provider_services.updateItemdata(anAddress);
+        return Global.STAY_ON_CURRENT_PAGE;
+    }
+
+    public String saveItem() {
+        itemNameChanged = false;
+        addItem();
+        return Global.STAY_ON_CURRENT_PAGE;
+    }
+
+    private String addItem() {
+       ProviderAvatar theAvatar = itemdata.saveFileToDisk();
+        if (sortitemdatamodel != null) {
+            for (Itemdata theItemdata : sortitemdatamodel) {
+                if(theItemdata.isEdited()){
+                   theItemdata.setEdited(false); 
+                }
+                if(theItemdata.isUploadValidated()){
+                    theItemdata.saveFileToDisk();
+                    theItemdata.setUploadValidated(false);
+                }
+            }
+        }
+        itemdata.addProviderAvatarToList(theAvatar);
+        item.addItemDataToList(itemdata);
+        item.setCdate(new Date());
+        item.setItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
+        service.addItemToList(item);
+        service.setServicereference();
+        provider_services.PersistService(service);        
+        //after persisting
+        itemdata = new Itemdata();
+        return Global.STAY_ON_CURRENT_PAGE;
+    }
+
+    public String modifyItems() {
+        if (!isThereAnyEditRequest()) {
+            return Global.STAY_ON_CURRENT_PAGE;
+        }
+        CollectionDataModel<Itemdata> theModel = getSortitemdatamodel();
+        for (Itemdata theItemdata : theModel) {
+            if (theItemdata.isEdited()) {
+                theItemdata.setEdited(false);
+                provider_services.updateItemdata(theItemdata);
+            }
+        }
+        return Global.STAY_ON_CURRENT_PAGE;
+    }
+
+    //https://www.mkyong.com/jsf2/jsf-2-valuechangelistener-example/   
+    public void onNameChanged(ValueChangeEvent anEvent) {
+        String theNewItemName = (String) anEvent.getNewValue();
+        resetItem(theNewItemName);
+        itemNameChanged = true;
+    }
+
+    public String ModifyAddresses() {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        String theItemId = facesContext.getExternalContext().getRequestParameterMap().get("itemId");
+        return null;
+    }
+
+    /*https://stackoverflow.com/questions/15332733/how-to-convert-list-data-into-json-in-java
+    https://roneiv.wordpress.com/2007/12/21/using-json-with-jsf/
+    https://netbeans.org/kb/docs/web/ajax-quickstart.html
+    https://www.journaldev.com/2315/java-json-example
+    https://gist.github.com/madan712/4000063
+    http://www.oracle.com/webfolder/technetwork/tutorials/obe/java/HomeWebsocket/WebsocketHome.html
+    http://hmkcode.com/java-servlet-send-receive-json-using-jquery-ajax/
+    http://www.mysamplecode.com/2012/04/jquery-ajax-request-response-java.html
+    http://jsfiddle.net/mjaric/sEwM6/
+    https://www.javacodegeeks.com/2013/02/jquery-datatables-and-java-integration.html
+    http://zetcode.com/articles/javaservletjson/
+    https://stackoverflow.com/questions/14800398/why-does-ajax-and-jsf-work-nicely-together-how-do-ajax-lifecycle-plug-in-with-n
+    http://memorynotfound.com/jsf-2-2-table-crud-ajax-example/
+    <!--h:outputScript library="javax.faces" name="jsf.js" target="body" /-- not needed when h:head exists
+        http://memorynotfound.com/jsf-2-2-basic-ajax-example/-->
+    https://showcase.bootsfaces.net/forms/DataTable.jsf  
+    
+     */
+    public String ShowHideDetails(@NotNull Itemdata anItemdata) {
+        provider_services.updateItemData(anItemdata);
+        JsonArray jsonDetails = ItemdataJsonBuilder.buildProviderAddress(anItemdata);
+        return Global.STAY_ON_CURRENT_PAGE;
+    }
+
+    public SortedDataModel<ProviderAddress> getSortAddressesPerProvider(@NotNull Itemdata anItemdata) {
+        setSortAddressesPerProvider(anItemdata);
+        return sortAddressesPerProvider;
+    }
+
+    public void setSortAddressesPerProvider(@NotNull Itemdata anItemdata) {
+        List<ProviderAddress> theAddressesList = anItemdata.getProviderAddressList();
+        if ((theAddressesList != null) && (!theAddressesList.isEmpty())) {
+            sortAddressesPerProvider = new SortedDataModel<>(new CollectionDataModel<>(theAddressesList));
+        }
+    }
+
+    public String getStreetNumber() {
+        return streetNumber;
+    }
+
+    public String setStreetNumber(String aNumber) {
+        return streetNumber = aNumber;
+    }
+
+    public String getStreet1() {
+        return street1;
+    }
+
+    public String setStreet1(String aStreet) {
+        return street1 = aStreet;
+    }
+
+    public String getStreet2() {
+        return street2;
+    }
+
+    public String setStreet2(String aStreet) {
+        return street2 = aStreet;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public String setCity(String aCity) {
+        return city = aCity;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public String setState(String aState) {
+        return state = aState;
+    }
+
+    public String getZipcode() {
+        return zipcode;
+    }
+
+    public String setZipCode(String aZipCode) {
+        return zipcode = aZipCode;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public String setCountry(String aCountry) {
+        return country = aCountry;
+    }
+
+    public String getShowhide() {
+        return showhide;
+    }
+
+    public void setShowhide(String aShow) {
+        showhide = aShow;
+    }
+
+    public String getUpload() {
+        return upload;
+    }
+
+    public String setUpload(String anUpload) {
+        return upload = anUpload;
+    }
+
+    public String getSubmitRow() {
+        return submitRow;
+    }
+
+    public String setSubmitRow(String aRowSubmit) {
+        return submitRow = aRowSubmit;
+    }
+    
+    
     public String getNav1() {
         return Nav1;
     }
@@ -369,10 +592,6 @@ public class AddItem implements Serializable{
         remove = aRemove;
     }
 
-    public String[] getProviderAddresses() {
-        return providerAddresses;
-    }
-
     public void setProviderAddresses(String[] someAddresses) {        
     }
 
@@ -415,27 +634,7 @@ public class AddItem implements Serializable{
     public void setBrowse(String anImage) {
         browse = anImage;
     }
-
-    public String sortItemByReference(final String dir) {
-        //System.out.println("setServicereference from AddItem.sortItemByReference");
-        service.setServicereference();
-        Collection<Item> theCollection = provider_services.getItemsListByServiceReference(service.getServicereference());
-        List theList = new ArrayList(theCollection);
-        Collections.sort(theList, new Comparator<Item>() {
-            @Override
-            public int compare(Item key_1, Item key_2) {
-                if (dir.equals("asc")) {
-                    return key_1.getItemreference().
-                            compareTo(key_2.getItemreference());
-                } else {
-                    return key_2.getItemreference().
-                            compareTo(key_1.getItemreference());
-                }
-            }
-        });
-        return null;
-    }
-
+    
     public SortedDataModel<Itemdata> getSortitemdatamodel() {
         setSortitemdatamodel();
         return sortitemdatamodel;
@@ -443,81 +642,35 @@ public class AddItem implements Serializable{
 //https://stackoverflow.com/tags/jsf/info
     public void setSortitemdatamodel() {
         List<Itemdata> theList = null;
+        System.out.println("yyyyy item.getItemname(): "+item.getItemname());
         if(item.getItemname() == null){
-           // item.setItemname(itemsNames.get(0));
+            resetItem(itemsNames.get(0));
         }
         Item theItem = null;
         String theItemName = item.getItemname();
         if(service.getItemList().size() > 0){
            theItem = service.getItemByName(theItemName); 
         }        
-        if(theItem == null){
-            //item = new Item();
-            //item.setItemname(theItemName);
-        }
-        else
-        {
+        if(theItem != null){
             theList = theItem.getItemdataList(); 
             item = theItem;
         }
         System.out.println("theList == null: "+(theList == null)+", item.getItemname(): "+item.getItemname()+", theItemName: "+theItemName);
         sortitemdatamodel = new SortedDataModel<>(new CollectionDataModel<>(theList));
     }
-
-    public String sortItemById() {
-
-        sortitemdatamodel.sortThis(new Comparator<Itemdata>() {
-            @Override
-            public int compare(Itemdata key_1, Itemdata key_2) {
-                if (sortType.equals("asc")) {
-                    return (int) (key_1.getItemdataTId() - key_2.getItemdataTId());
-                } else {
-                    return (-1) * (int) (key_1.getItemdataTId() - key_2.getItemdataTId());
-                }
-            }
-        });
-        sortType = (sortType.equals("asc")) ? "dsc" : "asc";
-        return sortType;
-    }
-
-    public String removeRowItemdata(@NotNull Itemdata anItemdata) {
-        if(item.removeItemDataToList(anItemdata)){
-            String theItemName = item.getItemname();
-            if(item.getItemdataList().isEmpty()){
-                service.removeItemToList(item);
-                item = new Item();
-                item.setItemname(theItemName);
-                item.setItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
-            }
-            provider_services.PersistService(service);
+    
+        public boolean isItemExists(@NotNull String anItemName){
+        List<Item> theItems = provider_services.getItemsListByServiceReference(service.getServicereference());
+        if(theItems == null) return false;
+        for(Item theItem: theItems){
+            if(theItem.getItemname().equals(anItemName)){
+                return true;
+            }                
         }
-        return Global.STAY_ON_CURRENT_PAGE;
+        return false;
     }
-    //https://www.mkyong.com/jsf2/how-to-update-row-in-jsf-datatable/
-
-    public String editRowItemdata(@NotNull Itemdata anItemdata) {
-        anItemdata.setEdited(true);
-        return Global.STAY_ON_CURRENT_PAGE;
-    }
-
-    public String submitRowItemdata(@NotNull Itemdata anItemdata) {
-        // validation must be performed before here
-        provider_services.updateItemdata(anItemdata);
-        anItemdata.setEdited(false);
-        return Global.STAY_ON_CURRENT_PAGE;
-    }
-
-    public String removeRowAddress(@NotNull ProviderAddress anAddress) {
-        //provider_services.deleteItemdata(anAddress);
-        return Global.STAY_ON_CURRENT_PAGE;
-    }
-
-    public String editRowAddress(@NotNull ProviderAddress anAddress) {
-        anAddress.setEdited(true);
-        // provider_services.updateItemdata(anAddress);
-        return Global.STAY_ON_CURRENT_PAGE;
-    }
-
+        
+        
     private boolean isThereAnyEditRequest() {
         SortedDataModel<Itemdata> theModel = getSortitemdatamodel();
         int theSize = theModel.getRowCount();
@@ -531,87 +684,8 @@ public class AddItem implements Serializable{
         }
         return false;
     }
-
-    public void removeItem() {
-
-    }
-
-    public void newItemLine() {
-
-    }
-
-    public String saveItem() {
-        itemNameChanged = false;
-        addItem();
-        return Global.STAY_ON_CURRENT_PAGE;
-    }
-
-    private String addItem() {
-        // Single upload management
-       ProviderAvatar theAvatar = itemdata.saveFileToDisk();
-       //System.out.println("theAvatar == null: "+(theAvatar==null));
-       // Reset datatable to default display
-        if (sortitemdatamodel != null) {
-            for (Itemdata theItemdata : sortitemdatamodel) {
-                if(theItemdata.isEdited()){
-                   theItemdata.setEdited(false); 
-                }
-                if(theItemdata.isUploadValidated()){
-                    theItemdata.saveFileToDisk();
-                    theItemdata.setUploadValidated(false);
-                }
-            }
-        }
-        itemdata.addProviderAvatarToList(theAvatar);
-        item.addItemDataToList(itemdata);
-        item.setCdate(new Date());
-        item.setItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
-        service.addItemToList(item);
-        service.setServicereference();
-        provider_services.PersistService(service);
-        
-        //after persisting
-        itemdata = new Itemdata();
-        //String theCurrentItemName = item.getItemname();
-       // item = new Item();
-       // item.setItemname(theCurrentItemName);
-       // item.setItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
-        return Global.STAY_ON_CURRENT_PAGE;
-    }
-
-    public String modifyItems() {
-        if (!isThereAnyEditRequest()) {
-            return Global.STAY_ON_CURRENT_PAGE;
-        }
-        CollectionDataModel<Itemdata> theModel = getSortitemdatamodel();
-        for (Itemdata theItemdata : theModel) {
-            if (theItemdata.isEdited()) {
-                theItemdata.setEdited(false);
-                provider_services.updateItemdata(theItemdata);
-            }
-        }
-        return Global.STAY_ON_CURRENT_PAGE;
-    }
-
-    //https://www.mkyong.com/jsf2/jsf-2-valuechangelistener-example/   
-    public void onNameChanged(ValueChangeEvent anEvent) {
-        System.out.println("ItemNameChanged start, getItemreference: " + item.getItemreference() + ", anEvent.getOldValue(): " + anEvent.getOldValue());
-        String theNewItemName = (String) anEvent.getNewValue();
-        //item.setItemname(theNewItemName);
-       // System.out.println("setItemreference from AddItem.onNameChanged");
-        //loadItem(theNewItemName);
-        item = new Item();
-        item.setItemname(theNewItemName);
-        item.setItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
-   
-        //item.setItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
-        itemNameChanged = true;
-        System.out.println("ItemNameChanged end, getItemreference: " + item.getItemreference() + ", theNewItemName: " + theNewItemName);
-    }
-
-    public void ItemAddressChanged(ValueChangeEvent anEvent) {
-    }
-
+    
+    
     public boolean isVirtualItem() {
         return virtualItem;
     }
@@ -626,127 +700,4 @@ public class AddItem implements Serializable{
         }
     }
 
-    public String ModifyAddresses() {
-        //returns the list of address modification page for a given item
-        FacesContext facesContext = FacesContext.getCurrentInstance();
-        String theItemId = facesContext.getExternalContext().getRequestParameterMap().get("itemId");
-        return null;
-    }
-
-    /*https://stackoverflow.com/questions/15332733/how-to-convert-list-data-into-json-in-java
-    https://roneiv.wordpress.com/2007/12/21/using-json-with-jsf/
-    https://netbeans.org/kb/docs/web/ajax-quickstart.html
-    https://www.journaldev.com/2315/java-json-example
-    https://gist.github.com/madan712/4000063
-    http://www.oracle.com/webfolder/technetwork/tutorials/obe/java/HomeWebsocket/WebsocketHome.html
-    http://hmkcode.com/java-servlet-send-receive-json-using-jquery-ajax/
-    http://www.mysamplecode.com/2012/04/jquery-ajax-request-response-java.html
-    http://jsfiddle.net/mjaric/sEwM6/
-    https://www.javacodegeeks.com/2013/02/jquery-datatables-and-java-integration.html
-    http://zetcode.com/articles/javaservletjson/
-    https://stackoverflow.com/questions/14800398/why-does-ajax-and-jsf-work-nicely-together-how-do-ajax-lifecycle-plug-in-with-n
-    http://memorynotfound.com/jsf-2-2-table-crud-ajax-example/
-    <!--h:outputScript library="javax.faces" name="jsf.js" target="body" /-- not needed when h:head exists
-        http://memorynotfound.com/jsf-2-2-basic-ajax-example/-->
-    https://showcase.bootsfaces.net/forms/DataTable.jsf
-    
-    
-     */
-    public String ShowHideDetails(@NotNull Itemdata anItemdata) {
-        provider_services.updateItemData(anItemdata);
-        JsonArray jsonDetails = ItemdataJsonBuilder.buildProviderAddress(anItemdata);
-        return Global.STAY_ON_CURRENT_PAGE;
-    }
-
-    public SortedDataModel<ProviderAddress> getSortAddressesPerProvider(@NotNull Itemdata anItemdata) {
-        setSortAddressesPerProvider(anItemdata);
-        return sortAddressesPerProvider;
-    }
-
-    public void setSortAddressesPerProvider(@NotNull Itemdata anItemdata) {
-        List<ProviderAddress> theAddressesList = anItemdata.getProviderAddressList();
-        if ((theAddressesList != null) && (!theAddressesList.isEmpty())) {
-            sortAddressesPerProvider = new SortedDataModel<>(new CollectionDataModel<>(theAddressesList));
-        }
-    }
-
-    public String getStreetNumber() {
-        return streetNumber;
-    }
-
-    public String setStreetNumber(String aNumber) {
-        return streetNumber = aNumber;
-    }
-
-    public String getStreet1() {
-        return street1;
-    }
-
-    public String setStreet1(String aStreet) {
-        return street1 = aStreet;
-    }
-
-    public String getStreet2() {
-        return street2;
-    }
-
-    public String setStreet2(String aStreet) {
-        return street2 = aStreet;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public String setCity(String aCity) {
-        return city = aCity;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public String setState(String aState) {
-        return state = aState;
-    }
-
-    public String getZipcode() {
-        return zipcode;
-    }
-
-    public String setZipCode(String aZipCode) {
-        return zipcode = aZipCode;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public String setCountry(String aCountry) {
-        return country = aCountry;
-    }
-
-    public String getShowhide() {
-        return showhide;
-    }
-
-    public void setShowhide(String aShow) {
-        showhide = aShow;
-    }
-
-    public String getUpload() {
-        return upload;
-    }
-
-    public String setUpload(String anUpload) {
-        return upload = anUpload;
-    }
-
-    public String getSubmitRow() {
-        return submitRow;
-    }
-
-    public String setSubmitRow(String aRowSubmit) {
-        return submitRow = aRowSubmit;
-    }
 }

@@ -64,7 +64,7 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                     <h:outputLabel value="#{addItem.name}"/>
                     <h:selectOneMenu id = "item_name" required="true" value="#{addItem.item.itemname}"
                                      valueChangeListener="#{addItem.onNameChanged}">
-                        <f:selectItems value="#{addItem.itemsNames}" />
+                        <f:selectItems value="#{addItem.itemsNames}"/>
                         <f:validateLength minimum="3" maximum="50"/>
                         <f:ajax render="@form"/>
                     </h:selectOneMenu>                    
