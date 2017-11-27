@@ -123,7 +123,7 @@ public class AddItem implements Serializable{
         else{
             System.out.println("service != null");
             service = theSavedService;
-            service.setMerged(true);
+            service.setMerged(true);            
             System.out.println("service.getItemList().size(): "+service.getItemList().size());
         } 
         setSortitemdatamodel();
@@ -643,6 +643,7 @@ public class AddItem implements Serializable{
     public void setSortitemdatamodel() {
         List<Itemdata> theList = null;
         System.out.println("yyyyy item.getItemname(): "+item.getItemname());
+        item.setItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
         if(item.getItemname() == null){
             resetItem(itemsNames.get(0));
         }
