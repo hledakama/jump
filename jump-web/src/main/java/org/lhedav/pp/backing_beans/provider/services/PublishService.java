@@ -5,7 +5,7 @@
  */
 package org.lhedav.pp.backing_beans.provider.services;
 
-import org.lhedav.pp.business.logic.ProviderEJB;
+import org.lhedav.pp.business.logic.SellerEJB;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -61,7 +61,7 @@ public class PublishService {
     private String modifyServiceButtonLabel = "Modify service";
     private String publishButtonLabel = "Publish service";
             @EJB
-    private ProviderEJB m_provider_services;
+    private SellerEJB m_provider_services;
     private SortedDataModel<Item> sortedItemModel;
     private SortedDataModel<Service> sortedServiceModel;
     private boolean publishChecked;

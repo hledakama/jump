@@ -5,6 +5,9 @@
  */
 package org.lhedav.pp.business.model.service;
 
+import org.lhedav.pp.business.model.user.Avatar;
+import org.lhedav.pp.business.model.user.Address;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,11 +53,19 @@ import org.lhedav.pp.business.model.common.Global;
 @NamedQueries({
     @NamedQuery(name = "Itemdata.findAll", query = "SELECT i FROM Itemdata i")
     , @NamedQuery(name = "Itemdata.findByItemdataTId", query = "SELECT i FROM Itemdata i WHERE i.itemdataTId = :itemdataTId")
+    , @NamedQuery(name = "Itemdata.findByCurrentAvatar", query = "SELECT i FROM Itemdata i WHERE i.currentAvatar = :currentAvatar")
     , @NamedQuery(name = "Itemdata.findByMdate", query = "SELECT i FROM Itemdata i WHERE i.mdate = :mdate")
     , @NamedQuery(name = "Itemdata.findByComment", query = "SELECT i FROM Itemdata i WHERE i.comment = :comment")
     , @NamedQuery(name = "Itemdata.findByDuration", query = "SELECT i FROM Itemdata i WHERE i.duration = :duration")
-    , @NamedQuery(name = "Itemdata.findByUnit", query = "SELECT i FROM Itemdata i WHERE i.unit = :unit")})
+    , @NamedQuery(name = "Itemdata.findByUnit", query = "SELECT i FROM Itemdata i WHERE i.unit = :unit")
+    , @NamedQuery(name = "Itemdata.findByPrice", query = "SELECT i FROM Itemdata i WHERE i.price = :price")
+    , @NamedQuery(name = "Itemdata.findByQty", query = "SELECT i FROM Itemdata i WHERE i.qty = :qty")
+    , @NamedQuery(name = "Itemdata.findByVirtual", query = "SELECT i FROM Itemdata i WHERE i.virtual = :virtual")
+})
 public class Itemdata implements Serializable {
+
+    @OneToMany( cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "itemdataFk")
+    private List<AdsConfiguration> adsConfigurationList;
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
@@ -74,26 +85,53 @@ public class Itemdata implements Serializable {
     private Long duration;
     @Size(max = 10)
     @Column(name = "UNIT")
-    private String unit;
+    private String unit;    
+    @Column(name = "CURRENT_AVATAR")
+    private String currentAvatar = "Current Avatar";
     @JoinColumn(name = "ITEM_FK", referencedColumnName = "ITEM_T_ID")
     @ManyToOne
     private Item itemFk;
+    @Column(name = "PRICE")
+    private Long price;
+    @Column(name = "QTY")
+    private Long qty;
+    @Column(name = "VIRTUAL_")
+    private Short virtual;
     @XmlTransient
-    @OneToMany( cascade = CascadeType.ALL, mappedBy = "itemdataFk", orphanRemoval = true)
-    private List<ProviderAddress> providerAddressList;
+    @OneToMany( cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "itemdataFk")
+    private List<Address> providerAddressList;
+    @XmlTransient
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "itemdataFk", orphanRemoval = true )
-    private List<ProviderAvatar> providerAvatarList;
+    private List<Avatar> providerAvatarList;
+   /* @XmlTransient
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "itemdataFk", orphanRemoval = true )
+    private List<View> viewList;
+    @XmlTransient
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "itemdataFk", orphanRemoval = true )
+    private List<Order> orderList;
+    @XmlTransient
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "itemdataFk", orphanRemoval = true )
+    private List<Recommendation> recommendationList;
+    @XmlTransient
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "itemdataFk", orphanRemoval = true )
+    private List<Wish> wishList;*/
         @Transient
     private boolean edited = false;
         @Transient
     private String addressSring = Global.STR_EMPTY;
         @Transient
     private Part file;
-    @Transient
-    private String currentAvatar = "Current Avatar";
-            @Transient
+        @Transient
     private boolean uploadValidated = false;
-
+        @Transient
+    private Long numOfOrders;
+        @Transient
+    private Long numOfViews;
+        @Transient
+    private Long numOfWishes;
+        @Transient
+    private Long numOfRecommendations;
+//http://www.hostettler.net/blog/2012/03/22/one-to-one-relations-in-jpa-2-dot-0/
     public Itemdata() {
         providerAddressList = new ArrayList();
         providerAvatarList = new ArrayList();
@@ -167,17 +205,41 @@ public class Itemdata implements Serializable {
     public void setCurrentAvatar(String anAvatar) {
         this.currentAvatar = anAvatar;
     }
+    
+    public Long getPrice() {
+        return price;
+    }
+
+    public void setPrice(Long price) {
+        this.price = price;
+    }
+
+    public Long getQty() {
+        return qty;
+    }
+
+    public void setQty(Long qty) {
+        this.qty = qty;
+    }
+
+    public Short getVirtual() {
+        return virtual;
+    }
+
+    public void setVirtual(Short virtual) {
+        this.virtual = virtual;
+    }
 
     
-    public List<ProviderAddress> getProviderAddressList() {
+    public List<Address> getProviderAddressList() {
         return providerAddressList;
     }
 
-    public void setProviderAddressList(List<ProviderAddress> providerAddressList) {
+    public void setProviderAddressList(List<Address> providerAddressList) {
         this.providerAddressList = providerAddressList;
     }
     
-    public void addProviderAddressToList(ProviderAddress anAddress) {
+    public void addProviderAddressToList(Address anAddress) {
         if (!getProviderAddressList().contains(anAddress)) {
             getProviderAddressList().add(anAddress);
             if (anAddress.getItemdataFk() != null) {
@@ -186,20 +248,19 @@ public class Itemdata implements Serializable {
             anAddress.setItemdataFk(this);
         }
     }
-
-    @XmlTransient
-    public List<ProviderAvatar> getProviderAvatarList() {
-        for(ProviderAvatar theavatar: providerAvatarList){
+    
+    public List<Avatar> getProviderAvatarList() {
+        for(Avatar theavatar: providerAvatarList){
             //System.out.println("getProviderAvatarList-->theavatar.getItemdataFk(): "+theavatar.getItemdataFk());
         }
         return providerAvatarList;
     }
 
-    public void setProviderAvatarList(List<ProviderAvatar> providerAvatarList) {
+    public void setProviderAvatarList(List<Avatar> providerAvatarList) {
         this.providerAvatarList = providerAvatarList;
     }
     
-    public void addProviderAvatarToList(ProviderAvatar anAvatar) {
+    public void addProviderAvatarToList(Avatar anAvatar) {
         //System.out.println("addProviderAvatarToList, this: "+this);
         if (!getProviderAvatarList().contains(anAvatar)) {
             getProviderAvatarList().add(anAvatar);
@@ -242,6 +303,39 @@ public class Itemdata implements Serializable {
     public void setEdited(boolean aBool){
         edited = aBool;
     }
+    
+    public Long getNumOfOrders(){
+        return numOfOrders;
+    }
+    
+    public void setNumOfOrders(Long aLong){
+        numOfOrders = aLong;
+    }
+    
+
+    public Long getNumOfViews(){
+        return numOfViews;
+    }
+    
+    public void setNumOfViews(Long aLong){
+        numOfViews = aLong;
+    }
+    
+    public Long getNumOfWishes(){
+        return numOfWishes;
+    }
+    
+    public void setNumOfWishes(Long aLong){
+        numOfWishes = aLong;
+    }
+    
+    public Long getNumOfRecommendations(){
+        return numOfRecommendations;
+    }
+    
+    public void setEdited(Long aLong){
+        numOfRecommendations = aLong;
+    }
             
     public boolean isUploadValidated(){
         return uploadValidated;
@@ -258,7 +352,7 @@ public class Itemdata implements Serializable {
     public void setAddressString(){        
         if(providerAddressList == null) return;
         addressSring = "";
-        for(ProviderAddress theAddress: providerAddressList){
+        for(Address theAddress: providerAddressList){
            addressSring +=  theAddress.toString();
         }
     }
@@ -294,8 +388,8 @@ public class Itemdata implements Serializable {
         return isUploadValidated();
     }
 
-    public ProviderAvatar saveFileToDisk() {
-        ProviderAvatar theAvatar = new ProviderAvatar();
+    public Avatar saveFileToDisk() {
+        Avatar theAvatar = new Avatar();
         if (file != null) {                                    
             try { 
                 //https://stackoverflow.com/questions/3481828/how-to-split-a-string-in-java
@@ -315,11 +409,12 @@ public class Itemdata implements Serializable {
                 theAvatar.setLocation(Global.diritemdata.getAbsolutePath());
                 theAvatar.setMimeType(file.getContentType());
                 theAvatar.setSubmitedFileName(theSubmitedFileName);
+                this.setCurrentAvatar(Global.diritemdata.getAbsolutePath() + File.separator + theSubmitedFileName);
                 addProviderAvatarToList(theAvatar);
                 resetFile();
                 setMdate(new Date());
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Upload successfully ended!"));
-            } catch (IOException e) {                
+            } catch (IOException e) {                  
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Upload failed!"));
             }
         }
@@ -327,6 +422,7 @@ public class Itemdata implements Serializable {
                 theAvatar.setLocation(Global.diritemdata.getAbsolutePath());
                 theAvatar.setSubmitedFileName(Global.DEFAULT_SHOPPING_IMAGE_NAME);
                 addProviderAvatarToList(theAvatar);
+                this.setCurrentAvatar(Global.diritemdata.getAbsolutePath() + File.separator + Global.DEFAULT_SHOPPING_IMAGE_NAME);
         }
         return theAvatar;
     }
@@ -341,4 +437,13 @@ public class Itemdata implements Serializable {
         }
         file = null;
     }    
+
+    @XmlTransient
+    public List<AdsConfiguration> getAdsConfigurationList() {
+        return adsConfigurationList;
+    }
+
+    public void setAdsConfigurationList(List<AdsConfiguration> adsConfigurationList) {
+        this.adsConfigurationList = adsConfigurationList;
+    }
 }

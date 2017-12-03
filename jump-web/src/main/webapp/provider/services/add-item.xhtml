@@ -47,45 +47,27 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
             <!-- add required content here-->            
             <h:form id="add_item_form_id" enctype="multipart/form-data">
                 <h:messages id= "globalMessagesId" infoStyle="color:blue" warnStyle="color:orange" errorStyle="color:red"/>
-                <h:panelGrid columns="3">
+                <h:panelGrid columns="5">
                     <h:outputLabel value="#{addItem.serviceKind}"/>
-                    <h:outputText id = "service_kind" value="#{addItem.service.kind}"/>
-                    
                     <h:outputLabel value="#{addItem.serviceType}"/>
-                    <h:outputText id = "service_type" value="#{addItem.service.type}"/>
-                    
                     <h:outputLabel value="#{addItem.serviceReference}"/>
-                    <h:outputText id = "service_reference" value="#{addItem.service.servicereference}"/>
-                    
                     <h:outputLabel value="#{addItem.itemReference}"/>
-                    <h:outputText id = "item_reference" value="#{addItem.item.itemreference}"/>
-                    
-                    <!--https://stackoverflow.com/questions/14824178/getting-selected-value-of-a-selectonemenu-->
                     <h:outputLabel value="#{addItem.name}"/>
+                    
+                    
+                    
+                    <h:outputText id = "service_kind" value="#{addItem.service.kind}"/>
+                    <h:outputText id = "service_type" value="#{addItem.service.type}"/>
+                    <h:outputText id = "service_reference" value="#{addItem.service.servicereference}"/>
+                    <h:outputText id = "item_reference" value="#{addItem.item.itemreference}"/>                    
+                    <!--https://stackoverflow.com/questions/14824178/getting-selected-value-of-a-selectonemenu-->                    
                     <h:selectOneMenu id = "item_name" required="true" value="#{addItem.item.itemname}"
                                      valueChangeListener="#{addItem.onNameChanged}">
                         <f:selectItems value="#{addItem.itemsNames}"/>
                         <f:validateLength minimum="3" maximum="50"/>
                         <f:ajax render="@form"/>
                     </h:selectOneMenu>                    
-                    <h:message for="item_name"/>
-                    
-                    <h:outputLabel value="#{addItem.price}"/>
-                    <h:inputText id = "item_price" required="true" value="#{addItem.item.price}">
-                        <f:validateLongRange minimum="1" maximum="1000000"/>
-                    </h:inputText >
-                    <h:message for="item_price"/>
-                    
-                    <h:outputLabel value="#{addItem.qty}"/>
-                    <h:inputText id = "item_qty" required="#{not addItem.virtualItem}" value="#{addItem.item.qty}">
-                    <f:validateLongRange minimum="0" maximum="10000"/>
-                    </h:inputText >
-                    <h:message for="item_qty"/>
-                    
-                    <h:outputLabel value="#{addItem.virtual}"/>
-                    <h:selectBooleanCheckbox id = "item_virtual" value="#{addItem.virtualItem}"/>
-                    <h:message for="item_virtual"/>
-                    
+                    <h:message for="item_name"/>                    
                 </h:panelGrid>
                 <!-- https://datatables.net/reference/option/
                      https://datatables.net/reference/index
@@ -120,10 +102,10 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                         #{model_item_data.mdate}
                     </h:column>
                     
-                    <h:column>
-                        <f:facet name="header"> #{model_item_data.currentAvatar}   </f:facet>                         
-                      <h:graphicImage id ="existing_model_avatar" value="#{resource['images/common/nav_arrow.png']}" alt="avatar is missing will use default" rendered="#{not model_item_data.edited}"/> 
-                    </h:column>
+                    <!--h:column>
+                        <f:facet name="header"> #{addItem.avatar}   </f:facet>                         
+                        <h:graphicImage id ="existing_model_avatar" value="#{model_item_data.currentAvatar}" alt="avatar is missing will use default" rendered="#{not model_item_data.edited}"/> 
+                    </h:column-->
                     
                     <h:column>
                         <f:facet name="header"> #{addItem.avatar}</f:facet>                         
@@ -155,6 +137,30 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                     </h:column>
                     
                     <h:column>
+                        <f:facet name="header">#{addItem.price}</f:facet>  
+                        <h:outputText value="#{model_item_data.price}"   rendered="#{not model_item_data.edited}"/>
+                      
+                        <h:inputText value="#{model_item_data.price}" rendered="#{model_item_data.edited}">
+                      </h:inputText>
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">#{addItem.qty}</f:facet>  
+                        <h:outputText value="#{model_item_data.qty}"   rendered="#{not model_item_data.edited}"/>
+                      
+                        <h:inputText value="#{model_item_data.qty}" rendered="#{model_item_data.edited}">
+                      </h:inputText>
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">#{addItem.virtual}</f:facet>  
+                        <h:outputText value="#{model_item_data.virtual}"   rendered="#{not model_item_data.edited}"/>
+                      
+                        <h:inputText value="#{model_item_data.virtual}" rendered="#{model_item_data.edited}">
+                      </h:inputText>
+                    </h:column>
+                    
+                    <h:column>
                         <f:facet name="header">#{addItem.unit}</f:facet> 
                         <h:outputText value="#{model_item_data.unit}"  rendered="#{not model_item_data.edited}"/>
                       
@@ -174,11 +180,14 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                     </h:column>
                 </h:dataTable>
                 
-                <h:panelGrid columns="5">
+                <h:panelGrid columns="8">
                     <h:outputLabel value="#{addItem.avatar}"/>
                     <h:outputLabel value="#{addItem.upload}"/>
                     <h:outputLabel value="#{addItem.comment}"/>
                     <h:outputLabel value="#{addItem.duration}"/>
+                    <h:outputLabel value="#{addItem.price}"/>
+                    <h:outputLabel value="#{addItem.qty}"/>
+                    <h:outputLabel value="#{addItem.virtual}"/>
                     <h:outputLabel value="#{addItem.unit}"/>
                     
                     <h:graphicImage id="previewImgId" value="/PreviewServlet/#{header['Content-Length']}" width="#{addItem.itemdata.file.size gt 0 ? 100 : 0}" height="#{addItem.itemdata.file.size gt 0 ? 100 : 0}"/>                    
@@ -187,6 +196,17 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                     </h:inputFile>
                     <h:inputText id = "comment_itemdata" value="#{addItem.itemdata.comment}"/>   
                     <h:inputText id = "durataion_itemdata" value="#{addItem.itemdata.duration}"/>
+                                        
+                    <h:inputText id = "itemdata_price" required="true" value="#{addItem.itemdata.price}">
+                        <f:validateLongRange minimum="1" maximum="1000000"/>
+                    </h:inputText >                    
+                    
+                    <h:inputText id = "itemdata_qty" required="#{not addItem.virtualItemdata}" value="#{addItem.itemdata.qty}">
+                    <f:validateLongRange minimum="0" maximum="10000"/>
+                    </h:inputText > 
+                    
+                    <h:selectBooleanCheckbox id = "itemdata_virtual" value="#{addItem.virtualItemdata}"/>                    
+                    
                     <h:selectOneMenu id = "unit_itemdata" required="true" value="#{addItem.itemdata.unit}">
                         <f:selectItems value="#{addItem.unitsList}" />
                     </h:selectOneMenu>                    

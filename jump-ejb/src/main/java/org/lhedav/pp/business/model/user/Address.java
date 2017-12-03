@@ -1,186 +1,222 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package org.lhedav.pp.business.model.user;
 
-
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.Serializable;
-
+import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.Version;
-import org.lhedav.pp.business.model.common.Shareable;
-
-
-
-// to use in customers and providers
+import javax.persistence.Table;
+import javax.persistence.TableGenerator;
+import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlRootElement;
+import org.lhedav.pp.business.model.service.Itemdata;
 
 /**
  *
  * @author client
  */
-@Entity
-/*@NamedQueries({
-	@NamedQuery(name = Address.FIND_ALL_ADDRESS,  query="SELECT p.m_id, p.m_username, "
-			+ "									 a.m_zip_code "
-			+ "									 FROM Profile p "
-			+ "									 INNER JOIN Address a ON p.m_id = a.profile_fk"),
-	
-	@NamedQuery(name = Address.FIND_BY_ZIP_CODE, query="SELECT p.m_id, p.m_username, "
-			+ "											a.m_zip_code "
-			+ "											FROM Profile p "
-			+ "											INNER JOIN Address a ON p.m_id = a.profile_fk "
-			+ "											WHERE a.m_zip_code = :zip_code"),
-	
-	@NamedQuery(name = Address.FIND_BY_STREET_AND_ZIP_CODE, query="SELECT p.m_id, p.m_username, "
-			+ "														a.m_zip_code, a.m_street1 "
-			+ "														FROM Profile p "
-			+ "														INNER JOIN Address a ON p.m_id = a.profile_fk "
-			+ "														WHERE a.m_zip_code = :zip_code AND a.m_street1 = :street1"),
-	@NamedQuery(name = Address.FIND_BY_CITY_AND_STATE,     query="SELECT p.m_id, p.m_username, "
-			+ "														a.m_zip_code, a.m_city, a.m_state "
-			+ "														FROM Profile p "
-			+ "														INNER JOIN Address a ON p.m_id = a.profile_fk "
-			+ "														WHERE a.m_city = :city AND a.m_state = :state"),
-	
-	@NamedQuery(name = Address.FIND_BY_STATE_AND_COUNTRY,    query="SELECT p.m_id, p.m_username, "
-			+ "														a.m_zip_code, a.m_city, a.m_state, a.m_country "
-			+ "														FROM Profile p INNER JOIN Address a ON p.m_id = a.profile_fk "
-			+ "														WHERE a.m_state = :sate AND a.m_country = :country"),
-	
-	@NamedQuery(name = Address.FIND_BY_COUNTRY,  query="SELECT p.m_id, p.m_username, "
-			+ "											a.m_zip_code, a.m_city, a.m_state, a.m_country "
-			+ "											FROM Profile p INNER JOIN Address a ON p.m_id = a.profile_fk "
-			+ "											WHERE a.m_country = :country"),
-	
-	@NamedQuery(name = Address.CHECK_FOR_MATCH,  query="SELECT a "
-			+ "											FROM Address a "
-			+ "											WHERE (a.m_street1 = :street1) AND (a.m_street2 = :street2) AND (a.m_city = :city) AND (a.m_state = :state) AND (a.m_zip_code = :zip_code) AND (a.m_country = :country)"),
-	
-	@NamedQuery(name = Address.FIND_ADDRESSES_BY_PROFILE_ID,  query="SELECT a "
-			+ "														FROM Address a "
-			+ "														WHERE a.ptofile_fk = :profile_id") // ptofile_fk is also stored in PROFILE table
-})*/
-public class Address implements Shareable, Serializable{
-	private Long m_id;
-	private Integer m_version;
-	private String m_street1;
-	private String m_street2;
-	private String m_city;
-	private String m_state;
-	private String m_zip_code;
-	private String m_country;
-	
-	public final static String FIND_ALL_ADDRESS                     = "FIND_ALL_ADDRESS";
-	public final static String FIND_BY_ZIP_CODE             = "FIND_BY_ZIP_CODE";
-	public final static String FIND_BY_STREET_AND_ZIP_CODE  = "FIND_BY_STREET_AND_ZIP_CODE";
-	public final static String FIND_BY_CITY_AND_STATE       = "FIND_BY_CITY_AND_STATE";
-	public final static String FIND_BY_STATE_AND_COUNTRY    = "FIND_BY_STATE_AND_COUNTRY";
-	public final static String FIND_BY_COUNTRY              = "FIND_BY_COUNTRY";
-	public final static String FIND_ADDRESSES_BY_PROFILE_ID = "FIND_ADDRESSES_BY_PROFILE_ID";
-	public final static String CHECK_FOR_MATCH              = "CHECK_FOR_MATCH";
+@Entity(name = "Address")
+@Table(name = "ADDRESS_T")
+@XmlRootElement
+@NamedQueries({
+    @NamedQuery(name = "Address.findAll", query = "SELECT p FROM Address p")
+    , @NamedQuery(name = "Address.findByAddressTId", query = "SELECT p FROM Address p WHERE p.providerAddressTId = :providerAddressTId")
+    , @NamedQuery(name = "Address.findByStreet1", query = "SELECT p FROM Address p WHERE p.street1 = :street1")
+    , @NamedQuery(name = "Address.findByStreet2", query = "SELECT p FROM Address p WHERE p.street2 = :street2")
+    , @NamedQuery(name = "Address.findByStreetNumber", query = "SELECT p FROM Address p WHERE p.streetNumber = :streetNumber")
+    , @NamedQuery(name = "Address.findByCity", query = "SELECT p FROM Address p WHERE p.city = :city")
+    , @NamedQuery(name = "Address.findByState", query = "SELECT p FROM Address p WHERE p.state = :state")
+    , @NamedQuery(name = "Address.findByZipcode", query = "SELECT p FROM Address p WHERE p.zipcode = :zipcode")
+    , @NamedQuery(name = "Address.findByCountry", query = "SELECT p FROM Address p WHERE p.country = :country")})
+public class Address implements Serializable {
 
-	public Address(){
+    @Id
+    @Basic(optional = false)
+    @TableGenerator( name = "sequence_address", table = "SEQUENCE", pkColumnName = "SEQ_NAME", pkColumnValue = "PROVIDER_ADDRESS_T_ID", valueColumnName = "SEQ_COUNT", initialValue = 0, allocationSize = 1 )
+    @GeneratedValue( strategy = GenerationType.TABLE, generator = "sequence_address" ) 
+    @Column(name = "PROVIDER_ADDRESS_T_ID")
+    private Long providerAddressTId;
+    @JoinColumn(name = "PROFILE_FK", referencedColumnName = "PROFILE_T_ID")
+    @ManyToOne
+    private Profile profileFk;
 
-	}
-	
-	Address(String aStreet1,
-			String aStreet2,
-			String aCity,
-			String aState,
-			String aZipCode,
-			String aCountry){
-		
-		setFirstStreet(aStreet1);
-		setSecondStreet(aStreet2);
-		setCity(aCity);
-		setState(aState);
-		setZipCode(aZipCode);
-		setCountry(aCountry);		
+    private static final long serialVersionUID = 1L;
+    @Id
+    @Basic(optional = false)
+    @TableGenerator( name = "sequence_address", table = "SEQUENCE", pkColumnName = "SEQ_NAME", pkColumnValue = "ADDRESS_T_ID", valueColumnName = "SEQ_COUNT", initialValue = 0, allocationSize = 1 )
+    @GeneratedValue( strategy = GenerationType.TABLE, generator = "sequence_address" )     
+    @Column(name = "ADDRESS_T_ID")
+    private Long addressTId;
+    @Size(max = 50)
+    @Column(name = "STREET1")
+    private String street1;
+    @Size(max = 50)
+    @Column(name = "STREET2")
+    private String street2;
+    @Size(max = 6)
+    @Column(name = "STREET_NUMBER")
+    private String streetNumber;
+    @Size(max = 50)
+    @Column(name = "CITY")
+    private String city;
+    @Size(max = 50)
+    @Column(name = "STATE")
+    private String state;
+    @Size(max = 50)
+    @Column(name = "ZIPCODE")
+    private String zipcode;
+    @Size(max = 50)
+    @Column(name = "COUNTRY")
+    private String country;
+    @JoinColumn(name = "ITEMDATA_FK", referencedColumnName = "ITEMDATA_T_ID")
+    @ManyToOne
+    private Itemdata itemdataFk;
+    @Transient
+    private boolean edited = false;
 
-	}
-	
-	public void setId(Long anId){
-		m_id = anId;
-	}
-	
-        @Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	public Long getId(){
-		return m_id;
-	}
-	
-	@Version
-	public Integer getVersion(){
-		return m_version;
-	}
+    public Address() {
+    }
+
+    public Address(Long providerAddressTId) {
+        this.addressTId = providerAddressTId;
+    }
+
+    public Long getAddressTId() {
+        return addressTId;
+    }
+
+    public void setAddressTId(Long providerAddressTId) {
+        this.addressTId = providerAddressTId;
+    }
+
+    public String getStreet1() {
+        return street1;
+    }
+
+    public void setStreet1(String street1) {
+        this.street1 = street1;
+    }
+
+    public String getStreet2() {
+        return street2;
+    }
+
+    public void setStreet2(String street2) {
+        this.street2 = street2;
+    }
+
+    public String getStreetNumber() {
+        return streetNumber;
+    }
+
+    public void setStreetNumber(String streetNumber) {
+        this.streetNumber = streetNumber;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getZipcode() {
+        return zipcode;
+    }
+
+    public void setZipcode(String zipcode) {
+        this.zipcode = zipcode;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public Itemdata getItemdataFk() {
+        return itemdataFk;
+    }
+
+    public void setItemdataFk(Itemdata itemdataFk) {
+        this.itemdataFk = itemdataFk;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (addressTId != null ? addressTId.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Address)) {
+            return false;
+        }
+        Address other = (Address) object;
+        if ((this.addressTId == null && other.addressTId != null) || (this.addressTId != null && !this.addressTId.equals(other.addressTId))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        //return "org.lhedav.pp.business.model.service.Address[ providerAddressTId=" + providerAddressTId + " ]";
+        return streetNumber +", "+ street1 + ", "+ city + ", "+ state + ", "+ "\n"+ country+ ", "+ zipcode + "\n";
         
-        public void setVersion(Integer aVersion){
-            m_version = aVersion;
-	}
-
-	public void setFirstStreet(String aStreet){
-		m_street1 = aStreet;
-	}
-
-	public String getFirstStreet(){
-		return m_street1;
-	}
-
-	public void setSecondStreet(String aStreet){
-		m_street2 = aStreet;
-	}
-
-	public String getSecondStreet(){
-		return m_street2;
-	}
-
-	public void setCity(String aCity){
-		m_city = aCity;
-	}
-
-	public String getCity(){
-		return m_city;
-	}
-
-	public void setState(String aState){
-		m_state = aState;
-	}
-
-	public String getState(){
-		return m_state;
-	}
-
-	public void setZipCode(String aZipCode){
-		m_zip_code = aZipCode;
-	}
-
-	public String getZipCode(){
-		return m_zip_code;
-	}
-
-	public void setCountry(String aCountry){
-		m_country = aCountry;
-	}
-
-	public String getCountry(){
-		return m_country;
-	}
-
-	@Override
-	public boolean SendTo(DataOutputStream os) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean RecvFrom(DataInputStream is, int aVersion) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    }
+    
+    public boolean isEdited(){
+        return edited;
+    }
+    
+    public void setEdited(boolean aBool){
+        edited = aBool;
+    }
 
 
+    public Long getProviderAddressTId() {
+        return providerAddressTId;
+    }
+
+    public void setProviderAddressTId(Long providerAddressTId) {
+        this.providerAddressTId = providerAddressTId;
+    }
+
+    public Profile getProfileFk() {
+        return profileFk;
+    }
+
+    public void setProfileFk(Profile profileFk) {
+        this.profileFk = profileFk;
+    }
+
+    
 }

@@ -13,7 +13,7 @@ import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.validation.constraints.NotNull;
 import org.lhedav.pp.business.model.service.Itemdata;
-import org.lhedav.pp.business.model.service.ProviderAddress;
+import org.lhedav.pp.business.model.user.Address;
 
 /**
  *
@@ -30,8 +30,8 @@ public static JsonObject buildItemdata(@NotNull Itemdata anItemdata) {
      JsonObjectBuilder itemdataBuilder = Json.createObjectBuilder();
      
      JsonArrayBuilder providerAddressBuilder = Json.createArrayBuilder();
-     List<ProviderAddress> theList = anItemdata.getProviderAddressList();
-     for (ProviderAddress aProviderAddress : theList) {
+     List<Address> theList = anItemdata.getProviderAddressList();
+     for (Address aProviderAddress : theList) {
 	providerAddressBuilder.add(AddressJsonBuilder.builderAddress(aProviderAddress));
       }
      
@@ -50,8 +50,8 @@ public static JsonObject buildItemdata(@NotNull Itemdata anItemdata) {
 public static JsonArray  buildProviderAddress(@NotNull Itemdata anItemdata) {
      m_itemdata = anItemdata;      
      JsonArrayBuilder providerAddressBuilder = Json.createArrayBuilder();
-     List<ProviderAddress> theList = anItemdata.getProviderAddressList();
-     for (ProviderAddress aProviderAddress : theList) {
+     List<Address> theList = anItemdata.getProviderAddressList();
+     for (Address aProviderAddress : theList) {
 	providerAddressBuilder.add(AddressJsonBuilder.builderAddress(aProviderAddress));
       }     
      return providerAddressBuilder.build();

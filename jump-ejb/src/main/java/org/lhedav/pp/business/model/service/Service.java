@@ -16,6 +16,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -28,6 +30,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import org.lhedav.pp.business.model.common.CRC32StringCollection;
 import org.lhedav.pp.business.model.common.Global;
+import org.lhedav.pp.business.model.user.Account;
 
 /**
  *
@@ -48,6 +51,10 @@ import org.lhedav.pp.business.model.common.Global;
     , @NamedQuery(name = "Service.findByServiceNameKindTypeCategory", query = "SELECT s FROM Service s WHERE ((s.servicename = :servicename) AND (s.kind = :kind) AND (s.type = :type) AND (s.category = :category))")
 })
 public class Service implements Serializable {
+
+    @JoinColumn(name = "ACCOUNT_FK", referencedColumnName = "ACCOUNT_T_ID")
+    @ManyToOne
+    private Account accountFk;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -203,10 +210,10 @@ public class Service implements Serializable {
                 }
             }
             if(theOne!= null){
-                theOne.setPrice(anItem.getPrice());
-                theOne.setQty(anItem.getQty());
+                //theOne.setPrice(anItem.getPrice());
+                //theOne.setQty(anItem.getQty());
                 theOne.setCdate(anItem.getCdate());
-                theOne.setVirtual(anItem.getVirtual());
+                //theOne.setVirtual(anItem.getVirtual());
                 for(Itemdata theData: anItem.getItemdataList()){
                    // System.out.println("itemdata in anItem: "+theData.getComment());
                     if(!theOne.getItemdataList().contains(theData)){
@@ -276,6 +283,14 @@ public class Service implements Serializable {
     
     public void setMerged(boolean aBool){
         merged = aBool;
+    }
+
+    public Account getAccountFk() {
+        return accountFk;
+    }
+
+    public void setAccountFk(Account accountFk) {
+        this.accountFk = accountFk;
     }
     
 }

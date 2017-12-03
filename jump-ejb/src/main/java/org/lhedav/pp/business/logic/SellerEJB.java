@@ -29,7 +29,7 @@ import org.lhedav.pp.business.data.Unit;
 
 @Stateless
 @LocalBean
-public class ProviderEJB {
+public class SellerEJB {
     
     
     @PersistenceContext(unitName = Global.PERSISTENCE_UNIT)

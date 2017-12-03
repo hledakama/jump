@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
-import org.lhedav.pp.business.logic.ProviderEJB;
+import org.lhedav.pp.business.logic.SellerEJB;
 import org.lhedav.pp.business.model.service.Itemdata;
 
 /**
@@ -31,7 +31,7 @@ public class PreviewServlet extends HttpServlet {
 @Inject
 private AddItem additemBean;
     @EJB
-private ProviderEJB provider_services;
+private SellerEJB provider_services;
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.

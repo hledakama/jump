@@ -23,13 +23,13 @@ import javax.json.JsonArray;
 import javax.validation.constraints.NotNull;
 import org.lhedav.pp.business.data.Services;
 import org.lhedav.pp.business.json.ItemdataJsonBuilder;
-import org.lhedav.pp.business.logic.ProviderEJB;
+import org.lhedav.pp.business.logic.SellerEJB;
 import org.lhedav.pp.business.model.common.CRC32StringCollection;
 import org.lhedav.pp.business.model.common.Global;
 import org.lhedav.pp.business.model.service.Item;
 import org.lhedav.pp.business.model.service.Itemdata;
-import org.lhedav.pp.business.model.service.ProviderAddress;
-import org.lhedav.pp.business.model.service.ProviderAvatar;
+import org.lhedav.pp.business.model.user.Address;
+import org.lhedav.pp.business.model.user.Avatar;
 import org.lhedav.pp.business.model.service.Service;
 import org.lhedav.pp.business.model.service.SortedDataModel;
 
@@ -74,13 +74,13 @@ public class AddItem implements Serializable{
     private String date_ = "Date";
     private SortedDataModel<Itemdata> sortitemdatamodel;
     private String sortType;
-    private boolean virtualItem;
+    private boolean virtualItemdata;
     @EJB
-    private ProviderEJB provider_services;
+    private SellerEJB provider_services;
     private boolean itemNameChanged = false; 
     private List<String> itemsNames = new ArrayList();
     private List<String> unitsList = new ArrayList();
-    private SortedDataModel<ProviderAddress> sortAddressesPerProvider;
+    private SortedDataModel<Address> sortAddressesPerProvider;
     private String street1 = "Street1";
     private String street2 = "Street2";
     private String streetNumber = "streetNumber";
@@ -195,7 +195,7 @@ public class AddItem implements Serializable{
         return Global.STAY_ON_CURRENT_PAGE;
     }
 
-     public String editRowAddress(@NotNull ProviderAddress anAddress) {
+     public String editRowAddress(@NotNull Address anAddress) {
         anAddress.setEdited(true);
         // provider_services.updateItemdata(anAddress);
         return Global.STAY_ON_CURRENT_PAGE;
@@ -208,7 +208,7 @@ public class AddItem implements Serializable{
     }
 
     private String addItem() {
-       ProviderAvatar theAvatar = itemdata.saveFileToDisk();
+       Avatar theAvatar = itemdata.saveFileToDisk();
         if (sortitemdatamodel != null) {
             for (Itemdata theItemdata : sortitemdatamodel) {
                 if(theItemdata.isEdited()){
@@ -283,13 +283,13 @@ public class AddItem implements Serializable{
         return Global.STAY_ON_CURRENT_PAGE;
     }
 
-    public SortedDataModel<ProviderAddress> getSortAddressesPerProvider(@NotNull Itemdata anItemdata) {
+    public SortedDataModel<Address> getSortAddressesPerProvider(@NotNull Itemdata anItemdata) {
         setSortAddressesPerProvider(anItemdata);
         return sortAddressesPerProvider;
     }
 
     public void setSortAddressesPerProvider(@NotNull Itemdata anItemdata) {
-        List<ProviderAddress> theAddressesList = anItemdata.getProviderAddressList();
+        List<Address> theAddressesList = anItemdata.getProviderAddressList();
         if ((theAddressesList != null) && (!theAddressesList.isEmpty())) {
             sortAddressesPerProvider = new SortedDataModel<>(new CollectionDataModel<>(theAddressesList));
         }
@@ -687,17 +687,17 @@ public class AddItem implements Serializable{
     }
     
     
-    public boolean isVirtualItem() {
-        return virtualItem;
+    public boolean isVirtualItemdata() {
+        return virtualItemdata;
     }
 
     //https://stackoverflow.com/questions/5706513/bind-hselectbooleancheckbox-value-to-int-integer-instead-of-boolean-boolean
-    public void setVirtualItem(boolean virtual) {
-        if (item == null) {
-            virtualItem = false;
+    public void setVirtualItemdata(boolean virtual) {
+        if (itemdata == null) {
+            virtualItemdata = false;
         } else {
-            virtualItem = virtual;
-            item.setVirtual(virtualItem ? (short) 1 : (short) 0);
+            virtualItemdata = virtual;
+            itemdata.setVirtual(virtualItemdata ? (short) 1 : (short) 0);
         }
     }
 

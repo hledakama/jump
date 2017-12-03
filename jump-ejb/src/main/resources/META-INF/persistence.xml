@@ -6,13 +6,13 @@
     <jar-file>jump-ejb-1.0-SNAPSHOT.jar</jar-file>
     <class>org.lhedav.pp.business.model.service.Service</class>
     <class>org.lhedav.pp.business.model.service.Item</class>
-    <class>org.lhedav.pp.business.model.service.ProviderAddress</class>
     <class>org.lhedav.pp.business.data.ServiceKind</class>
     <class>org.lhedav.pp.business.data.Services</class>
     <class>org.lhedav.pp.business.model.service.Itemdata</class>
-    <class>org.lhedav.pp.business.model.service.ProviderAvatar</class>
     <class>org.lhedav.pp.business.data.ServiceType</class>
     <class>org.lhedav.pp.business.data.Unit</class>
+    <class>org.lhedav.pp.business.model.user.Address</class>
+    <class>org.lhedav.pp.business.model.user.Avatar</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
       <!--property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>

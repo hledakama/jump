@@ -46,9 +46,6 @@ import org.lhedav.pp.business.model.common.Global;
     , @NamedQuery(name = "Item.findByCdate", query = "SELECT i FROM Item i WHERE i.cdate = :cdate")
     , @NamedQuery(name = "Item.findByItemname", query = "SELECT i FROM Item i WHERE i.itemname = :itemname")
     , @NamedQuery(name = "Item.findByItemreference", query = "SELECT i FROM Item i WHERE i.itemreference = :itemreference")
-    , @NamedQuery(name = "Item.findByPrice", query = "SELECT i FROM Item i WHERE i.price = :price")
-    , @NamedQuery(name = "Item.findByQty", query = "SELECT i FROM Item i WHERE i.qty = :qty")
-    , @NamedQuery(name = "Item.findByVirtual", query = "SELECT i FROM Item i WHERE i.virtual = :virtual")
 })
 public class Item implements Serializable {
 
@@ -69,13 +66,7 @@ public class Item implements Serializable {
     private String itemname;
     @Size(max = 50)
     @Column(name = "ITEMREFERENCE")
-    private String itemreference;
-    @Column(name = "PRICE")
-    private Long price;
-    @Column(name = "QTY")
-    private Long qty;
-    @Column(name = "VIRTUAL_")
-    private Short virtual;
+    private String itemreference;    
     @XmlTransient
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "itemFk", orphanRemoval = true)
     private List<Itemdata> itemdataList;
@@ -143,31 +134,7 @@ public class Item implements Serializable {
           this.itemreference = ((new CRC32StringCollection(theList)).hashCode())+Global.STR_EMPTY; 
           //System.out.println("In setItemreference: "+itemreference);
     }
-
-    public Long getPrice() {
-        return price;
-    }
-
-    public void setPrice(Long price) {
-        this.price = price;
-    }
-
-    public Long getQty() {
-        return qty;
-    }
-
-    public void setQty(Long qty) {
-        this.qty = qty;
-    }
-
-    public Short getVirtual() {
-        return virtual;
-    }
-
-    public void setVirtual(Short virtual) {
-        this.virtual = virtual;
-    }
-    
+       
     public List<Itemdata> getItemdataList() {
         for(Itemdata thedata: itemdataList){
             //System.out.println("getItemdataList-->thedata.getItemFk(): "+thedata.getItemFk());

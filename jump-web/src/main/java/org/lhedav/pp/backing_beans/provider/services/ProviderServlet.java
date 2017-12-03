@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.lhedav.pp.business.json.ItemdataJsonBuilder;
-import org.lhedav.pp.business.logic.ProviderEJB;
+import org.lhedav.pp.business.logic.SellerEJB;
 import org.lhedav.pp.business.model.service.Itemdata;
 
 /**
@@ -29,7 +29,7 @@ import org.lhedav.pp.business.model.service.Itemdata;
 public class ProviderServlet extends HttpServlet {
 private ServletContext context;
             @EJB
-private ProviderEJB provider_services;
+private SellerEJB provider_services;
 
     @Override
     public void init(ServletConfig config) throws ServletException {

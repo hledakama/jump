@@ -9,19 +9,19 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.validation.constraints.NotNull;
-import org.lhedav.pp.business.model.service.ProviderAddress;
+import org.lhedav.pp.business.model.user.Address;
 
 /**
  *
  * @author client
  */
 public class AddressJsonBuilder {
-    private static ProviderAddress m_address;
+    private static Address m_address;
     
-    public static JsonObject buildAddress(@NotNull ProviderAddress anAddress) {
+    public static JsonObject buildAddress(@NotNull Address anAddress) {
         m_address = anAddress;
         return Json.createObjectBuilder().add("address", Json.createObjectBuilder()
-        .add("providerAddressTId", anAddress.getProviderAddressTId())
+        .add("addressTId", anAddress.getAddressTId())
         .add("streetNumber", anAddress.getStreetNumber())
         .add("street1", anAddress.getStreet1())
         .add("street2", anAddress.getStreet2())
@@ -33,10 +33,10 @@ public class AddressJsonBuilder {
 
 
     
-    public static JsonObjectBuilder builderAddress(@NotNull ProviderAddress anAddress) {
+    public static JsonObjectBuilder builderAddress(@NotNull Address anAddress) {
         m_address = anAddress;
         return Json.createObjectBuilder().add("address", Json.createObjectBuilder()
-        .add("providerAddressTId", anAddress.getProviderAddressTId())
+        .add("addressTId", anAddress.getAddressTId())
         .add("streetNumber", anAddress.getStreetNumber())
         .add("street1", anAddress.getStreet1())
         .add("street2", anAddress.getStreet2())
