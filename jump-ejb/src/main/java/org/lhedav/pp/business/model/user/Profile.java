@@ -6,6 +6,7 @@
 package org.lhedav.pp.business.model.user;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -85,15 +86,21 @@ public class Profile implements Serializable {
     private List<Avatar> avatarList;
 
     public Profile() {
+        addressList = new ArrayList();
+        avatarList = new ArrayList();
     }
 
     public Profile(Long profileTId) {
         this.profileTId = profileTId;
+        addressList = new ArrayList();
+        avatarList = new ArrayList();
     }
 
     public Profile(Long profileTId, Date creation) {
         this.profileTId = profileTId;
         this.creation = creation;
+        addressList = new ArrayList();
+        avatarList = new ArrayList();
     }
 
     public Long getProfileTId() {
@@ -215,7 +222,7 @@ public class Profile implements Serializable {
                 theOne.setCountry(theOne.getCountry());
                 theOne.setEdited(theOne.isEdited());
                 theOne.setItemdataFk(theOne.getItemdataFk());
-                theOne.setProviderAddressTId(theOne.getProviderAddressTId());
+                theOne.setAddressTId(theOne.getAddressTId());
                 theOne.setState(theOne.getState());
                 theOne.setStreet1(theOne.getStreet1());
                 theOne.setStreet2(theOne.getStreet2());
@@ -264,7 +271,7 @@ public class Profile implements Serializable {
                 theOne.setItemdataFk(theOne.getItemdataFk());
                 theOne.setLocation(theOne.getLocation());
                 theOne.setMimeType(theOne.getMimeType());
-                theOne.setProviderAvatarTId(theOne.getProviderAvatarTId());
+                theOne.setAvatarTId(theOne.getAvatarTId());
                 theOne.setSubmitedFileName(theOne.getSubmitedFileName());
             }
         }

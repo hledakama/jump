@@ -18,7 +18,6 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import org.lhedav.pp.business.model.service.Itemdata;
@@ -32,7 +31,7 @@ import org.lhedav.pp.business.model.service.Itemdata;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Avatar.findAll", query = "SELECT p FROM Avatar p")
-    , @NamedQuery(name = "Avatar.findByAvatarTId", query = "SELECT p FROM Avatar p WHERE p.providerAvatarTId = :providerAvatarTId")
+    , @NamedQuery(name = "Avatar.findByAvatarTId", query = "SELECT p FROM Avatar p WHERE p.avatarTId = :avatarTId")
     , @NamedQuery(name = "Avatar.findByFileName", query = "SELECT p FROM Avatar p WHERE p.fileName = :fileName")
     , @NamedQuery(name = "Avatar.findBySubmitedFileName", query = "SELECT p FROM Avatar p WHERE p.submitedFileName = :submitedFileName")
     , @NamedQuery(name = "Avatar.findByMimeType", query = "SELECT p FROM Avatar p WHERE p.mimeType = :mimeType")
@@ -40,12 +39,6 @@ import org.lhedav.pp.business.model.service.Itemdata;
     , @NamedQuery(name = "Avatar.findByLocation", query = "SELECT p FROM Avatar p WHERE p.location = :location")})
 public class Avatar implements Serializable {
 
-    @Id
-    @Basic(optional = false)
-    @TableGenerator( name = "sequence_avatar", table = "SEQUENCE", pkColumnName = "SEQ_NAME", pkColumnValue = "PROVIDER_AVATAR_T_ID", valueColumnName = "SEQ_COUNT", initialValue = 0, allocationSize = 1 )
-    @GeneratedValue( strategy = GenerationType.TABLE, generator = "sequence_avatar" ) 
-    @Column(name = "PROVIDER_AVATAR_T_ID")
-    private Long providerAvatarTId;
     @JoinColumn(name = "PROFILE_FK", referencedColumnName = "PROFILE_T_ID")
     @ManyToOne
     private Profile profileFk;
@@ -161,14 +154,6 @@ public class Avatar implements Serializable {
     @Override
     public String toString() {
         return "org.lhedav.pp.business.model.service.Avatar[ providerAvatarTId=" + avatarTId + " ]";
-    }
-
-    public Long getProviderAvatarTId() {
-        return providerAvatarTId;
-    }
-
-    public void setProviderAvatarTId(Long providerAvatarTId) {
-        this.providerAvatarTId = providerAvatarTId;
     }
 
     public Profile getProfileFk() {

@@ -13,6 +13,19 @@
     <class>org.lhedav.pp.business.data.Unit</class>
     <class>org.lhedav.pp.business.model.user.Address</class>
     <class>org.lhedav.pp.business.model.user.Avatar</class>
+    <class>org.lhedav.pp.business.model.feedback.MarketView</class>
+    <class>org.lhedav.pp.business.model.feedback.Recommendation</class>
+    <class>org.lhedav.pp.business.model.feedback.WishList</class>
+    <class>org.lhedav.pp.business.model.order.Appointment</class>
+    <class>org.lhedav.pp.business.model.order.Chat</class>
+    <class>org.lhedav.pp.business.model.order.Inmail</class>
+    <class>org.lhedav.pp.business.model.order.OrderLine</class>
+    <class>org.lhedav.pp.business.model.order.Order_</class>
+    <class>org.lhedav.pp.business.model.order.Postpone</class>
+    <class>org.lhedav.pp.business.model.order.Rate</class>
+    <class>org.lhedav.pp.business.model.service.AdsConfiguration</class>
+    <class>org.lhedav.pp.business.model.user.Account</class>
+    <class>org.lhedav.pp.business.model.user.Profile</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
       <!--property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>

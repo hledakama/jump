@@ -19,7 +19,6 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import org.lhedav.pp.business.model.service.Itemdata;
@@ -33,7 +32,7 @@ import org.lhedav.pp.business.model.service.Itemdata;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Address.findAll", query = "SELECT p FROM Address p")
-    , @NamedQuery(name = "Address.findByAddressTId", query = "SELECT p FROM Address p WHERE p.providerAddressTId = :providerAddressTId")
+    , @NamedQuery(name = "Address.findByAddressTId", query = "SELECT p FROM Address p WHERE p.addressTId = :addressTId")
     , @NamedQuery(name = "Address.findByStreet1", query = "SELECT p FROM Address p WHERE p.street1 = :street1")
     , @NamedQuery(name = "Address.findByStreet2", query = "SELECT p FROM Address p WHERE p.street2 = :street2")
     , @NamedQuery(name = "Address.findByStreetNumber", query = "SELECT p FROM Address p WHERE p.streetNumber = :streetNumber")
@@ -43,12 +42,6 @@ import org.lhedav.pp.business.model.service.Itemdata;
     , @NamedQuery(name = "Address.findByCountry", query = "SELECT p FROM Address p WHERE p.country = :country")})
 public class Address implements Serializable {
 
-    @Id
-    @Basic(optional = false)
-    @TableGenerator( name = "sequence_address", table = "SEQUENCE", pkColumnName = "SEQ_NAME", pkColumnValue = "PROVIDER_ADDRESS_T_ID", valueColumnName = "SEQ_COUNT", initialValue = 0, allocationSize = 1 )
-    @GeneratedValue( strategy = GenerationType.TABLE, generator = "sequence_address" ) 
-    @Column(name = "PROVIDER_ADDRESS_T_ID")
-    private Long providerAddressTId;
     @JoinColumn(name = "PROFILE_FK", referencedColumnName = "PROFILE_T_ID")
     @ManyToOne
     private Profile profileFk;
@@ -199,15 +192,6 @@ public class Address implements Serializable {
     
     public void setEdited(boolean aBool){
         edited = aBool;
-    }
-
-
-    public Long getProviderAddressTId() {
-        return providerAddressTId;
-    }
-
-    public void setProviderAddressTId(Long providerAddressTId) {
-        this.providerAddressTId = providerAddressTId;
     }
 
     public Profile getProfileFk() {

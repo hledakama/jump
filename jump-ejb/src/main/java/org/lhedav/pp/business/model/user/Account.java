@@ -61,14 +61,14 @@ public class Account implements Serializable {
     public Account() {
         serviceList = new ArrayList();
         orderList   = new ArrayList();
-        serviceList = new ArrayList();
+        profileList = new ArrayList();
     }
 
     public Account(Long accountTId) {
         this.accountTId = accountTId;
         serviceList = new ArrayList();
         orderList   = new ArrayList();
-        serviceList = new ArrayList();
+        profileList = new ArrayList();
     }
 
     public Long getAccountTId() {

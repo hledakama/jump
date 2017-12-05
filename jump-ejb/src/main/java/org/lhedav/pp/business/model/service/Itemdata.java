@@ -67,8 +67,7 @@ import org.lhedav.pp.business.model.feedback.WishList;
 })
 public class Itemdata implements Serializable {
 
-    @OneToMany( cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "itemdataFk")
-    private List<AdsConfiguration> adsConfigurationList;
+
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
@@ -112,6 +111,8 @@ public class Itemdata implements Serializable {
     private List<Recommendation> recommendationList;
     @OneToMany( cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "itemdataFk")
     private List<MarketView> marketViewList;
+    @OneToMany( cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "itemdataFk")
+    private List<AdsConfiguration> adsConfigurationList;
         @Transient
     private boolean edited = false;
         @Transient
@@ -132,12 +133,20 @@ public class Itemdata implements Serializable {
     public Itemdata() {
         providerAddressList = new ArrayList();
         providerAvatarList = new ArrayList();
+        wishListList = new ArrayList();
+        recommendationList = new ArrayList();
+        marketViewList = new ArrayList();
+        adsConfigurationList = new ArrayList();
     }
 
     public Itemdata(Long itemdataTId) {
         this.itemdataTId = itemdataTId;
         providerAddressList = new ArrayList();
         providerAvatarList = new ArrayList();
+        wishListList = new ArrayList();
+        recommendationList = new ArrayList();
+        marketViewList = new ArrayList();
+        adsConfigurationList = new ArrayList();
     }
 
     public Itemdata(Long itemdataTId, Date mdate) {
@@ -145,6 +154,10 @@ public class Itemdata implements Serializable {
         this.mdate = mdate;
         providerAddressList = new ArrayList();
         providerAvatarList = new ArrayList();
+        wishListList = new ArrayList();
+        recommendationList = new ArrayList();
+        marketViewList = new ArrayList();
+        adsConfigurationList = new ArrayList();
     }
 
     public Long getItemdataTId() {
