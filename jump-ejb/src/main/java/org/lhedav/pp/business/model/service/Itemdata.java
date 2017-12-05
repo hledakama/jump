@@ -42,6 +42,9 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import org.lhedav.pp.business.model.common.Global;
+import org.lhedav.pp.business.model.feedback.MarketView;
+import org.lhedav.pp.business.model.feedback.Recommendation;
+import org.lhedav.pp.business.model.feedback.WishList;
 
 /**
  *
@@ -103,18 +106,12 @@ public class Itemdata implements Serializable {
     @XmlTransient
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "itemdataFk", orphanRemoval = true )
     private List<Avatar> providerAvatarList;
-   /* @XmlTransient
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "itemdataFk", orphanRemoval = true )
-    private List<View> viewList;
-    @XmlTransient
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "itemdataFk", orphanRemoval = true )
-    private List<Order> orderList;
-    @XmlTransient
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "itemdataFk", orphanRemoval = true )
+    @OneToMany( cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "itemdataFk")
+    private List<WishList> wishListList;
+    @OneToMany( cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "itemdataFk")
     private List<Recommendation> recommendationList;
-    @XmlTransient
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "itemdataFk", orphanRemoval = true )
-    private List<Wish> wishList;*/
+    @OneToMany( cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "itemdataFk")
+    private List<MarketView> marketViewList;
         @Transient
     private boolean edited = false;
         @Transient
@@ -445,5 +442,32 @@ public class Itemdata implements Serializable {
 
     public void setAdsConfigurationList(List<AdsConfiguration> adsConfigurationList) {
         this.adsConfigurationList = adsConfigurationList;
+    }
+
+    @XmlTransient
+    public List<WishList> getWishListList() {
+        return wishListList;
+    }
+
+    public void setWishListList(List<WishList> wishListList) {
+        this.wishListList = wishListList;
+    }
+
+    @XmlTransient
+    public List<Recommendation> getRecommendationList() {
+        return recommendationList;
+    }
+
+    public void setRecommendationList(List<Recommendation> recommendationList) {
+        this.recommendationList = recommendationList;
+    }
+
+    @XmlTransient
+    public List<MarketView> getMarketViewList() {
+        return marketViewList;
+    }
+
+    public void setMarketViewList(List<MarketView> marketViewList) {
+        this.marketViewList = marketViewList;
     }
 }

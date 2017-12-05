@@ -7,7 +7,9 @@ package org.lhedav.pp.business.model.order;
 
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -22,7 +24,6 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -80,10 +81,18 @@ public class OrderLine implements Serializable {
     private List<Appointment> appointmentList;
 
     public OrderLine() {
+        inmailList = new ArrayList();
+        chatList = new ArrayList();
+        rateList = new ArrayList();
+        appointmentList = new ArrayList();
     }
 
     public OrderLine(Long orderLineTId) {
         this.orderLineTId = orderLineTId;
+        inmailList = new ArrayList();
+        chatList = new ArrayList();
+        rateList = new ArrayList();
+        appointmentList = new ArrayList();
     }
 
     public Long getOrderLineTId() {
@@ -150,6 +159,42 @@ public class OrderLine implements Serializable {
     public void setInmailList(List<Inmail> inmailList) {
         this.inmailList = inmailList;
     }
+    
+    public void addInmailToList(Inmail anInmail) {
+        if (!inmailList.contains(anInmail)) {
+            inmailList.add(anInmail);
+            if (anInmail.getOrderLineFk() != null) {
+                anInmail.getOrderLineFk().getInmailList().remove(anInmail);
+            }
+            anInmail.setOrderLineFk(this);
+        }
+        else{
+            Inmail theOne = null;
+            for(Inmail theInmail : inmailList){
+                if(Objects.equals(theInmail.getInmailTId(), anInmail.getInmailTId())){
+                    theOne = anInmail;
+                    break;
+                }
+            }
+            if(theOne!= null){
+                theOne.setContent(anInmail.getContent());
+                theOne.setReceive(anInmail.getReceive());
+                theOne.setSent(anInmail.getSent());
+                theOne.setSubject(anInmail.getSubject());
+                theOne.setToOtherUserId(anInmail.getToOtherUserId());
+                theOne.setOrderFk(anInmail.getOrderFk());
+            }
+        }
+    }
+ public boolean removeInmailFromList(Inmail anInmail) {
+    if (inmailList.contains(anInmail)) {
+        inmailList.remove(anInmail);
+        return true;
+    }  
+    return false;
+}
+    
+    
 
     @XmlTransient
     public List<Chat> getChatList() {
@@ -159,6 +204,43 @@ public class OrderLine implements Serializable {
     public void setChatList(List<Chat> chatList) {
         this.chatList = chatList;
     }
+    
+    
+    public void addChatToList(Chat aChat) {
+        if (!chatList.contains(aChat)) {
+            chatList.add(aChat);
+            if (aChat.getOrderLineFk() != null) {
+                aChat.getOrderLineFk().getChatList().remove(aChat);
+            }
+            aChat.setOrderLineFk(this);
+        }
+        else{
+            Chat theOne = null;
+            for(Chat theChat : chatList){
+                if(Objects.equals(theChat.getChatTId(), aChat.getChatTId())){
+                    theOne = theChat;
+                    break;
+                }
+            }
+            if(theOne!= null){
+                theOne.setContent(aChat.getContent());
+                theOne.setFromUserId(aChat.getFromUserId());
+                theOne.setOrderFk(aChat.getOrderFk());
+                theOne.setReceive(aChat.getReceive());
+                theOne.setSent(aChat.getSent());
+                theOne.setSubject(aChat.getSubject());
+                theOne.setToOtherUserId(aChat.getToOtherUserId());
+            }
+        }
+    }
+    
+ public boolean removeChatFromList(Chat aChat) {
+    if (chatList.contains(aChat)) {
+        chatList.remove(aChat);
+        return true;
+    }  
+    return false;
+}
 
     public Order_ getOrderFk() {
         return orderFk;
@@ -176,6 +258,42 @@ public class OrderLine implements Serializable {
     public void setRateList(List<Rate> rateList) {
         this.rateList = rateList;
     }
+    
+    public void addRateToList(Rate aRate) {
+        if (!rateList.contains(aRate)) {
+            rateList.add(aRate);
+            if (aRate.getOrderLineFk() != null) {
+                aRate.getOrderLineFk().rateList.remove(aRate);
+            }
+            aRate.setOrderLineFk(this);
+        }
+        else{
+            Rate theOne = null;
+            for(Rate theRate : rateList){
+                if(Objects.equals(theRate.getRateTId(), aRate.getRateTId())){
+                    theOne = theRate;
+                    break;
+                }
+            }
+            if(theOne!= null){
+                theOne.setCreation(aRate.getCreation());
+                theOne.setEnvironment(aRate.getEnvironment());
+                theOne.setInput(aRate.getInput());
+                theOne.setOnTime(aRate.getOnTime());
+                theOne.setOrderFk(aRate.getOrderFk());
+                theOne.setQuality(aRate.getQuality());
+                theOne.setRespect(aRate.getRespect());
+                theOne.setTools(aRate.getTools());
+            }
+        }
+    }
+ public boolean removeRateToList(Rate aRate) {
+    if (rateList.contains(aRate)) {
+        rateList.remove(aRate);
+        return true;
+    }  
+    return false;
+}
 
     @XmlTransient
     public List<Appointment> getAppointmentList() {
@@ -185,6 +303,45 @@ public class OrderLine implements Serializable {
     public void setAppointmentList(List<Appointment> appointmentList) {
         this.appointmentList = appointmentList;
     }
+    
+    public void addAppointmentToList(Appointment aRdv) {
+        if (!appointmentList.contains(aRdv)) {
+            appointmentList.add(aRdv);
+            if (aRdv.getOrderLineFk() != null) {
+                aRdv.getOrderLineFk().getAppointmentList().remove(aRdv);
+            }
+            aRdv.setOrderLineFk(this);
+        }
+        else{
+            Appointment theOne = null;
+            for(Appointment theItem : appointmentList){
+                if(Objects.equals(theItem.getAppointmentTId(), aRdv.getAppointmentTId())){
+                    theOne = theItem;
+                    break;
+                }
+            }
+            if(theOne!= null){
+                theOne.setAddress(aRdv.getAddress());
+                theOne.setCreation(aRdv.getCreation());
+                theOne.setEnd(aRdv.getEnd());
+                theOne.setOrderFk(aRdv.getOrderFk());
+                theOne.setStart(aRdv.getStart());
+                for(Postpone thePostpone: aRdv.getPostponeList()){
+                    if(!theOne.getPostponeList().contains(thePostpone)){
+                        theOne.addPostponeToList(thePostpone);
+                    }
+                }
+            }
+        }
+    }
+    
+ public boolean removeAppointmentFromList(Appointment aRdv) {
+    if (getAppointmentList().contains(aRdv)) {
+        getAppointmentList().remove(aRdv);
+        return true;
+    }  
+    return false;
+}
 
     @Override
     public int hashCode() {

@@ -168,7 +168,7 @@ public class AddItem implements Serializable{
         if(item.removeItemDataToList(anItemdata)){
             String theItemName = item.getItemname();
             if(item.getItemdataList().isEmpty()){
-                service.removeItemToList(item);
+                service.removeItemFromList(item);
                 resetItem(theItemName);
             }
             provider_services.PersistService(service);

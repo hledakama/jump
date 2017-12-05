@@ -190,7 +190,6 @@ public class Service implements Serializable {
     }
     
     public void addItemToList(Item anItem) {
-          //System.out.println("addItemToList, this: "+this);
         if (!getItemList().contains(anItem)) {
             getItemList().add(anItem);
             /*if (anItem.getServiceFk() != null) {
@@ -199,36 +198,26 @@ public class Service implements Serializable {
             anItem.setServiceFk(this);
         }
         else{
-            System.out.println("toward theOne");
             Item theOne = null;
             for(Item theItem : getItemList()){
-                //System.out.println("theItem.getItemname(): "+theItem.getItemname());
                 if(Objects.equals(theItem.getItemTId(), anItem.getItemTId())){
                     theOne = theItem;
-                    System.out.println("theOne is: "+theOne.getItemname());
                     break;
                 }
             }
             if(theOne!= null){
-                //theOne.setPrice(anItem.getPrice());
-                //theOne.setQty(anItem.getQty());
                 theOne.setCdate(anItem.getCdate());
-                //theOne.setVirtual(anItem.getVirtual());
                 for(Itemdata theData: anItem.getItemdataList()){
-                   // System.out.println("itemdata in anItem: "+theData.getComment());
                     if(!theOne.getItemdataList().contains(theData)){
                         theOne.addItemDataToList(theData);
-                       // System.out.println("itemdata added in theOne: "+theData.getComment());
                     }
                 }
             }
         }
     }
- public boolean removeItemToList(Item anItem) {
-    System.out.println("removeItemToList, this: "+this);
+ public boolean removeItemFromList(Item anItem) {
     if (getItemList().contains(anItem)) {
         getItemList().remove(anItem);
-        System.out.println("removeItemToList, item removed ");
         return true;
     }  
     return false;

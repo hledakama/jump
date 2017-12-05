@@ -8,6 +8,7 @@ package org.lhedav.pp.business.model.user;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -28,6 +29,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import org.lhedav.pp.business.model.service.Item;
+import org.lhedav.pp.business.model.service.Itemdata;
 
 /**
  *
@@ -190,6 +193,45 @@ public class Profile implements Serializable {
     public void setAddressList(List<Address> addressList) {
         this.addressList = addressList;
     }
+    
+    public void addAddressToList(Address anAddress) {
+        if (!addressList.contains(anAddress)) {
+            addressList.add(anAddress);
+            if (anAddress.getProfileFk() != null) {
+                anAddress.getProfileFk().addressList.remove(anAddress);
+            }
+            anAddress.setProfileFk(this);
+        }
+        else{
+            Address theOne = null;
+            for(Address theAddress : addressList){
+                if(Objects.equals(theAddress.getAddressTId(), anAddress.getAddressTId())){
+                    theOne = theAddress;
+                    break;
+                }
+            }
+            if(theOne!= null){
+                theOne.setCity(theOne.getCity());
+                theOne.setCountry(theOne.getCountry());
+                theOne.setEdited(theOne.isEdited());
+                theOne.setItemdataFk(theOne.getItemdataFk());
+                theOne.setProviderAddressTId(theOne.getProviderAddressTId());
+                theOne.setState(theOne.getState());
+                theOne.setStreet1(theOne.getStreet1());
+                theOne.setStreet2(theOne.getStreet2());
+                theOne.setStreetNumber(theOne.getStreetNumber());
+                theOne.setZipcode(theOne.getZipcode());
+            }
+        }
+    }
+    
+ public boolean removeAddressFromList(Address anAddress) {
+    if (addressList.contains(anAddress)) {
+        addressList.remove(anAddress);
+        return true;
+    }  
+    return false;
+}
 
     @XmlTransient
     public List<Avatar> getAvatarList() {
@@ -199,5 +241,40 @@ public class Profile implements Serializable {
     public void setAvatarList(List<Avatar> avatarList) {
         this.avatarList = avatarList;
     }
+    
+    public void addAvatarToList(Avatar anAvatar) {
+        if (!getAvatarList().contains(anAvatar)) {
+            getAvatarList().add(anAvatar);
+            if (anAvatar.getProfileFk() != null) {
+                anAvatar.getProfileFk().getAvatarList().remove(anAvatar);
+            }
+            anAvatar.setProfileFk(this);
+        }
+        else{
+            Avatar theOne = null;
+            for(Avatar theAvatar : getAvatarList()){
+                if(Objects.equals(theAvatar.getAvatarTId(), anAvatar.getAvatarTId())){
+                    theOne = theAvatar;
+                    break;
+                }
+            }
+            if(theOne!= null){
+                theOne.setFileName(theOne.getFileName());
+                theOne.setFileSize(theOne.getFileSize());
+                theOne.setItemdataFk(theOne.getItemdataFk());
+                theOne.setLocation(theOne.getLocation());
+                theOne.setMimeType(theOne.getMimeType());
+                theOne.setProviderAvatarTId(theOne.getProviderAvatarTId());
+                theOne.setSubmitedFileName(theOne.getSubmitedFileName());
+            }
+        }
+    }
+ public boolean removeAvatarFromList(Avatar anAvatar) {
+    if (getAvatarList().contains(anAvatar)) {
+        getAvatarList().remove(anAvatar);
+        return true;
+    }  
+    return false;
+}
     
 }

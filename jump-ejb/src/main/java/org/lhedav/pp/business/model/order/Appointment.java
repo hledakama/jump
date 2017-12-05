@@ -6,8 +6,10 @@
 package org.lhedav.pp.business.model.order;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -28,6 +30,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import org.lhedav.pp.business.model.service.Item;
+import org.lhedav.pp.business.model.service.Itemdata;
 
 /**
  *
@@ -80,10 +84,12 @@ public class Appointment implements Serializable {
     private OrderLine orderLineFk;
 
     public Appointment() {
+        postponeList = new ArrayList();
     }
 
     public Appointment(Long appointmentTId) {
         this.appointmentTId = appointmentTId;
+        postponeList = new ArrayList();
     }
 
     public Appointment(Long appointmentTId, Date creation, Date start, Date end) {
@@ -91,6 +97,7 @@ public class Appointment implements Serializable {
         this.creation = creation;
         this.start = start;
         this.end = end;
+        postponeList = new ArrayList();
     }
 
     public Long getAppointmentTId() {
@@ -141,6 +148,42 @@ public class Appointment implements Serializable {
     public void setPostponeList(List<Postpone> postponeList) {
         this.postponeList = postponeList;
     }
+    
+    public void addPostponeToList(Postpone aPostpone) {
+        if (!postponeList.contains(aPostpone)) {
+            postponeList.add(aPostpone);
+            if (aPostpone.getAppointmentFk() != null) {
+                aPostpone.getAppointmentFk().getPostponeList().remove(aPostpone);
+            }
+            aPostpone.setAppointmentFk(this);
+        }
+        else{
+            Postpone theOne = null;
+            for(Postpone theItem : postponeList){
+                if(Objects.equals(theItem.getPostponeTId(), aPostpone.getPostponeTId())){
+                    theOne = theItem;
+                    break;
+                }
+            }
+            if(theOne!= null){
+                theOne.setAddress(aPostpone.getAddress());
+                theOne.setCreation(aPostpone.getCreation());
+                theOne.setEnd(aPostpone.getEnd());
+                theOne.setInitiatedBy(aPostpone.getInitiatedBy());
+                theOne.setReason(aPostpone.getReason());
+                theOne.setStart(aPostpone.getStart());
+                theOne.setStatus(aPostpone.getStatus());
+            }
+        }
+    }
+    
+ public boolean removePostponeFromList(Postpone aPostpone) {
+    if (postponeList.contains(aPostpone)) {
+        postponeList.remove(aPostpone);
+        return true;
+    }  
+    return false;
+}
 
     public Order_ getOrderFk() {
         return orderFk;
