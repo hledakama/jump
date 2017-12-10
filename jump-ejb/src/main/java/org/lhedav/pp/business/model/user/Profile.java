@@ -30,8 +30,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-import org.lhedav.pp.business.model.service.Item;
-import org.lhedav.pp.business.model.service.Itemdata;
+import org.lhedav.pp.business.bean_validation.composition.Email;
 
 /**
  *
@@ -61,20 +60,19 @@ public class Profile implements Serializable {
     @Column(name = "CREATION")
     @Temporal(TemporalType.TIMESTAMP)
     private Date creation;
-    @Size(max = 50)
-    @Column(name = "FIRST_NAME")
+    @Size(max = 50, min = 3)
+    @Column(name = "FIRST_NAME")    
     private String firstName;
-    @Size(max = 50)
+    @Size(max = 50, min = 3)
     @Column(name = "LAST_NAME")
     private String lastName;
-    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
-    @Size(max = 255)
     @Column(name = "EMAIL")
+    @Email
     private String email;
-    @Size(max = 255)
+    @Size(max = 255, min = 6)
     @Column(name = "PASSWORD_")
     private String password;
-    @Size(max = 10)
+    @Size(max = 10, min = 7)
     @Column(name = "MOBILE_PHONE")
     private String mobilePhone;
     @JoinColumn(name = "ACCOUNT_FK", referencedColumnName = "ACCOUNT_T_ID")

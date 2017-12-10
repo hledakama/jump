@@ -53,7 +53,7 @@ public class Avatar implements Serializable {
     @Size(max = 255)
     @Column(name = "FILE_NAME")
     private String fileName;
-    @Size(max = 255)
+    @Size(max = 255, min = 3)
     @Column(name = "SUBMITED_FILE_NAME")
     private String submitedFileName;
     @Size(max = 50)

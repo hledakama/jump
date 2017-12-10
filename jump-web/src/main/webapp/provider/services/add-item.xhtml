@@ -171,12 +171,15 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                   
                     <h:column>
                       <f:facet name="header">#{addItem.remove}</f:facet>
+                      
                       <h:commandButton image="#{resource['images/common/red_minus.png']}" action="#{addItem.removeRowItemdata(model_item_data)}" /> 
                     </h:column>
                     
                     <h:column>
                       <f:facet name="header">#{addItem.edit}</f:facet>
-                      <h:commandButton image="#{resource['images/common/green_plus.png']}" action="#{addItem.editRowItemdata(model_item_data)}" rendered="#{not model_item_data.edited}"/> 
+                      <h:commandButton image="#{resource['images/common/green_plus.png']}" action="#{addItem.editRowItemdata(model_item_data)}" rendered="#{not model_item_data.edited}"> 
+                          <f:ajax render="@form"/>
+                      </h:commandButton>
                     </h:column>
                 </h:dataTable>
                 

@@ -61,7 +61,7 @@ public class Item implements Serializable {
     @Column(name = "CDATE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date cdate;
-    @Size(max = 50)
+    @Size(max = 50, min = 3)
     @Column(name = "ITEMNAME")
     private String itemname;
     @Size(max = 50)
@@ -207,6 +207,5 @@ public class Item implements Serializable {
     @Override
     public String toString() {
         return "org.lhedav.pp.business.model.service.Item[ itemTId=" + itemTId + " ]";
-    }
-    
+    }    
 }

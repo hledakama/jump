@@ -19,8 +19,10 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import org.lhedav.pp.business.bean_validation.generic.ZipCode;
 import org.lhedav.pp.business.model.service.Itemdata;
 
 /**
@@ -42,10 +44,6 @@ import org.lhedav.pp.business.model.service.Itemdata;
     , @NamedQuery(name = "Address.findByCountry", query = "SELECT p FROM Address p WHERE p.country = :country")})
 public class Address implements Serializable {
 
-    @JoinColumn(name = "PROFILE_FK", referencedColumnName = "PROFILE_T_ID")
-    @ManyToOne
-    private Profile profileFk;
-
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
@@ -53,30 +51,37 @@ public class Address implements Serializable {
     @GeneratedValue( strategy = GenerationType.TABLE, generator = "sequence_address" )     
     @Column(name = "ADDRESS_T_ID")
     private Long addressTId;
-    @Size(max = 50)
+    @Size(max = 50, min = 2)
+    @NotNull
     @Column(name = "STREET1")
     private String street1;
-    @Size(max = 50)
+    @Size(max = 50, min = 2)
     @Column(name = "STREET2")
     private String street2;
-    @Size(max = 6)
+    @Size(max = 6, min = 2)
     @Column(name = "STREET_NUMBER")
     private String streetNumber;
-    @Size(max = 50)
+    @Size(max = 50, min = 2)
     @Column(name = "CITY")
+    @NotNull
     private String city;
-    @Size(max = 50)
+    @Size(max = 50, min = 2)
     @Column(name = "STATE")
     private String state;
     @Size(max = 50)
     @Column(name = "ZIPCODE")
+    @ZipCode
+    @NotNull
     private String zipcode;
-    @Size(max = 50)
+    @Size(max = 50, min = 3)
     @Column(name = "COUNTRY")
     private String country;
     @JoinColumn(name = "ITEMDATA_FK", referencedColumnName = "ITEMDATA_T_ID")
     @ManyToOne
     private Itemdata itemdataFk;
+    @JoinColumn(name = "PROFILE_FK", referencedColumnName = "PROFILE_T_ID")
+    @ManyToOne
+    private Profile profileFk;
     @Transient
     private boolean edited = false;
 

@@ -82,11 +82,14 @@ public class Itemdata implements Serializable {
     private Date mdate;
     @Size(max = 255)
     @Column(name = "COMMENT_")
+    @NotNull
     private String comment;
+    @NotNull
     @Column(name = "DURATION")
     private Long duration;
     @Size(max = 10)
     @Column(name = "UNIT")
+    @NotNull
     private String unit;    
     @Column(name = "CURRENT_AVATAR")
     private String currentAvatar = "Current Avatar";

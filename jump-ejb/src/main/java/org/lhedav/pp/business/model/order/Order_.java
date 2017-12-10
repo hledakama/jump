@@ -30,12 +30,14 @@ import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import org.lhedav.pp.business.bean_validation.class_level.ChronologicalDates;
 import org.lhedav.pp.business.model.feedback.Recommendation;
 
 /**
  *
  * @author client
  */
+@ChronologicalDates
 @Entity
 @Table(name = "ORDER_T")
 @XmlRootElement
