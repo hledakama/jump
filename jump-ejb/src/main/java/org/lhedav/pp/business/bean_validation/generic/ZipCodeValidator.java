@@ -10,14 +10,14 @@ import java.util.regex.Pattern;
 import javax.inject.Inject;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
+import org.lhedav.pp.business.cdi.qualifier.Country;
 
 /**
  *
  * @author client
  */
 public class ZipCodeValidator implements ConstraintValidator<ZipCode, String>{
-  @Inject
- // @USA
+  @Inject  @Country(name = "CANADA")
   private ZipCodeChecker checker;
   private Pattern zipPattern = Pattern.compile("\\d{5}(-\\d{5})?");
 

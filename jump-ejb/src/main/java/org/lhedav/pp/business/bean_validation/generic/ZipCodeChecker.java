@@ -5,11 +5,13 @@
  */
 package org.lhedav.pp.business.bean_validation.generic;
 
+import org.lhedav.pp.business.cdi.qualifier.Country;
+
 /**
  *
  * @author client
  */
-//@USA
+@Country(name = "CANADA")
 public class ZipCodeChecker {
       public boolean isZipCodeValid(String zipCode) {
     // Call an external web service to check zipcode
