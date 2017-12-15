@@ -18,9 +18,11 @@ import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.CollectionDataModel;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.json.JsonArray;
 import javax.validation.constraints.NotNull;
+import org.lhedav.pp.business.cdi.producer.WholeDate;
 import org.lhedav.pp.business.data.Services;
 import org.lhedav.pp.business.json.ItemdataJsonBuilder;
 import org.lhedav.pp.business.logic.SellerEJB;
@@ -660,7 +662,7 @@ public class AddItem implements Serializable{
         sortitemdatamodel = new SortedDataModel<>(new CollectionDataModel<>(theList));
     }
     
-        public boolean isItemExists(@NotNull String anItemName){
+    public boolean isItemExists(@NotNull String anItemName){
         List<Item> theItems = provider_services.getItemsListByServiceReference(service.getServicereference());
         if(theItems == null) return false;
         for(Item theItem: theItems){

@@ -12,8 +12,8 @@ import javax.enterprise.inject.Produces;
  *
  * @author client
  */
-public class DateProducer {
-    
+//@WholeDate
+public class DateProducer {    
     @Produces @WholeDate
     public Date getCurrentDate(){
         return new Date();
