@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html lang="en"
+xmlns="http://www.w3.org/1999/xhtml"
+xmlns:h="http://xmlns.jcp.org/jsf/html"
+xmlns:f="http://xmlns.jcp.org/jsf/core"
+xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    
+ <f:metadata>
+   <f:viewParam name="kind"      value="#{modifyItem.service.kind}"/>
+   <f:viewParam name="type"      value="#{modifyItem.service.type}"/>
+   <f:viewParam name="service"   value="#{modifyItem.service.servicename}"/> 
+   <f:viewParam name="category"  value="#{modifyItem.service.category}"/>  
+   <f:event type="preRenderView" listener="#{modifyItem.loadService}"/>
+ </f:metadata>
+    
+    <ui:composition template="/WEB-INF/masterTemplate.xhtml">        
+        <!--
+            https://stackoverflow.com/questions/8367421/how-to-reference-css-js-image-resource-in-facelets-template
+        
+            
+        -->
+        <ui:define name="title"> 
+            <h:outputStylesheet name="css/datatable_styles.css" />
+            <h:outputText value="#{modifyItem.pageTitle}"/> 
+        </ui:define> 
+        
+
+        <ui:define name="location"> 
+            <h:outputText value="#{modifyItem.nav1}"/><h:graphicImage value="#{resource['images/common/nav_arrow.png']}" alt="/"/>
+            <h:outputText value="#{modifyItem.nav2}"/><h:graphicImage value="#{resource['images/common/nav_arrow.png']}" alt="/"/>
+            <h:outputText value="#{modifyItem.nav3}"/><h:graphicImage value="#{resource['images/common/nav_arrow.png']}" alt="/"/>
+            <h:outputText value="#{modifyItem.nav4}"/><h:graphicImage value="#{resource['images/common/nav_arrow.png']}" alt="/"/>
+            <h:outputText value="#{modifyItem.service.servicename}"/><h:graphicImage value="#{resource['images/common/nav_arrow.png']}" alt="/"/>
+            <h:outputText value="#{modifyItem.service.category}"/><h:graphicImage value="#{resource['images/common/nav_arrow.png']}" alt="/"/>
+            <h:outputText value="#{modifyItem.nav5}"/>
+        </ui:define>
+        
+        <ui:define name="content">
+            <!-- modify required content here-->            
+            <h:form id="modify_item_form_id" enctype="multipart/form-data">
+                <h:messages id= "globalMessagesId" infoStyle="color:blue" warnStyle="color:orange" errorStyle="color:red"/>
+                <h:panelGrid columns="5">
+                    <h:outputLabel value="#{modifyItem.serviceKind}"/>
+                    <h:outputLabel value="#{modifyItem.serviceType}"/>
+                    <h:outputLabel value="#{modifyItem.serviceReference}"/>
+                    <h:outputLabel value="#{modifyItem.itemReference}"/>
+                    <h:outputLabel value="#{modifyItem.name}"/>
+                    
+                    <h:outputText id = "service_kind" value="#{modifyItem.service.kind}"/>
+                    <h:outputText id = "service_type" value="#{modifyItem.service.type}"/>
+                    <h:outputText id = "service_reference" value="#{modifyItem.service.servicereference}"/>
+                    <h:outputText id = "item_reference" value="#{modifyItem.item.itemreference}"/>                    
+                    <!--https://stackoverflow.com/questions/14824178/getting-selected-value-of-a-selectonemenu-->                    
+                    <h:selectOneMenu id = "item_name" required="true" value="#{modifyItem.item.itemname}"
+                                     valueChangeListener="#{modifyItem.onNameChanged}">
+                        <f:selectItems value="#{modifyItem.itemsNames}"/>
+                        <f:validateLength minimum="3" maximum="50"/>
+                        <f:ajax render="@form"/>
+                    </h:selectOneMenu>                    
+                    <h:message for="item_name"/>                    
+                </h:panelGrid>
+                <h:dataTable id="itemdata_table" value="#{modifyItem.sortitemdatamodel}" var="model_item_data">
+                    <h:column>
+                        <f:facet name="header"> #{modifyItem.date_}  </f:facet> 
+                        #{model_item_data.mdate}
+                    </h:column>
+                    
+                    <!--h:column>
+                        <f:facet name="header"> #{modifyItem.avatar}   </f:facet>                         
+                        <h:graphicImage id ="existing_model_avatar" value="#{model_item_data.currentAvatar}" alt="avatar is missing will use default" rendered="#{not model_item_data.edited}"/> 
+                    </h:column-->
+                    
+                    <h:column>
+                        <f:facet name="header"> #{modifyItem.avatar}</f:facet>                         
+                      <h:graphicImage id="model_file_preview" value="/PreviewServlet/#{header['Content-Length']}" 
+                                      alt="avatar is missing will use default" rendered="#{model_item_data.edited}" 
+                                      width="#{model_item_data.file.size gt 0 ? 100 : 0}" 
+                                      height="#{model_item_data.file.size gt 0 ? 100 : 0}"/>  
+                      
+                      <h:inputFile id="model_file" required="false" requiredMessage="No file selected ..."
+                                   value="#{model_item_data.file}" rendered="#{model_item_data.edited}">                                
+                          <f:ajax listener="#{model_item_data.validateFile()}" render="model_file_preview"/> 
+                      </h:inputFile>
+                                                                    
+                    </h:column>
+                    
+                    <h:column>
+                       <f:facet name="header">#{modifyItem.comment}</f:facet> 
+                       <h:outputText value="#{model_item_data.comment}"   rendered="#{not model_item_data.edited}"/>                      
+                       <h:inputText value="#{model_item_data.comment}" rendered="#{model_item_data.edited}">
+                      </h:inputText>                      
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">#{modifyItem.duration}</f:facet>  
+                        <h:outputText value="#{model_item_data.duration}"   rendered="#{not model_item_data.edited}"/>
+                      
+                        <h:inputText value="#{model_item_data.duration}" rendered="#{model_item_data.edited}">
+                      </h:inputText>
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">#{modifyItem.price}</f:facet>  
+                        <h:outputText value="#{model_item_data.price}"   rendered="#{not model_item_data.edited}"/>
+                      
+                        <h:inputText value="#{model_item_data.price}" rendered="#{model_item_data.edited}">
+                      </h:inputText>
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">#{modifyItem.qty}</f:facet>  
+                        <h:outputText value="#{model_item_data.qty}"   rendered="#{not model_item_data.edited}"/>
+                      
+                        <h:inputText value="#{model_item_data.qty}" rendered="#{model_item_data.edited}">
+                      </h:inputText>
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">#{modifyItem.virtual}</f:facet>  
+                        <h:outputText value="#{model_item_data.virtual}"   rendered="#{not model_item_data.edited}"/>
+                      
+                        <h:inputText value="#{model_item_data.virtual}" rendered="#{model_item_data.edited}">
+                      </h:inputText>
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">#{modifyItem.unit}</f:facet> 
+                        <h:outputText value="#{model_item_data.unit}"  rendered="#{not model_item_data.edited}"/>
+                      
+                        <h:selectOneMenu id = "unit" required="true" value="#{model_item_data.unit}" rendered="#{model_item_data.edited}">
+                            <f:selectItems value="#{modifyItem.unitsList}" />
+                        </h:selectOneMenu>
+                    </h:column> 
+                  
+                    <h:column>
+                      <f:facet name="header">#{modifyItem.remove}</f:facet>
+                      
+                      <h:commandButton image="#{resource['images/common/red_minus.png']}" action="#{modifyItem.removeRowItemdata(model_item_data)}" /> 
+                    </h:column>
+                    
+                    <h:column>
+                      <f:facet name="header">#{modifyItem.edit}</f:facet>
+                      <h:commandButton image="#{resource['images/common/green_plus.png']}" action="#{modifyItem.editRowItemdata(model_item_data)}" rendered="#{not model_item_data.edited}"> 
+                          <f:ajax render="@form"/>
+                      </h:commandButton>
+                    </h:column>
+                </h:dataTable>
+                 
+                 <h:commandButton value="#{modifyItem.saveItemLabel}" action="#{modifyItem.saveItem()}">
+                     <!-- <f:ajax execute="fileToUpload" render="@all"/> use @all in JSF 2.2.0 -->
+                     <f:ajax execute="@form" render="@form"/> <!-- works in JSF 2.2.5 -->
+                 </h:commandButton>
+            
+            </h:form>
+            
+        </ui:define>
+    </ui:composition>
+</html>

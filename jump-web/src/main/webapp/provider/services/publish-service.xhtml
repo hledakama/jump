@@ -160,13 +160,20 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
                 </h:dataTable>
             
-                <h:button id = "toward_item" value="#{publishService.addServiceButtonLabel}" outcome="add-item" > 
+                <h:button id = "adding_item" value="#{publishService.addServiceButtonLabel}" outcome="add-item" > 
                     <f:param name="kind" value="#{publishService.service.kind}"/>
                     <f:param name="type" value="#{publishService.service.type}"/>
                     <f:param name="service" value="#{publishService.service.servicename}"/>
                     <f:param name="category" value="#{publishService.service.category}"/>
                 </h:button>
-                <h:commandButton disabled="true" value="#{publishService.modifyServiceButtonLabel}"/>
+            
+            <h:button id ="modifying_item" value="#{publishService.modifyServiceButtonLabel}"  outcome="modify-item" rendered="#{publishService.isModify()}">
+                    <f:param name="kind" value="#{publishService.service.kind}"/>
+                    <f:param name="type" value="#{publishService.service.type}"/>
+                    <f:param name="service" value="#{publishService.service.servicename}"/>
+                    <f:param name="category" value="#{publishService.service.category}"/>
+                </h:button>
+            
             <h:commandButton disabled="#{publishService.publishChecked}" value="#{publishService.publishButtonLabel}" action="#{publishService.publish()}"/>
                               
             

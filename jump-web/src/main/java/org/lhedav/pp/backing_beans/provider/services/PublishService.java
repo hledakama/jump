@@ -57,14 +57,15 @@ public class PublishService {
     private String itemPrice = "Price";
     private String itemVirtual = "Virtual";
     private String itemQty = "Qty";
-    private String addServiceButtonLabel = "Add service";
-    private String modifyServiceButtonLabel = "Modify service";
-    private String publishButtonLabel = "Publish service";
+    private String addServiceButtonLabel = "Add";
+    private String modifyServiceButtonLabel = "Modify";
+    private String publishButtonLabel = "Publish";
             @EJB
-    private SellerEJB m_provider_services;
+    private SellerEJB provider_services;
     private SortedDataModel<Item> sortedItemModel;
     private SortedDataModel<Service> sortedServiceModel;
     private boolean publishChecked;
+    private boolean modify;
     
     
     PublishService(){ 
@@ -72,9 +73,9 @@ public class PublishService {
     //https://community.oracle.com/thread/1726468
     @PostConstruct
     public void init() {
-        List<ServiceKind>  theKinds    = m_provider_services.getServiceKinds();
-        List<ServiceType> theTypes     = m_provider_services.getServiceTypes();
-        List<Services> theServicesData = m_provider_services.getServicesData();
+        List<ServiceKind>  theKinds    = provider_services.getServiceKinds();
+        List<ServiceType> theTypes     = provider_services.getServiceTypes();
+        List<Services> theServicesData = provider_services.getServicesData();
         
         int theKindSize = theKinds.size(); 
            for(int index = 0; index < theKindSize; index++){
@@ -124,7 +125,7 @@ public class PublishService {
     public boolean isServiceEmpty(){
         System.out.println("setServicereference from PublishService.isServiceEmpty");
         service.setServicereference();
-        Collection<Item>   theItems = m_provider_services.getItemsListByServiceReference(service.getServicereference());
+        Collection<Item>   theItems = provider_services.getItemsListByServiceReference(service.getServicereference());
         boolean isNotEmpty = (theItems != null) && (theItems.size() > 0);
         if(theItems != null){
             java.lang.System.out.println("listSize: "+theItems.size()+", ");
@@ -325,60 +326,34 @@ public class PublishService {
        public void setPublishButtonLabel(String aLabel){
            publishButtonLabel = aLabel;
        }
-        
-   /*    public void setServiceKindChanged(ValueChangeEvent anEvent){
-        if(anEvent == null) return;
-        serviceKindChanged = anEvent.getNewValue().toString();
-    }
-       public void isServiceTypeChanged(ValueChangeEvent anEvent){
-        if(anEvent == null) return;
-        serviceKindChanged = anEvent.getNewValue().toString();
-    }
-       public void setServiceNameChanged(ValueChangeEvent anEvent){
-        if(anEvent == null) return;
-        serviceNameChanged = anEvent.getNewValue().toString();
-    }
-       
-         public void isServiceCategoryChanged(ValueChangeEvent anEvent){
-        if(anEvent == null) return;
-        serviceNameChanged = anEvent.getNewValue().toString();
-    }*/
-         
-           public SortedDataModel<Item> getSortedItemModel() {
-           List<Service>   theServices;
+             
+    public SortedDataModel<Item> getSortedItemModel() {
+           Service   theService;
            System.out.println("service.getServicename(): "+service.getServicename());
            System.out.println("service.getKind(): "+service.getKind());
            System.out.println("service.getType(): "+service.getType());
-           theServices = m_provider_services.getItemsFromServices(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
+           theService = provider_services.getItemsFromService(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
            List<Item> theItems = new ArrayList();
-           if(theServices != null) {
-              for(Service theService: theServices) {
+           if(theService != null) {
               List<Item> theTempResult = theService.getItemList();
-              if(theTempResult == null) continue;
            
               for(Item theItem : theTempResult) {
                 if(theItem == null) continue;
                    theItems.add(theItem);           
-              }           
-            }
+              } 
            }
-           //System.out.println("theServices.size(): "+theServices.size()+ ", theItems.size(): "+theItems.size());;
            sortedItemModel = new SortedDataModel<>(new CollectionDataModel<>(theItems));
-           /* } catch (ParseException ex) {
-            Logger.getLogger(AddModifyItem.class.getName()).log(Level.SEVERE, null, ex);
-           }*/
+
            return sortedItemModel;
     }
     
            public SortedDataModel<Service> getSortedServiceModel() {
-           List<Service>   theServices;
+           List<Service>   theServices = new ArrayList();
            System.out.println("--service.getServicename(): "+service.getServicename());
            System.out.println("--service.getKind(): "+service.getKind());
            System.out.println("--service.getType(): "+service.getType());
-           theServices = m_provider_services.getItemsFromServices(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
-
-           //System.out.println("theServices.size(): "+theServices.size()+ ", theServices.size(): "+theServices.size());;
-           sortedServiceModel = new SortedDataModel<>(new CollectionDataModel<>(theServices));
+           theServices.add(provider_services.getItemsFromService(service.getKind(), service.getType(), service.getServicename(), service.getCategory()));
+            sortedServiceModel = new SortedDataModel<>(new CollectionDataModel<>(theServices));
            /* } catch (ParseException ex) {
             Logger.getLogger(AddModifyItem.class.getName()).log(Level.SEVERE, null, ex);
            }*/
@@ -395,10 +370,10 @@ public class PublishService {
          }
          System.out.println("setServicereference from PublishService.Publish");
          service.setServicereference();
-         Service theRetrived = m_provider_services.getServiceByServiceReference(service.getServicereference());
+         Service theRetrived = provider_services.getServiceByServiceReference(service.getServicereference());
          theRetrived.setPublished((short)1);
          
-         if(m_provider_services.PersistService(service)){
+         if(provider_services.PersistService(service)){
              theCtx.addMessage(GLOBAL_DISPLAY_MESSAGE, new FacesMessage(FacesMessage.SEVERITY_INFO, 
                                                                         "Publishing service.",
                                                                         "The service is published successfully"));
@@ -474,32 +449,32 @@ public class PublishService {
     
     public String editItemRow(Item anItem) {
         anItem.setEdited(true);
-        m_provider_services.updateItem(anItem);
+        provider_services.updateItem(anItem);
       return Global.STAY_ON_CURRENT_PAGE;        
     }
        
     public String deleteItemRow(Item anItem) {
-        m_provider_services.deleteItem(anItem);
-        m_provider_services.updateItem(anItem);
+        provider_services.deleteItem(anItem);
+        provider_services.updateItem(anItem);
       return Global.STAY_ON_CURRENT_PAGE;       
     }
     
     
     public String editServiceRow(Service aService) {
         aService.setEdited(true);
-        m_provider_services.PersistService(aService);
+        provider_services.PersistService(aService);
       return Global.STAY_ON_CURRENT_PAGE;        
     }
        
     public String deleteServiceRow(Service aService) {
-        m_provider_services.deleteService(aService);
-        m_provider_services.PersistService(aService);
+        provider_services.deleteService(aService);
+        provider_services.PersistService(aService);
       return Global.STAY_ON_CURRENT_PAGE;       
     }
     
     public void updateAddModifyButton(){
         service.setServicereference();
-        Service theRegistered = m_provider_services.getServiceByServiceReference(service.getServicereference());
+        Service theRegistered = provider_services.getServiceByServiceReference(service.getServicereference());
         if(theRegistered == null){
             // display add label
         }
@@ -507,6 +482,18 @@ public class PublishService {
             // display modify label
         }
                 
+    }
+    
+    public boolean isModify() {
+        Service theService = provider_services.getItemsFromService(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
+        List<Item> theItems = theService.getItemList();
+        System.out.println("PublushService-->, null != theItems: "+(null != theItems));
+        setModify(null != theItems);
+        return modify;
+    }
+      
+    public void setModify(boolean aModify){
+        modify = aModify;
     }
     
 }

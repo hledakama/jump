@@ -119,7 +119,7 @@ public class SellerEJB {
          }
     }
      
-    public List<Service> getItemsFromServices(@NotNull String aKind, @NotNull String aType, @NotNull String aServiceName, @NotNull String aCategory){
+    public Service getItemsFromService(@NotNull String aKind, @NotNull String aType, @NotNull String aServiceName, @NotNull String aCategory){
        try{
         TypedQuery<Service> theQuery;
         theQuery = em.createNamedQuery("Service.findByServiceNameKindTypeCategory", Service.class);        
@@ -127,7 +127,7 @@ public class SellerEJB {
         theQuery.setParameter("type", aType);
         theQuery.setParameter("servicename", aServiceName);
         theQuery.setParameter("category", aCategory);
-        return theQuery.getResultList();
+        return theQuery.getSingleResult();
          }
          catch(javax.persistence.NoResultException e){
              return null;
