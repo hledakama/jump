@@ -108,7 +108,7 @@ public class PublishService {
         service.setType(servicesTypes.get(0));
         service.setServicename(servicesNames.get(0));
         service.setCategory(categoriesNames.get(0));
-        System.out.println("setServicereference from PublishService.init");
+        //System.out.println("setServicereference from PublishService.init");
         service.setServicereference();
         
         updateAddModifyButton();
@@ -123,14 +123,14 @@ public class PublishService {
     }
     
     public boolean isServiceEmpty(){
-        System.out.println("setServicereference from PublishService.isServiceEmpty");
+        //System.out.println("setServicereference from PublishService.isServiceEmpty");
         service.setServicereference();
         Collection<Item>   theItems = provider_services.getItemsListByServiceReference(service.getServicereference());
         boolean isNotEmpty = (theItems != null) && (theItems.size() > 0);
         if(theItems != null){
-            java.lang.System.out.println("listSize: "+theItems.size()+", ");
+            //java.lang.System.out.println("listSize: "+theItems.size()+", ");
         }   
-        java.lang.System.out.println("isNotEmpty: "+isNotEmpty);
+        //java.lang.System.out.println("isNotEmpty: "+isNotEmpty);
         return !isNotEmpty;
     }
     
@@ -329,9 +329,9 @@ public class PublishService {
              
     public SortedDataModel<Item> getSortedItemModel() {
            Service   theService;
-           System.out.println("service.getServicename(): "+service.getServicename());
-           System.out.println("service.getKind(): "+service.getKind());
-           System.out.println("service.getType(): "+service.getType());
+           //System.out.println("service.getServicename(): "+service.getServicename());
+           //System.out.println("service.getKind(): "+service.getKind());
+           //System.out.println("service.getType(): "+service.getType());
            theService = provider_services.getItemsFromService(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
            List<Item> theItems = new ArrayList();
            if(theService != null) {
@@ -349,9 +349,9 @@ public class PublishService {
     
            public SortedDataModel<Service> getSortedServiceModel() {
            List<Service>   theServices = new ArrayList();
-           System.out.println("--service.getServicename(): "+service.getServicename());
-           System.out.println("--service.getKind(): "+service.getKind());
-           System.out.println("--service.getType(): "+service.getType());
+           //System.out.println("--service.getServicename(): "+service.getServicename());
+           //System.out.println("--service.getKind(): "+service.getKind());
+           //System.out.println("--service.getType(): "+service.getType());
            theServices.add(provider_services.getItemsFromService(service.getKind(), service.getType(), service.getServicename(), service.getCategory()));
             sortedServiceModel = new SortedDataModel<>(new CollectionDataModel<>(theServices));
            /* } catch (ParseException ex) {
@@ -368,7 +368,7 @@ public class PublishService {
                                                                         "Current service is empty or already published!"));
              return Global.STAY_ON_CURRENT_PAGE;
          }
-         System.out.println("setServicereference from PublishService.Publish");
+         //System.out.println("setServicereference from PublishService.Publish");
          service.setServicereference();
          Service theRetrived = provider_services.getServiceByServiceReference(service.getServicereference());
          theRetrived.setPublished((short)1);
@@ -407,43 +407,43 @@ public class PublishService {
     
     
     public void onKindChanged(ValueChangeEvent anEvent){
-       System.out.println("onKindChanged start, getServicereference: "+service.getServicereference()+ ", anEvent.getOldValue(): "+anEvent.getOldValue());
+       //System.out.println("onKindChanged start, getServicereference: "+service.getServicereference()+ ", anEvent.getOldValue(): "+anEvent.getOldValue());
        String theNewKind = (String) anEvent.getNewValue();
        service.setKind(theNewKind);
-       System.out.println("setServicereference from PublishService.onKindChanged");
+       //System.out.println("setServicereference from PublishService.onKindChanged");
        service.setServicereference();
-       System.out.println("onKindChanged end, getServicereference: "+service.getServicereference()+ ", theNewKind: "+theNewKind);
+      //System.out.println("onKindChanged end, getServicereference: "+service.getServicereference()+ ", theNewKind: "+theNewKind);
        updateAddModifyButton();
     }
     //In setServicereference, kind: BEAUTY, type: ADMINISTRATION, servicename: COIFFURE HOMME, category: AFRICAINE
      public void onTypeChanged(ValueChangeEvent anEvent){
-       System.out.println("onTypeChanged start, getServicereference: "+service.getServicereference()+ ", anEvent.getOldValue(): "+anEvent.getOldValue());
+       //System.out.println("onTypeChanged start, getServicereference: "+service.getServicereference()+ ", anEvent.getOldValue(): "+anEvent.getOldValue());
        String theNewType = (String) anEvent.getNewValue();
        service.setType(theNewType);
-       System.out.println("setServicereference from PublishService.onTypeChanged");
+       //System.out.println("setServicereference from PublishService.onTypeChanged");
        service.setServicereference();
-       System.out.println("onTypeChanged end, getServicereference: "+service.getServicereference()+", theNewType: "+theNewType);
+       //System.out.println("onTypeChanged end, getServicereference: "+service.getServicereference()+", theNewType: "+theNewType);
        updateAddModifyButton();
     }
      
      
     public void onNameChanged(ValueChangeEvent anEvent){
-       System.out.println("onNameChanged start, getServicereference: "+service.getServicereference()+ ", anEvent.getOldValue(): "+anEvent.getOldValue());
+       //System.out.println("onNameChanged start, getServicereference: "+service.getServicereference()+ ", anEvent.getOldValue(): "+anEvent.getOldValue());
        String theNewName = (String) anEvent.getNewValue();
        service.setServicename(theNewName);
-       System.out.println("setServicereference from PublishService.onNameChanged");
+       //System.out.println("setServicereference from PublishService.onNameChanged");
        service.setServicereference();
-       System.out.println("onNameChanged end, getServicereference: "+service.getServicereference()+", theNewName: "+theNewName);
+       //System.out.println("onNameChanged end, getServicereference: "+service.getServicereference()+", theNewName: "+theNewName);
        updateAddModifyButton();
     }    
     
     public void onCategoryChanged(ValueChangeEvent anEvent){
-       System.out.println("onCategoryChanged start, getServicereference: "+service.getServicereference()+ ", anEvent.getOldValue(): "+anEvent.getOldValue());
+       //System.out.println("onCategoryChanged start, getServicereference: "+service.getServicereference()+ ", anEvent.getOldValue(): "+anEvent.getOldValue());
        String theNewCategory = (String) anEvent.getNewValue();
        service.setCategory(theNewCategory);
-       System.out.println("setServicereference from PublishService.onCategoryChanged");
+       //System.out.println("setServicereference from PublishService.onCategoryChanged");
        service.setServicereference();
-       System.out.println("onCategoryChanged end, getServicereference: "+service.getServicereference()+", theNewCategory: "+theNewCategory);
+       //System.out.println("onCategoryChanged end, getServicereference: "+service.getServicereference()+", theNewCategory: "+theNewCategory);
        updateAddModifyButton();
     }
     
@@ -487,7 +487,7 @@ public class PublishService {
     public boolean isModify() {
         Service theService = provider_services.getItemsFromService(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
         List<Item> theItems = theService.getItemList();
-        System.out.println("PublushService-->, null != theItems: "+(null != theItems));
+        //System.out.println("PublushService-->, null != theItems: "+(null != theItems));
         setModify(null != theItems);
         return modify;
     }

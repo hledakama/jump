@@ -134,18 +134,7 @@ public class ModifyItem implements Serializable{
             numOfItems  = theItems.size();
             //System.out.println("numOfItems: "+numOfItems+ ", theItems.size(): "+theItems.size());
         }
-        String theCrc = CRC32StringCollection.getServicereference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
-        //System.out.println("loadService from ModifyItem.init, service-->theCrc: "+theCrc);
-        Service theSavedService = provider_services.getServiceByServiceReference(theCrc);
-        if(theSavedService == null){
-            service.setServicereference();
-        }
-        else{
-            //System.out.println("service != null");
-            service = theSavedService;
-            service.setMerged(true);            
-            //System.out.println("service.getItemList().size(): "+service.getItemList().size());
-        } 
+        loadService_(); 
         setSortitemdatamodel();
     }    
    
@@ -185,6 +174,13 @@ public class ModifyItem implements Serializable{
     }
 
     public String removeRowItemdata(@NotNull Itemdata anItemdata) {
+       loadService_();
+       System.out.println("=========== before removeRowItemdata start  =============");
+        List<Itemdata> theData = item.getItemdataList();
+        for(Itemdata aData: theData){
+            System.out.println("comment: "+aData.getComment()+ ", date: "+aData.getMdate());
+        }
+        System.out.println("=========== before removeRowItemdata end =============");
         if(item.removeItemDataFromList(anItemdata)){            
             if(item.getItemdataList().isEmpty()){                
                 strDeletion = item.getItemname();
@@ -192,9 +188,16 @@ public class ModifyItem implements Serializable{
                     //System.out.println("removeRowItemdata, strDeletion: "+strDeletion);
                 }
             }
+            service.replaceItem(item);
             provider_services.PersistService(service);
             init();
         }
+        System.out.println("=========== after removeRowItemdata start  =============");
+         theData = item.getItemdataList();
+        for(Itemdata aData: theData){
+            System.out.println("comment: "+aData.getComment()+ ", date: "+aData.getMdate());
+        }
+        System.out.println("=========== after removeRowItemdata end =============");
         return Global.STAY_ON_CURRENT_PAGE;
     }
     
@@ -230,6 +233,7 @@ public class ModifyItem implements Serializable{
     }
 
     private String modifyItem() {
+       loadService_();
        Avatar theAvatar = itemdata.saveFileToDisk();
         if (sortitemdatamodel != null) {
             for (Itemdata theItemdata : sortitemdatamodel) {
@@ -247,6 +251,12 @@ public class ModifyItem implements Serializable{
         item.setCdate(new Date());
         item.setItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
         service.addItemToList(item);
+        System.out.println("=========== modifyItem start  =============");
+        List<Itemdata> theData = item.getItemdataList();
+        for(Itemdata aData: theData){
+            System.out.println("comment: "+aData.getComment()+ ", date: "+aData.getMdate());
+        }
+        System.out.println("=========== modifyItem end =============");
         service.setServicereference();
         provider_services.PersistService(service);        
         //after persisting
@@ -725,6 +735,23 @@ public class ModifyItem implements Serializable{
     
     public boolean isItemNameEmpty(){
         return (itemsNames.isEmpty() || (itemsNames.get(0)).equals(Global.STR_EMPTY));
+    }
+    
+    public void loadService_(){
+            
+        String theCrc = CRC32StringCollection.getServicereference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
+        //System.out.println("loadService from AddItem.init, service-->theCrc: "+theCrc);
+        Service theSavedService = provider_services.getServiceByServiceReference(theCrc);
+        if(theSavedService == null){
+            service.setServicereference();
+        }
+        else{
+            //System.out.println("service != null");
+            service = theSavedService;
+            service.setMerged(true);            
+            //System.out.println("service.getItemList().size(): "+service.getItemList().size());
+    
+    }
     }
 
 }

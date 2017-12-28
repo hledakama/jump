@@ -223,6 +223,18 @@ public class Service implements Serializable {
     }  
     return false;
 }
+ 
+  public boolean replaceItem(Item anItem) {
+      for(Item anyItem: getItemList()){
+            if (Objects.equals(anyItem.getItemTId(), anItem.getItemTId())) {
+            itemList.remove(anyItem);
+            itemList.add(anItem);
+            System.out.println("replaceItem-->true,  itemName: "+ anItem.getItemname()+ ", Id: "+anyItem.getItemTId());
+            return true;
+      } 
+    } 
+    return false;
+}
     
     public Item getItemByName(@NotNull String aName) {
         for(Item theItem: itemList){

@@ -100,7 +100,7 @@ public class AddItem implements Serializable{
 
     @PostConstruct
     public void init() {
-         System.out.println("PostConstruct init");
+         //System.out.println("PostConstruct init");
         List<Services> theServicesData = provider_services.getServicesData();
         int theServicesSize = theServicesData.size();
          
@@ -116,18 +116,7 @@ public class AddItem implements Serializable{
     }
     //https://stackoverflow.com/questions/6341462/initializng-a-backing-bean-with-parameters-on-page-load-with-jsf-2-0
     public void loadService(){
-        String theCrc = CRC32StringCollection.getServicereference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
-        System.out.println("loadService from AddItem.init, service-->theCrc: "+theCrc);
-        Service theSavedService = provider_services.getServiceByServiceReference(theCrc);
-        if(theSavedService == null){
-            service.setServicereference();
-        }
-        else{
-            System.out.println("service != null");
-            service = theSavedService;
-            service.setMerged(true);            
-            System.out.println("service.getItemList().size(): "+service.getItemList().size());
-        } 
+        loadService_();
         setSortitemdatamodel();
     }    
    
@@ -210,6 +199,7 @@ public class AddItem implements Serializable{
     }
 
     private String addItem() {
+       loadService_();
        Avatar theAvatar = itemdata.saveFileToDisk();
         if (sortitemdatamodel != null) {
             for (Itemdata theItemdata : sortitemdatamodel) {
@@ -227,6 +217,12 @@ public class AddItem implements Serializable{
         item.setCdate(new Date());
         item.setItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
         service.addItemToList(item);
+        System.out.println("=========== addItem start  =============");
+        List<Itemdata> theData = item.getItemdataList();
+        for(Itemdata aData: theData){
+            System.out.println("comment: "+aData.getComment()+ ", date: "+aData.getMdate());
+        }
+        System.out.println("=========== addItem end =============");
         service.setServicereference();
         provider_services.PersistService(service);        
         //after persisting
@@ -644,7 +640,7 @@ public class AddItem implements Serializable{
 //https://stackoverflow.com/tags/jsf/info
     public void setSortitemdatamodel() {
         List<Itemdata> theList = null;
-        System.out.println("yyyyy item.getItemname(): "+item.getItemname());
+        //System.out.println("yyyyy item.getItemname(): "+item.getItemname());
         item.setItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
         if(item.getItemname() == null){
             resetItem(itemsNames.get(0));
@@ -658,7 +654,7 @@ public class AddItem implements Serializable{
             theList = theItem.getItemdataList(); 
             item = theItem;
         }
-        System.out.println("theList == null: "+(theList == null)+", item.getItemname(): "+item.getItemname()+", theItemName: "+theItemName);
+        //System.out.println("theList == null: "+(theList == null)+", item.getItemname(): "+item.getItemname()+", theItemName: "+theItemName);
         sortitemdatamodel = new SortedDataModel<>(new CollectionDataModel<>(theList));
     }
     
@@ -702,5 +698,23 @@ public class AddItem implements Serializable{
             itemdata.setVirtual(virtualItemdata ? (short) 1 : (short) 0);
         }
     }
+    
+    public void loadService_(){
+            
+        String theCrc = CRC32StringCollection.getServicereference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
+        //System.out.println("loadService from AddItem.init, service-->theCrc: "+theCrc);
+        Service theSavedService = provider_services.getServiceByServiceReference(theCrc);
+        if(theSavedService == null){
+            service.setServicereference();
+        }
+        else{
+            //System.out.println("service != null");
+            service = theSavedService;
+            service.setMerged(true);            
+            //System.out.println("service.getItemList().size(): "+service.getItemList().size());
+    
+    }
+    }
+    
 
 }
