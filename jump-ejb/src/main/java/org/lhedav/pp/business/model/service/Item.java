@@ -157,7 +157,7 @@ public class Item implements Serializable {
         }
     }
     
-    public boolean removeItemDataToList(Itemdata anItemData) {
+    public boolean removeItemDataFromList(Itemdata anItemData) {
         System.out.println("removeItemDataToList, this: "+this+", getItemdataList().contains(anItemData): "+getItemdataList().contains(anItemData)+ ", getComment: "+anItemData.getComment());
         if (getItemdataList().contains(anItemData)) {
             getItemdataList().remove(anItemData);

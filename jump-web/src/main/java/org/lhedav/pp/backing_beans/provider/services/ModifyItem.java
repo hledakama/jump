@@ -12,7 +12,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
@@ -35,6 +34,7 @@ import org.lhedav.pp.business.model.service.SortedDataModel;
 /**
  *
  * @author client
+ * 
  */
 @Named
 //@RequestScoped
@@ -91,48 +91,60 @@ public class ModifyItem implements Serializable{
     private String upload = "Upload";
     private String submitRow = "submitRow";
     private boolean isInitiated = false;  
-    private boolean isDeletion = false;
+    private String strDeletion = Global.STR_EMPTY;
+    private int numOfItems = -1;
 
     ModifyItem() {
     }
-
-    //@PostConstruct
+    
     public synchronized void init() {
-         System.out.println("PostConstruct init");
-        Service theService = provider_services.getItemsFromService(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
+        //System.out.println("init");
+        Service theService  = provider_services.getItemsFromService(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
         List<Item> theItems = theService.getItemList();
-        if(!itemsNames.isEmpty()){
-            for(String theString: itemsNames){
-            itemsNames.remove(theString);
+       
+        if(itemsNames.contains(strDeletion)){
+                itemsNames.remove(strDeletion);                
+                //System.out.println("init removing strDeletion : "+strDeletion);
+                strDeletion = Global.STR_EMPTY;
             }
-        }
-
+           
         if(null != theItems){
+            numOfItems = theItems.size();
             for (Item theItem: theItems) {
-                String theItemName = theItem.getItemname();       
-            itemsNames.add(theItemName);
-            if(!itemsNames.isEmpty())resetItem(itemsNames.get(0));
-        }         
+                String theItemName = theItem.getItemname();                 
+                if(!itemsNames.contains(theItemName)){
+                    itemsNames.add(theItemName);
+                }
+                //System.out.println("init adding : "+theItemName +", numOfItems: "+numOfItems);
+            }
+        
+            if(!isItemNameEmpty()){
+                resetItem(itemsNames.get(0));
+            }
         }
     }
     //https://stackoverflow.com/questions/6341462/initializng-a-backing-bean-with-parameters-on-page-load-with-jsf-2-0
     public void loadService(){
-        if(!isInitiated || isDeletion || itemsNames.isEmpty()) {
+        Service theService  = provider_services.getItemsFromService(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
+        List<Item> theItems = theService.getItemList();
+        
+        if(!isInitiated || isItemNameEmpty() || (theItems != null) && (numOfItems != (theItems.size())) ) {
             init();
             isInitiated = true;
-            isDeletion = false;
+            numOfItems  = theItems.size();
+            //System.out.println("numOfItems: "+numOfItems+ ", theItems.size(): "+theItems.size());
         }
         String theCrc = CRC32StringCollection.getServicereference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
-        System.out.println("loadService from ModifyItem.init, service-->theCrc: "+theCrc);
+        //System.out.println("loadService from ModifyItem.init, service-->theCrc: "+theCrc);
         Service theSavedService = provider_services.getServiceByServiceReference(theCrc);
         if(theSavedService == null){
             service.setServicereference();
         }
         else{
-            System.out.println("service != null");
+            //System.out.println("service != null");
             service = theSavedService;
             service.setMerged(true);            
-            System.out.println("service.getItemList().size(): "+service.getItemList().size());
+            //System.out.println("service.getItemList().size(): "+service.getItemList().size());
         } 
         setSortitemdatamodel();
     }    
@@ -173,15 +185,15 @@ public class ModifyItem implements Serializable{
     }
 
     public String removeRowItemdata(@NotNull Itemdata anItemdata) {
-        if(item.removeItemDataToList(anItemdata)){
-           //isDeletion = true;
-            //init();
-            String theItemName = item.getItemname();
-            if(item.getItemdataList().isEmpty()){
-                service.removeItemFromList(item);
-                resetItem(theItemName);
+        if(item.removeItemDataFromList(anItemdata)){            
+            if(item.getItemdataList().isEmpty()){                
+                strDeletion = item.getItemname();
+                if(service.removeItemFromList(item)){
+                    //System.out.println("removeRowItemdata, strDeletion: "+strDeletion);
+                }
             }
             provider_services.PersistService(service);
+            init();
         }
         return Global.STAY_ON_CURRENT_PAGE;
     }
@@ -652,9 +664,9 @@ public class ModifyItem implements Serializable{
 //https://stackoverflow.com/tags/jsf/info
     public void setSortitemdatamodel() {
         List<Itemdata> theList = null;
-        System.out.println("yyyyy item.getItemname(): "+item.getItemname());
+        //System.out.println("yyyyy item.getItemname(): "+item.getItemname()+", isItemNameEmpty(): "+isItemNameEmpty());
         item.setItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
-        if((item.getItemname() == null) && (!itemsNames.isEmpty())){
+        if((item.getItemname() == null) && (!isItemNameEmpty())){
             resetItem(itemsNames.get(0));
         }
         Item theItem = null;
@@ -666,7 +678,7 @@ public class ModifyItem implements Serializable{
             theList = theItem.getItemdataList(); 
             item = theItem;
         }
-        System.out.println("theList == null: "+(theList == null)+", item.getItemname(): "+item.getItemname()+", theItemName: "+theItemName);
+        //System.out.println("theList == null: "+(theList == null)+", item.getItemname(): "+item.getItemname()+", theItemName: "+theItemName);
         sortitemdatamodel = new SortedDataModel<>(new CollectionDataModel<>(theList));
     }
     
@@ -709,6 +721,10 @@ public class ModifyItem implements Serializable{
             virtualItemdata = virtual;
             itemdata.setVirtual(virtualItemdata ? (short) 1 : (short) 0);
         }
+    }
+    
+    public boolean isItemNameEmpty(){
+        return (itemsNames.isEmpty() || (itemsNames.get(0)).equals(Global.STR_EMPTY));
     }
 
 }

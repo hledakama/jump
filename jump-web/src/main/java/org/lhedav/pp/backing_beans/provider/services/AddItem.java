@@ -167,7 +167,7 @@ public class AddItem implements Serializable{
     }
 
     public String removeRowItemdata(@NotNull Itemdata anItemdata) {
-        if(item.removeItemDataToList(anItemdata)){
+        if(item.removeItemDataFromList(anItemdata)){
             String theItemName = item.getItemname();
             if(item.getItemdataList().isEmpty()){
                 service.removeItemFromList(item);

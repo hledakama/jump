@@ -215,6 +215,7 @@ public class Service implements Serializable {
             }
         }
     }
+    
  public boolean removeItemFromList(Item anItem) {
     if (getItemList().contains(anItem)) {
         getItemList().remove(anItem);
