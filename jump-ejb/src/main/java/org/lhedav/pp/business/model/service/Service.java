@@ -229,7 +229,7 @@ public class Service implements Serializable {
             if (Objects.equals(anyItem.getItemTId(), anItem.getItemTId())) {
             itemList.remove(anyItem);
             itemList.add(anItem);
-            System.out.println("replaceItem-->true,  itemName: "+ anItem.getItemname()+ ", Id: "+anyItem.getItemTId());
+            //System.out.println("replaceItem-->true,  itemName: "+ anItem.getItemname()+ ", Id: "+anyItem.getItemTId());
             return true;
       } 
     } 

@@ -93,6 +93,7 @@ public class AddItem implements Serializable{
     private String showhide = "ShowHide";
     private String upload = "Upload";
     private String submitRow = "submitRow";
+    private boolean isInitiated = false; 
 
     AddItem() {
         
@@ -218,15 +219,15 @@ public class AddItem implements Serializable{
         item.setCdate(new Date());
         item.setItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());        
         if(!service.replaceItem(item)){
-            System.out.println("=========== addItem addItemToList  =============");
+            //System.out.println("=========== addItem addItemToList  =============");
             service.addItemToList(item);
         }
-        System.out.println("=========== addItem start  =============");
-        List<Itemdata> theData = item.getItemdataList();
-        for(Itemdata aData: theData){
-            System.out.println("comment: "+aData.getComment()+ ", date: "+aData.getMdate());
-        }
-        System.out.println("=========== addItem end =============");
+        //System.out.println("=========== addItem start  =============");
+       // List<Itemdata> theData = item.getItemdataList();
+       // for(Itemdata aData: theData){
+            //System.out.println("comment: "+aData.getComment()+ ", date: "+aData.getMdate());
+        //}
+        //System.out.println("=========== addItem end =============");
         service.setServicereference();
         provider_services.PersistService(service);        
         //after persisting
@@ -703,8 +704,7 @@ public class AddItem implements Serializable{
         }
     }
     
-    public void loadService_(){
-            
+    public void loadService_(){            
         String theCrc = CRC32StringCollection.getServicereference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
         //System.out.println("loadService from AddItem.init, service-->theCrc: "+theCrc);
         Service theSavedService = provider_services.getServiceByServiceReference(theCrc);
@@ -717,5 +717,24 @@ public class AddItem implements Serializable{
             service.setMerged(true);            
             //System.out.println("service.getItemList().size(): "+service.getItemList().size());
         }
+        if((itemsNames.size() > 0) && !isInitiated){
+            resetItem(itemsNames.get(getFirstAvailableIndex()));
+            isInitiated = true;
+        }
     }
+    
+    public int getFirstAvailableIndex(){
+        if(itemsNames.isEmpty()){
+            return -1;
+        }
+        int theResult = 0;
+        int theSize = itemsNames.size();
+        for(int index = 0; index < theSize; index++){
+            if(service.containsItem(itemsNames.get(index))){
+                theResult = index;
+                break;
+            }
+        }        
+        return theResult;
+    }    
 }

@@ -53,10 +53,10 @@ private SellerEJB provider_services;
         String model_id = request.getParameter("id");
         try {
             //https://stackoverflow.com/questions/2633112/get-jsf-managed-bean-by-name-in-any-servlet-related-class
-            System.out.println("preview1");
+            //System.out.println("preview1");
             HttpSession session = request.getSession(false);
             if (additemBean != null) {
-                System.out.println("preview2");                
+                //System.out.println("preview2");                
                 Part theFile = null;
                 if((model_id != null) && (!model_id.equals("-1"))){
                     Itemdata theItemdata = provider_services.getItemdataById(model_id);
@@ -66,7 +66,7 @@ private SellerEJB provider_services;
                     theFile = additemBean.getItemdata().getFile(); 
                 }
                 if (theFile != null) {
-                    System.out.println("preview3");
+                    //System.out.println("preview3");
                     BufferedImage image = ImageIO.read(theFile.getInputStream());
                     BufferedImage resizedImage = new BufferedImage(100, 100, BufferedImage.TYPE_INT_ARGB);
                     Graphics2D g = resizedImage.createGraphics();
@@ -77,7 +77,7 @@ private SellerEJB provider_services;
             }
         } finally {
             out.close();
-            System.out.println("preview4");
+            //System.out.println("preview4");
         }
     }
 
