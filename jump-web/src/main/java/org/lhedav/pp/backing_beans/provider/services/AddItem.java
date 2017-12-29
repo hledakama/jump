@@ -168,6 +168,7 @@ public class AddItem implements Serializable{
     }
     
     public void resetItem(String anItemName){
+        itemdata.resetFile();
         item = new Item();
         item.setItemname(anItemName);
         item.setItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
