@@ -215,8 +215,11 @@ public class AddItem implements Serializable{
         itemdata.addProviderAvatarToList(theAvatar);
         item.addItemDataToList(itemdata);
         item.setCdate(new Date());
-        item.setItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
-        service.addItemToList(item);
+        item.setItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());        
+        if(!service.replaceItem(item)){
+            System.out.println("=========== addItem addItemToList  =============");
+            service.addItemToList(item);
+        }
         System.out.println("=========== addItem start  =============");
         List<Itemdata> theData = item.getItemdataList();
         for(Itemdata aData: theData){
@@ -712,9 +715,6 @@ public class AddItem implements Serializable{
             service = theSavedService;
             service.setMerged(true);            
             //System.out.println("service.getItemList().size(): "+service.getItemList().size());
-    
+        }
     }
-    }
-    
-
 }

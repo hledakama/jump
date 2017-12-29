@@ -91,8 +91,10 @@ public class ModifyItem implements Serializable{
     private String upload = "Upload";
     private String submitRow = "submitRow";
     private boolean isInitiated = false;  
-    private String strDeletion = Global.STR_EMPTY;
+    private String strItemDeletion = Global.STR_EMPTY;
+    private String strLastItemContentDeleted = Global.STR_EMPTY;
     private int numOfItems = -1;
+    //private boolean isItemsNamesCleaned = false;
 
     ModifyItem() {
     }
@@ -101,24 +103,30 @@ public class ModifyItem implements Serializable{
         //System.out.println("init");
         Service theService  = provider_services.getItemsFromService(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
         List<Item> theItems = theService.getItemList();
-       
-        if(itemsNames.contains(strDeletion)){
-                itemsNames.remove(strDeletion);                
-                //System.out.println("init removing strDeletion : "+strDeletion);
-                strDeletion = Global.STR_EMPTY;
+        if(itemsNames.contains(strItemDeletion)){
+            System.out.println("init removing strDeletion : "+strItemDeletion+", "+itemsNames.get(0)+", numOfItems: "+numOfItems);
+            itemsNames.remove(strItemDeletion);
+            strItemDeletion = Global.STR_EMPTY;
+            item.setItemname(null);
             }
            
         if(null != theItems){
             numOfItems = theItems.size();
+            if(!strLastItemContentDeleted.equals(Global.STR_EMPTY)){
+                itemsNames.set(0, strLastItemContentDeleted);
+                removeName(0, strLastItemContentDeleted);
+                strLastItemContentDeleted = Global.STR_EMPTY;
+            }
             for (Item theItem: theItems) {
-                String theItemName = theItem.getItemname();                 
+                String theItemName = theItem.getItemname();
                 if(!itemsNames.contains(theItemName)){
                     itemsNames.add(theItemName);
-                }
-                //System.out.println("init adding : "+theItemName +", numOfItems: "+numOfItems);
+                 System.out.println("init adding : "+theItemName +", numOfItems: "+numOfItems);
+                }                
             }
         
             if(!isItemNameEmpty()){
+                System.out.println("resetItem-->init");
                 resetItem(itemsNames.get(0));
             }
         }
@@ -181,9 +189,11 @@ public class ModifyItem implements Serializable{
             System.out.println("comment: "+aData.getComment()+ ", date: "+aData.getMdate());
         }
         System.out.println("=========== before removeRowItemdata end =============");
-        if(item.removeItemDataFromList(anItemdata)){            
+        if(item.removeItemDataFromList(anItemdata)){
+            strLastItemContentDeleted = item.getItemname();
             if(item.getItemdataList().isEmpty()){                
-                strDeletion = item.getItemname();
+                strItemDeletion = item.getItemname();
+                strLastItemContentDeleted = Global.STR_EMPTY;
                 if(service.removeItemFromList(item)){
                     //System.out.println("removeRowItemdata, strDeletion: "+strDeletion);
                 }
@@ -204,6 +214,15 @@ public class ModifyItem implements Serializable{
     public void resetItem(String anItemName){
         item = new Item();
         item.setItemname(anItemName);
+        System.out.println("resetItem-->anItemName: "+anItemName+", strLastItemContentDeleted: "+strLastItemContentDeleted+", itemsNames.size: "+itemsNames.size());
+        /*if(!strLastItemContentDeleted.equals(Global.STR_EMPTY)){
+            System.out.println("resetItem-->strLastItemContentDeleted not empty");
+            item.setItemname(strLastItemContentDeleted);
+            itemsNames.set(0, strLastItemContentDeleted);
+        }*/
+        if(itemsNames.isEmpty()){
+            item.setItemname(null);
+        }
         item.setItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
     }
     //https://www.mkyong.com/jsf2/how-to-update-row-in-jsf-datatable/
@@ -226,44 +245,6 @@ public class ModifyItem implements Serializable{
         return Global.STAY_ON_CURRENT_PAGE;
     }
 
-    public String saveItem() {
-        itemNameChanged = false;
-        modifyItem();
-        return Global.STAY_ON_CURRENT_PAGE;
-    }
-
-    private String modifyItem() {
-       loadService_();
-       Avatar theAvatar = itemdata.saveFileToDisk();
-        if (sortitemdatamodel != null) {
-            for (Itemdata theItemdata : sortitemdatamodel) {
-                if(theItemdata.isEdited()){
-                   theItemdata.setEdited(false); 
-                }
-                if(theItemdata.isUploadValidated()){
-                    theItemdata.saveFileToDisk();
-                    theItemdata.setUploadValidated(false);
-                }
-            }
-        }
-        itemdata.addProviderAvatarToList(theAvatar);
-        item.addItemDataToList(itemdata);
-        item.setCdate(new Date());
-        item.setItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
-        service.addItemToList(item);
-        System.out.println("=========== modifyItem start  =============");
-        List<Itemdata> theData = item.getItemdataList();
-        for(Itemdata aData: theData){
-            System.out.println("comment: "+aData.getComment()+ ", date: "+aData.getMdate());
-        }
-        System.out.println("=========== modifyItem end =============");
-        service.setServicereference();
-        provider_services.PersistService(service);        
-        //after persisting
-        itemdata = new Itemdata();
-        return Global.STAY_ON_CURRENT_PAGE;
-    }
-
     public String modifyItems() {
         if (!isThereAnyEditRequest()) {
             return Global.STAY_ON_CURRENT_PAGE;
@@ -281,6 +262,7 @@ public class ModifyItem implements Serializable{
     //https://www.mkyong.com/jsf2/jsf-2-valuechangelistener-example/   
     public void onNameChanged(ValueChangeEvent anEvent) {
         String theNewItemName = (String) anEvent.getNewValue();
+        System.out.println("resetItem-->onNameChanged");
         resetItem(theNewItemName);
         itemNameChanged = true;
     }
@@ -677,6 +659,7 @@ public class ModifyItem implements Serializable{
         //System.out.println("yyyyy item.getItemname(): "+item.getItemname()+", isItemNameEmpty(): "+isItemNameEmpty());
         item.setItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
         if((item.getItemname() == null) && (!isItemNameEmpty())){
+            System.out.println("resetItem-->setSortitemdatamodel");
             resetItem(itemsNames.get(0));
         }
         Item theItem = null;
@@ -753,5 +736,20 @@ public class ModifyItem implements Serializable{
     
     }
     }
-
+    public void removeName(int startingIndex, String theJoker){
+        if(itemsNames.isEmpty()){
+            return;
+        }
+        int theResult = -1;
+        int theSize = itemsNames.size();
+        for(int index = (startingIndex +1); index < theSize; index++){
+            if(itemsNames.get(index).equals(theJoker)){
+                theResult = index;
+                break;
+            }
+        }
+        if(theResult != -1 ){
+            itemsNames.remove(theResult);
+    }
+    }    
 }
