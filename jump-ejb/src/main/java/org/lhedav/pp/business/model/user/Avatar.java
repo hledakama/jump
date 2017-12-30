@@ -116,6 +116,7 @@ public class Avatar implements Serializable {
     }
 
     public String getLocation() {
+        System.out.println("location: "+location+", submitedFileName: "+submitedFileName);
         return location;
     }
 

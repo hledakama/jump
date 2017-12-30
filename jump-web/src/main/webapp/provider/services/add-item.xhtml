@@ -109,10 +109,10 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                     
                     <h:column>
                         <f:facet name="header"> #{addItem.avatar}</f:facet>                         
-                      <h:graphicImage id="model_file_preview" value="/PreviewServlet/#{header['Content-Length']}" 
-                                      alt="avatar is missing will use default" rendered="#{model_item_data.edited}" 
-                                      width="#{model_item_data.file.size gt 0 ? 100 : 0}" 
-                                      height="#{model_item_data.file.size gt 0 ? 100 : 0}"/>  
+                        <h:graphicImage id="model_file_preview" url="#{model_item_data.lastAvatar.location}" 
+                                      alt="avatar is missing will use default" rendered="#{not model_item_data.edited}" 
+                                      width="50" 
+                                      height="50"/>  
                       
                       <h:inputFile id="model_file" required="false" requiredMessage="No file selected ..."
                                    value="#{model_item_data.file}" rendered="#{model_item_data.edited}">                                
@@ -193,7 +193,12 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                     <h:outputLabel value="#{addItem.virtual}"/>
                     <h:outputLabel value="#{addItem.unit}"/>
                     
-                    <h:graphicImage id="previewImgId" value="/PreviewServlet/#{header['Content-Length']}" width="#{addItem.itemdata.file.size gt 0 ? 100 : 0}" height="#{addItem.itemdata.file.size gt 0 ? 100 : 0}"/>                    
+                    <h:graphicImage id="previewImgId" 
+                                    value="/PreviewServlet/#{header['Content-Length']}" 
+                                    width="#{addItem.itemdata.file.size gt 0 ? 100 : 0}" 
+                                    height="#{addItem.itemdata.file.size gt 0 ? 100 : 0}"
+                    />
+                    
                     <h:inputFile id="fileToUpload_itemdata" required="false" requiredMessage="No file selected ..." value="#{addItem.itemdata.file}">
                         <f:ajax render="previewImgId" listener="#{addItem.itemdata.validateFile()}"/>           
                     </h:inputFile>

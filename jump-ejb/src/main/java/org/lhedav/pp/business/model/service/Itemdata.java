@@ -54,7 +54,7 @@ import org.lhedav.pp.business.model.feedback.WishList;
 @Table(name = "ITEMDATA_T")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Itemdata.findAll", query = "SELECT i FROM Itemdata i")
+    @NamedQuery(  name = "Itemdata.findAll", query = "SELECT i FROM Itemdata i")
     , @NamedQuery(name = "Itemdata.findByItemdataTId", query = "SELECT i FROM Itemdata i WHERE i.itemdataTId = :itemdataTId")
     , @NamedQuery(name = "Itemdata.findByCurrentAvatar", query = "SELECT i FROM Itemdata i WHERE i.currentAvatar = :currentAvatar")
     , @NamedQuery(name = "Itemdata.findByMdate", query = "SELECT i FROM Itemdata i WHERE i.mdate = :mdate")
@@ -132,6 +132,11 @@ public class Itemdata implements Serializable {
     private Long numOfWishes;
         @Transient
     private Long numOfRecommendations;
+        @Transient
+    private Avatar lastAvatar;
+        
+        
+        
 //http://www.hostettler.net/blog/2012/03/22/one-to-one-relations-in-jpa-2-dot-0/
     public Itemdata() {
         providerAddressList = new ArrayList();
@@ -271,6 +276,16 @@ public class Itemdata implements Serializable {
 
     public void setProviderAvatarList(List<Avatar> providerAvatarList) {
         this.providerAvatarList = providerAvatarList;
+    }
+    
+    public Avatar getLastAvatar(){
+        if(providerAvatarList.isEmpty()){
+            lastAvatar = null;
+        }
+        else{
+           lastAvatar =  providerAvatarList.get(providerAvatarList.size()-1); 
+        } 
+        return lastAvatar;
     }
     
     public void addProviderAvatarToList(Avatar anAvatar) {
@@ -418,11 +433,11 @@ public class Itemdata implements Serializable {
                     }
                 }                
                 theAvatar.setFileName(file.getName());
-                theAvatar.setFileSize(file.getSize());
-                theAvatar.setLocation(Global.diritemdata.getAbsolutePath());
+                theAvatar.setFileSize(file.getSize());                
                 theAvatar.setMimeType(file.getContentType());
                 theAvatar.setSubmitedFileName(theSubmitedFileName);
                 this.setCurrentAvatar(Global.diritemdata.getAbsolutePath() + File.separator + theSubmitedFileName);
+                theAvatar.setLocation(Global.PROVIDER_IMAGES_FOLDER+theSubmitedFileName);
                 addProviderAvatarToList(theAvatar);
                 resetFile();
                 setMdate(new Date());

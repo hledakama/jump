@@ -136,9 +136,6 @@ public class Item implements Serializable {
     }
        
     public List<Itemdata> getItemdataList() {
-        for(Itemdata thedata: itemdataList){
-            //System.out.println("getItemdataList-->thedata.getItemFk(): "+thedata.getItemFk());
-        }
         return itemdataList;
     }
 
@@ -147,7 +144,6 @@ public class Item implements Serializable {
     }
     
     public void addItemDataToList(Itemdata anItemData) {
-        System.out.println("addItemDataToList, this: "+this+", getItemdataList().contains(anItemData): "+getItemdataList().contains(anItemData)+ ", getComment: "+anItemData.getComment());
         if (!getItemdataList().contains(anItemData)) {
             getItemdataList().add(anItemData);
             /*if (anItemData.getItemFk() != null) {

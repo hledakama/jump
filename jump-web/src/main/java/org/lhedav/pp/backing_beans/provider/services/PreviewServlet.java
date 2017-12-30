@@ -30,7 +30,7 @@ import org.lhedav.pp.business.model.service.Itemdata;
 public class PreviewServlet extends HttpServlet {
 @Inject
 private AddItem additemBean;
-    @EJB
+@EJB
 private SellerEJB provider_services;
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>

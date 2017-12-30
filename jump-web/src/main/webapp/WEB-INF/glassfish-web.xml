@@ -9,5 +9,6 @@ and open the template in the editor.
 <glassfish-web-app error-url="">
     <class-loader delegate="false" />
     <property name="useBundledJsf" value="true" />
+    <property name="alternatedocroot_1" value="from=/itemdata/* dir=/opt/lhedav/images/provider/"/>
     <context-root>/jump-web-1.0-SNAPSHOT.war</context-root>
 </glassfish-web-app>

@@ -42,6 +42,8 @@ public class Global {
         public static String DEFAULT_SHOPPING_IMAGE_NAME = "default_shopping_image.jpg";
         public static File default_shopping_file;
         public static File default_profile_file;
+        //http://blog4j.free.fr/index.php/2008/02/12/glassfish-les-alternate-docroot/
+        public static String PROVIDER_IMAGES_FOLDER = "http://localhost:8080/jump-web-1.0-SNAPSHOT/itemdata/";
                 
         public static byte[] getHash(String aRawData){
             MessageDigest m=null;
