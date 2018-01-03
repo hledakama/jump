@@ -21,6 +21,7 @@ import javax.faces.model.CollectionDataModel;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.json.JsonArray;
+import javax.servlet.http.Part;
 import javax.validation.constraints.NotNull;
 import org.lhedav.pp.business.cdi.producer.WholeDate;
 import org.lhedav.pp.business.data.Services;
@@ -73,7 +74,8 @@ public class AddItem implements Serializable{
     private String remove = "Remove";
     private String nextItemLabel = "Add new line";
     private String saveItemLabel = "Save item";
-    private String date_ = "Date";
+    private String creationDate = "Created";
+    private String updateDate = "Modified";
     private SortedDataModel<Itemdata> sortitemdatamodel;
     private String sortType;
     private boolean virtualItemdata;
@@ -94,6 +96,7 @@ public class AddItem implements Serializable{
     private String upload = "Upload";
     private String submitRow = "submitRow";
     private boolean isInitiated = false; 
+    private Part file;
 
     AddItem() {
         
@@ -169,7 +172,7 @@ public class AddItem implements Serializable{
     }
     
     public void resetItem(String anItemName){
-        itemdata.resetFile();
+        Global.resetFile(file);
         item = new Item();
         item.setItemname(anItemName);
         item.setItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
@@ -177,14 +180,16 @@ public class AddItem implements Serializable{
     //https://www.mkyong.com/jsf2/how-to-update-row-in-jsf-datatable/
 
     public String editRowItemdata(@NotNull Itemdata anItemdata) {
-        anItemdata.setEdited(true);
+        System.out.println("additem submitRowItemdata setEdited true");
+        anItemdata.setEdited(false);
         return Global.STAY_ON_CURRENT_PAGE;
     }
 
     public String submitRowItemdata(@NotNull Itemdata anItemdata) {
         // validation must be performed before here
         provider_services.updateItemdata(anItemdata);
-        anItemdata.setEdited(false);
+        System.out.println("additem submitRowItemdata setEdited false");
+        //anItemdata.setEdited(false);
         return Global.STAY_ON_CURRENT_PAGE;
     }
 
@@ -202,18 +207,7 @@ public class AddItem implements Serializable{
 
     private String addItem() {
        loadService_();
-       Avatar theAvatar = itemdata.saveFileToDisk();
-        if (sortitemdatamodel != null) {
-            for (Itemdata theItemdata : sortitemdatamodel) {
-                if(theItemdata.isEdited()){
-                   theItemdata.setEdited(false); 
-                }
-                if(theItemdata.isUploadValidated()){
-                    theItemdata.saveFileToDisk();
-                    theItemdata.setUploadValidated(false);
-                }
-            }
-        }
+       Avatar theAvatar = Global.saveFileToDisk(itemdata, true, file);
         itemdata.addProviderAvatarToList(theAvatar);
         item.addItemDataToList(itemdata);
         item.setCdate(new Date());
@@ -235,21 +229,7 @@ public class AddItem implements Serializable{
         return Global.STAY_ON_CURRENT_PAGE;
     }
 
-    public String modifyItems() {
-        if (!isThereAnyEditRequest()) {
-            return Global.STAY_ON_CURRENT_PAGE;
-        }
-        CollectionDataModel<Itemdata> theModel = getSortitemdatamodel();
-        for (Itemdata theItemdata : theModel) {
-            if (theItemdata.isEdited()) {
-                theItemdata.setEdited(false);
-                provider_services.updateItemdata(theItemdata);
-            }
-        }
-        return Global.STAY_ON_CURRENT_PAGE;
-    }
-
-    //https://www.mkyong.com/jsf2/jsf-2-valuechangelistener-example/   
+        //https://www.mkyong.com/jsf2/jsf-2-valuechangelistener-example/   
     public void onNameChanged(ValueChangeEvent anEvent) {
         String theNewItemName = (String) anEvent.getNewValue();
         resetItem(theNewItemName);
@@ -622,12 +602,20 @@ public class AddItem implements Serializable{
         saveItemLabel = aRemove;
     }
 
-    public String getDate_() {
-        return date_;
+        public String getCreationDate() {
+        return creationDate;
     }
 
-    public void setDate_(String aDate) {
-        date_ = aDate;
+    public void setCreationDate(String aDate) {
+        creationDate = aDate;
+    }
+    
+    public String getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(String aDate) {
+        updateDate = aDate;
     }
 
     public String getBrowse() {
@@ -658,7 +646,15 @@ public class AddItem implements Serializable{
         if(theItem != null){
             theList = theItem.getItemdataList(); 
             item = theItem;
+            if(theList != null){
+                for(Itemdata theData: theList){
+                if(theData == null) continue;
+                theData.setEdited(false);
+                provider_services.Updatetemdata(theData);
+                }
+            }
         }
+        
         //System.out.println("theList == null: "+(theList == null)+", item.getItemname(): "+item.getItemname()+", theItemName: "+theItemName);
         sortitemdatamodel = new SortedDataModel<>(new CollectionDataModel<>(theList));
     }
@@ -672,23 +668,7 @@ public class AddItem implements Serializable{
             }                
         }
         return false;
-    }
-        
-        
-    private boolean isThereAnyEditRequest() {
-        SortedDataModel<Itemdata> theModel = getSortitemdatamodel();
-        int theSize = theModel.getRowCount();
-        if (theSize == 0) {
-            return false;
-        }
-        for (Itemdata theItem : theModel) {
-            if (theItem.isEdited()) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
+    } 
     
     public boolean isVirtualItemdata() {
         return virtualItemdata;
@@ -736,5 +716,17 @@ public class AddItem implements Serializable{
             }
         }        
         return theResult;
-    }    
+    }  
+    
+    public Part getFile() {
+        return file;
+    }
+
+    public void setFile(Part file) {
+        this.file = file;
+    }
+    
+    public void validateFile(){
+        Global.validateFile(file);
+    }
 }

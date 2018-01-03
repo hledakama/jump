@@ -19,6 +19,7 @@ import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.CollectionDataModel;
 import javax.inject.Named;
 import javax.json.JsonArray;
+import javax.servlet.http.Part;
 import javax.validation.constraints.NotNull;
 import org.lhedav.pp.business.json.ItemdataJsonBuilder;
 import org.lhedav.pp.business.logic.SellerEJB;
@@ -70,7 +71,8 @@ public class ModifyItem implements Serializable{
     private String remove = "Remove";
     private String nextItemLabel = "Add new line";
     private String saveItemLabel = "Save item";
-    private String date_ = "Date";
+    private String creationDate = "Created";
+    private String updateDate = "Modified";
     private SortedDataModel<Itemdata> sortitemdatamodel;
     private String sortType;
     private boolean virtualItemdata;
@@ -94,13 +96,13 @@ public class ModifyItem implements Serializable{
     private String strItemDeletion = Global.STR_EMPTY;
     private String strLastItemContentDeleted = Global.STR_EMPTY;
     private int numOfItems = -1;
-    //private boolean isItemsNamesCleaned = false;
+    private Part file;
 
     ModifyItem() {
     }
     
     public synchronized void init() {
-        //System.out.println("init");
+        System.out.println("init modify");
         Service theService  = provider_services.getItemsFromService(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
         List<Item> theItems = theService.getItemList();
         if(itemsNames.contains(strItemDeletion)){
@@ -130,9 +132,11 @@ public class ModifyItem implements Serializable{
                 resetItem(itemsNames.get(0));
             }
         }
+        unitsList = provider_services.getItemUnits(provider_services.getItemUnits()); 
     }
     //https://stackoverflow.com/questions/6341462/initializng-a-backing-bean-with-parameters-on-page-load-with-jsf-2-0
     public void loadService(){
+        System.out.println("loadService modify ");
         Service theService  = provider_services.getItemsFromService(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
         List<Item> theItems = theService.getItemList();
         
@@ -228,36 +232,51 @@ public class ModifyItem implements Serializable{
     //https://www.mkyong.com/jsf2/how-to-update-row-in-jsf-datatable/
 
     public String editRowItemdata(@NotNull Itemdata anItemdata) {
-        anItemdata.setEdited(true);
+        System.out.println("editRowItemdata anAddress.setEdited");
+        if(anItemdata.isEdited()){
+            anItemdata.setEdited(false);
+        }
+        else{
+            anItemdata.setEdited(true);
+        } 
+        anItemdata.setAvatarIndex(0);
+        if(file != null){
+            System.out.println("editRowItemdata file != null, ");
+            Global.saveFileToDisk(anItemdata, false, file);
+        }
+        provider_services.Updatetemdata(anItemdata);
         return Global.STAY_ON_CURRENT_PAGE;
     }
 
     public String submitRowItemdata(@NotNull Itemdata anItemdata) {
         // validation must be performed before here
         provider_services.updateItemdata(anItemdata);
-        anItemdata.setEdited(false);
+        System.out.println("modifyitem submitRowItemdata setEdited false");
+        //anItemdata.setEdited(false);
         return Global.STAY_ON_CURRENT_PAGE;
     }
 
      public String editRowAddress(@NotNull Address anAddress) {
+        System.out.println("editRowAddress anAddress.setEdited true: ");
         anAddress.setEdited(true);
         // provider_services.updateItemdata(anAddress);
         return Global.STAY_ON_CURRENT_PAGE;
     }
 
-    public String modifyItems() {
+   /* public String modifyItems() {
         if (!isThereAnyEditRequest()) {
             return Global.STAY_ON_CURRENT_PAGE;
         }
         CollectionDataModel<Itemdata> theModel = getSortitemdatamodel();
         for (Itemdata theItemdata : theModel) {
+            System.out.println("modifyItems ++ setEdited false: ");
             if (theItemdata.isEdited()) {
                 theItemdata.setEdited(false);
                 provider_services.updateItemdata(theItemdata);
             }
         }
         return Global.STAY_ON_CURRENT_PAGE;
-    }
+    }*/
 
     //https://www.mkyong.com/jsf2/jsf-2-valuechangelistener-example/   
     public void onNameChanged(ValueChangeEvent anEvent) {
@@ -633,12 +652,20 @@ public class ModifyItem implements Serializable{
         saveItemLabel = aRemove;
     }
 
-    public String getDate_() {
-        return date_;
+    public String getCreationDate() {
+        return creationDate;
     }
 
-    public void setDate_(String aDate) {
-        date_ = aDate;
+    public void setCreationDate(String aDate) {
+        creationDate = aDate;
+    }
+    
+    public String getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(String aDate) {
+        updateDate = aDate;
     }
 
     public String getBrowse() {
@@ -684,23 +711,7 @@ public class ModifyItem implements Serializable{
             }                
         }
         return false;
-    }
-        
-        
-    private boolean isThereAnyEditRequest() {
-        SortedDataModel<Itemdata> theModel = getSortitemdatamodel();
-        int theSize = theModel.getRowCount();
-        if (theSize == 0) {
-            return false;
-        }
-        for (Itemdata theItem : theModel) {
-            if (theItem.isEdited()) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
+    }    
     
     public boolean isVirtualItemdata() {
         return virtualItemdata;
@@ -721,7 +732,7 @@ public class ModifyItem implements Serializable{
     }
     
     public void loadService_(){
-            
+         System.out.println("loadService_ modify ");   
         String theCrc = CRC32StringCollection.getServicereference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
         //System.out.println("loadService from AddItem.init, service-->theCrc: "+theCrc);
         Service theSavedService = provider_services.getServiceByServiceReference(theCrc);
@@ -751,5 +762,17 @@ public class ModifyItem implements Serializable{
         if(theResult != -1 ){
             itemsNames.remove(theResult);
     }
+    }
+
+    public Part getFile() {
+        return file;
+    }
+
+    public void setFile(Part file) {
+        this.file = file;
+    }
+
+    public void validateFile(){
+        Global.validateFile(file);
     }    
 }

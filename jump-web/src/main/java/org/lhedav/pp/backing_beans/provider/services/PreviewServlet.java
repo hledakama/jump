@@ -13,6 +13,7 @@ import javax.ejb.EJB;
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -26,12 +27,16 @@ import org.lhedav.pp.business.model.service.Itemdata;
  *
  * @author client
  */
+//https://docs.oracle.com/javaee/7/api/javax/servlet/annotation/MultipartConfig.html
+//https://docs.oracle.com/javaee/7/api/javax/servlet/annotation/WebServlet.html
+//http://www.codejava.net/java-ee/servlet/webservlet-annotation-examples
 @WebServlet(name = "PreviewServlet", urlPatterns = {"/PreviewServlet/*"})
+@MultipartConfig(/*location="/folder",*/ fileSizeThreshold=1024*1024,maxFileSize=1024*1024*3, maxRequestSize=1024*1024*3*3)
 public class PreviewServlet extends HttpServlet {
 @Inject
 private AddItem additemBean;
-@EJB
-private SellerEJB provider_services;
+@Inject
+private ModifyItem modifyitemBean;
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -50,34 +55,43 @@ private SellerEJB provider_services;
         response.addHeader("Cache-Control", "post-check=0, pre-check=0");
         response.setHeader("Pragma", "no-cache");
         
-        String model_id = request.getParameter("id");
+        String source   = request.getParameter("source");
+        String data     = request.getParameter("data");
+        System.out.println("data: "+request.getParameter("data")+", source: "+source);        
+            //https://www.ntu.edu.sg/home/ehchua/programming/java/JavaServlets.html   
+            //http://www.codejava.net/java-ee/servlet/java-file-upload-example-with-servlet-30-api
         try {
-            //https://stackoverflow.com/questions/2633112/get-jsf-managed-bean-by-name-in-any-servlet-related-class
-            //System.out.println("preview1");
+            System.out.println("preview1");
             HttpSession session = request.getSession(false);
-            if (additemBean != null) {
-                //System.out.println("preview2");                
-                Part theFile = null;
-                if((model_id != null) && (!model_id.equals("-1"))){
-                    Itemdata theItemdata = provider_services.getItemdataById(model_id);
-                    theFile = theItemdata.getFile();                  
+            Part theFile = null; 
+            //https://stackoverflow.com/questions/2633112/get-jsf-managed-bean-by-name-in-any-servlet-related-class
+                        
+                if (data != null) {
+                    System.out.println("preview2 modify data ok");
+                    if(modifyitemBean != null){
+                        System.out.println("preview2 modify bean ++");
+                        theFile = modifyitemBean.getFile();
+                    }                                        
                 }
-                else{                    
-                    theFile = additemBean.getItemdata().getFile(); 
+                else{
+                    System.out.println("preview2 add dat is null");
+                    if(additemBean != null){
+                        theFile = additemBean.getFile();
+                    }
                 }
                 if (theFile != null) {
-                    //System.out.println("preview3");
-                    BufferedImage image = ImageIO.read(theFile.getInputStream());
-                    BufferedImage resizedImage = new BufferedImage(100, 100, BufferedImage.TYPE_INT_ARGB);
-                    Graphics2D g = resizedImage.createGraphics();
-                    g.drawImage(image, 0, 0, 100, 100, null);
-                    g.dispose();
-                    ImageIO.write(resizedImage, "png", out);                    
-                }
-            }
+                        System.out.println("preview3");
+                        BufferedImage image = ImageIO.read(theFile.getInputStream());
+                        BufferedImage resizedImage = new BufferedImage(100, 100, BufferedImage.TYPE_INT_ARGB);
+                        Graphics2D g = resizedImage.createGraphics();
+                        g.drawImage(image, 0, 0, 100, 100, null);
+                        g.dispose();
+                        ImageIO.write(resizedImage, "png", out);                    
+                    }
+
         } finally {
             out.close();
-            //System.out.println("preview4");
+            System.out.println("preview4");
         }
     }
 

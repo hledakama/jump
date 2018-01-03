@@ -3,8 +3,18 @@ package org.lhedav.pp.business.model.common;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.Part;
+import javax.validation.constraints.NotNull;
+import org.lhedav.pp.business.model.service.Itemdata;
+import org.lhedav.pp.business.model.user.Avatar;
 
 public class Global {
 	
@@ -42,9 +52,10 @@ public class Global {
         public static String DEFAULT_SHOPPING_IMAGE_NAME = "default_shopping_image.jpg";
         public static File default_shopping_file;
         public static File default_profile_file;
+        private static boolean uploadValidated = false;
         //http://blog4j.free.fr/index.php/2008/02/12/glassfish-les-alternate-docroot/
         public static String PROVIDER_IMAGES_FOLDER = "http://localhost:8080/jump-web-1.0-SNAPSHOT/itemdata/";
-                
+              
         public static byte[] getHash(String aRawData){
             MessageDigest m=null;
             try {
@@ -96,6 +107,95 @@ public class Global {
             System.out.println("openItemdataForWrite, thePath: "+thePath);
             return Filos;
 	}
+    
+    public static boolean validateFile(Part aFile) {
+        if(aFile == null) return false;
+        String name = aFile.getSubmittedFileName();
+        if (name.length() == 0) {
+            resetFile(aFile);
+            setUploadValidated(false);
+            return isUploadValidated();           
+        } else if (name.length() > Global.MAX_IMAGE_FILE_NAME_LENGTH) {
+            resetFile(aFile);
+            setUploadValidated(false);
+            return isUploadValidated();
+        } else if ((!Global.PNG_FILE_TYPE.equals(aFile.getContentType())) && (!Global.JPEG_FILE_TYPE.equals(aFile.getContentType()))) {
+            resetFile(aFile);
+            setUploadValidated(false);            
+            return isUploadValidated();
+        } else if (aFile.getSize() > Global.MAX_IMAGE_FILE_SIZE) {
+            resetFile(aFile);
+            setUploadValidated(false);
+            return isUploadValidated();
+        }
+        setUploadValidated(true);        
+        return isUploadValidated();
+    }
+
+    public static Avatar saveFileToDisk(@NotNull Itemdata anItemdata, boolean aNewData, @NotNull Part aFile) {
+        Avatar theAvatar;
+        if(aNewData){
+            theAvatar = new Avatar();
+        }
+        else{
+            theAvatar = anItemdata.getAvatarFromRank();
+        }                                
+            try { 
+                //https://stackoverflow.com/questions/3481828/how-to-split-a-string-in-java
+                Global.CheckCreateDirectories();
+                //https://stackoverflow.com/questions/6233541/java-set-file-permissions-to-777-while-creating-a-file-object
+                InputStream inputStream = aFile.getInputStream();
+                String theSubmitedFileName = (new Date()).getTime()+Global.FILE_SPITTER+aFile.getSubmittedFileName();
+                try (FileOutputStream outputStream = Global.openItemdataForWrite( theSubmitedFileName )) {
+                    int bytesRead;
+                    final byte[] chunck = new byte[1024];
+                    while ((bytesRead = inputStream.read(chunck)) != -1){
+                        outputStream.write(chunck, 0, bytesRead);
+                    }
+                }                
+                theAvatar.setFileName(aFile.getName());
+                theAvatar.setFileSize(aFile.getSize());                
+                theAvatar.setMimeType(aFile.getContentType());
+                theAvatar.setSubmitedFileName(theSubmitedFileName);
+                anItemdata.setCurrentAvatar(Global.diritemdata.getAbsolutePath() + File.separator + theSubmitedFileName);
+                theAvatar.setLocation(Global.PROVIDER_IMAGES_FOLDER+theSubmitedFileName);
+                anItemdata.addProviderAvatarToList(theAvatar);
+                resetFile(aFile);
+                Date theNewDate = new Date();
+                if(aNewData){
+                    anItemdata.setMdate(theNewDate);
+                    anItemdata.setSdate(theNewDate);
+                }
+                else{
+                    System.out.println(" not new, nItemdata.getMdate():  "+anItemdata.getMdate()+", new Date(): "+(new Date()));
+                    anItemdata.setMdate(anItemdata.getMdate());// never change. It is a keu used in market
+                    anItemdata.setSdate(theNewDate); 
+                }
+                
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Upload successfully ended!"));
+            } catch (IOException e) {                  
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Upload failed!"));
+            }
+
+        return theAvatar;
+    }
+    
+    public static void resetFile(Part aFile) {
+            if(aFile == null) return;
+        try {           
+                aFile.delete();
+        } catch (IOException ex) {
+            Logger.getLogger(Itemdata.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+        
+    public static boolean isUploadValidated(){
+        return uploadValidated;
+    }
+    
+    public static void setUploadValidated(boolean aBool){
+        uploadValidated = aBool;
+    }
         
 }
 

@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.ejb.EJB;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -30,6 +31,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import org.lhedav.pp.business.logic.SellerEJB;
 import org.lhedav.pp.business.model.common.CRC32StringCollection;
 import org.lhedav.pp.business.model.common.Global;
 
@@ -203,5 +205,7 @@ public class Item implements Serializable {
     @Override
     public String toString() {
         return "org.lhedav.pp.business.model.service.Item[ itemTId=" + itemTId + " ]";
-    }    
+    } 
+    
+
 }

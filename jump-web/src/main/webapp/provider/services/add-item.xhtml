@@ -98,28 +98,25 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                 
                 <h:dataTable id="itemdata_table" value="#{addItem.sortitemdatamodel}" var="model_item_data">
                     <h:column>
-                        <f:facet name="header"> #{addItem.date_}  </f:facet> 
+                        <f:facet name="header"> #{addItem.creationDate}  </f:facet> 
                         #{model_item_data.mdate}
                     </h:column>
                     
-                    <!--h:column>
-                        <f:facet name="header"> #{addItem.avatar}   </f:facet>                         
-                        <h:graphicImage id ="existing_model_avatar" value="#{model_item_data.currentAvatar}" alt="avatar is missing will use default" rendered="#{not model_item_data.edited}"/> 
-                    </h:column-->
+                    <h:column>
+                        <f:facet name="header"> #{addItem.updateDate}  </f:facet> 
+                        #{model_item_data.sdate}
+                    </h:column>
                     
                     <h:column>
                         <f:facet name="header"> #{addItem.avatar}</f:facet>                         
                         <h:graphicImage id="model_file_preview" url="#{model_item_data.lastAvatar.location}" 
-                                      alt="avatar is missing will use default" rendered="#{not model_item_data.edited}" 
+                                      alt="avatar is missing" rendered="#{not model_item_data.edited}" 
                                       width="50" 
                                       height="50"/>  
-                      
-                      <h:inputFile id="model_file" required="false" requiredMessage="No file selected ..."
-                                   value="#{model_item_data.file}" rendered="#{model_item_data.edited}">                                
-                          <f:ajax listener="#{model_item_data.validateFile()}" render="model_file_preview"/> 
-                      </h:inputFile>
-                                                                    
+                                         
                     </h:column>
+                    
+           
                     
                     <h:column>
                        <f:facet name="header">#{addItem.comment}</f:facet> 
@@ -169,17 +166,16 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                         </h:selectOneMenu>
                     </h:column> 
                   
-                    <h:column>
-                      <f:facet name="header">#{addItem.remove}</f:facet>
-                      
-                      <h:commandButton image="#{resource['images/common/red_minus.png']}" action="#{addItem.removeRowItemdata(model_item_data)}" /> 
+                    <h:column  rendered="#{not model_item_data.edited}">
+                      <f:facet name="header">#{addItem.remove} </f:facet>                      
+                      <h:commandButton image="#{resource['images/common/red_minus.png']}" action="#{addItem.removeRowItemdata(model_item_data)}"/>
                     </h:column>
                     
                     <h:column>
-                      <f:facet name="header">#{addItem.edit}</f:facet>
-                      <h:commandButton image="#{resource['images/common/green_plus.png']}" action="#{addItem.editRowItemdata(model_item_data)}" rendered="#{not model_item_data.edited}"> 
-                          <f:ajax render="@form"/>
-                      </h:commandButton>
+                      <f:facet name="header" rendered="#{not model_item_data.edited}">#{addItem.edit}</f:facet>
+                      <h:commandButton image="#{resource['images/common/green_plus.png']}" 
+                                       action="#{addItem.editRowItemdata(model_item_data)}"
+                                       rendered="#{not model_item_data.edited}"/>
                     </h:column>
                 </h:dataTable>
                 
@@ -195,12 +191,12 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                     
                     <h:graphicImage id="previewImgId" 
                                     value="/PreviewServlet/#{header['Content-Length']}" 
-                                    width="#{addItem.itemdata.file.size gt 0 ? 100 : 0}" 
-                                    height="#{addItem.itemdata.file.size gt 0 ? 100 : 0}"
+                                    width="#{addItem.file.size gt 0 ? 100 : 0}" 
+                                    height="#{addItem.file.size gt 0 ? 100 : 0}"
                     />
                     
-                    <h:inputFile id="fileToUpload_itemdata" required="false" requiredMessage="No file selected ..." value="#{addItem.itemdata.file}">
-                        <f:ajax render="previewImgId" listener="#{addItem.itemdata.validateFile()}"/>           
+                    <h:inputFile id="fileToUpload_itemdata" required="false" requiredMessage="" value="#{addItem.file}">
+                        <f:ajax render="previewImgId" listener="#{addItem.validateFile()}"/>           
                     </h:inputFile>
                     <h:inputText id = "comment_itemdata" value="#{addItem.itemdata.comment}"/>   
                     <h:inputText id = "durataion_itemdata" value="#{addItem.itemdata.duration}"/>

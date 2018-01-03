@@ -58,6 +58,7 @@ import org.lhedav.pp.business.model.feedback.WishList;
     , @NamedQuery(name = "Itemdata.findByItemdataTId", query = "SELECT i FROM Itemdata i WHERE i.itemdataTId = :itemdataTId")
     , @NamedQuery(name = "Itemdata.findByCurrentAvatar", query = "SELECT i FROM Itemdata i WHERE i.currentAvatar = :currentAvatar")
     , @NamedQuery(name = "Itemdata.findByMdate", query = "SELECT i FROM Itemdata i WHERE i.mdate = :mdate")
+    , @NamedQuery(name = "Itemdata.findBySdate", query = "SELECT i FROM Itemdata i WHERE i.sdate = :sdate")
     , @NamedQuery(name = "Itemdata.findByComment", query = "SELECT i FROM Itemdata i WHERE i.comment = :comment")
     , @NamedQuery(name = "Itemdata.findByDuration", query = "SELECT i FROM Itemdata i WHERE i.duration = :duration")
     , @NamedQuery(name = "Itemdata.findByUnit", query = "SELECT i FROM Itemdata i WHERE i.unit = :unit")
@@ -73,13 +74,20 @@ public class Itemdata implements Serializable {
     @Basic(optional = false)
     @TableGenerator( name = "sequence_itemdata", table = "SEQUENCE", pkColumnName = "SEQ_NAME", pkColumnValue = "ITEMDATA_T_ID", valueColumnName = "SEQ_COUNT", initialValue = 0, allocationSize = 1 )
     @GeneratedValue( strategy = GenerationType.TABLE, generator = "sequence_itemdata" ) 
-    @Column(name = "ITEMDATA_T_ID")
+    @Column(name = "ITEMDATA_T_ID")    
     private Long itemdataTId;
+    
     @Basic(optional = false)
     @NotNull
     @Column(name = "MDATE")
+    @Temporal(TemporalType.TIMESTAMP)      
+    private Date mdate;  // main date when created the first time. Never modified.
+    
+    @Basic(optional = false)    
+    @Column(name = "SDATE")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date mdate;
+    private Date sdate;     // secondary date, enabled once data is modified
+        
     @Size(max = 255)
     @Column(name = "COMMENT_")
     @NotNull
@@ -102,6 +110,8 @@ public class Itemdata implements Serializable {
     private Long qty;
     @Column(name = "VIRTUAL_")
     private Short virtual;
+    @Column(name = "EDITED")
+    private boolean edited = false;
     @XmlTransient
     @OneToMany( cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "itemdataFk")
     private List<Address> providerAddressList;
@@ -115,15 +125,9 @@ public class Itemdata implements Serializable {
     @OneToMany( cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "itemdataFk")
     private List<MarketView> marketViewList;
     @OneToMany( cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "itemdataFk")
-    private List<AdsConfiguration> adsConfigurationList;
-        @Transient
-    private boolean edited = false;
+    private List<AdsConfiguration> adsConfigurationList;    
         @Transient
     private String addressSring = Global.STR_EMPTY;
-        @Transient
-    private Part file;
-        @Transient
-    private boolean uploadValidated = false;
         @Transient
     private Long numOfOrders;
         @Transient
@@ -134,6 +138,8 @@ public class Itemdata implements Serializable {
     private Long numOfRecommendations;
         @Transient
     private Avatar lastAvatar;
+        @Transient
+    private int avatarRank;
         
         
         
@@ -180,8 +186,17 @@ public class Itemdata implements Serializable {
         return mdate;
     }
 
-    public void setMdate(Date mdate) {
-        this.mdate = mdate;
+    public void setMdate(Date aDate) {
+        this.mdate = aDate;
+    }
+    
+    
+    public Date getSdate() {
+        return sdate;
+    }
+
+    public void setSdate(Date aDate) {
+        this.sdate = aDate;
     }
 
     public String getComment() {
@@ -267,6 +282,18 @@ public class Itemdata implements Serializable {
         }
     }
     
+    public int getAvatarIndex(){
+        return avatarRank;
+    }
+    
+        public int setAvatarIndex(int aRank){
+        return avatarRank = aRank;
+    }
+        
+    public Avatar getAvatarFromRank(){
+        return providerAvatarList.get(avatarRank);
+    }
+    
     public List<Avatar> getProviderAvatarList() {
         for(Avatar theavatar: providerAvatarList){
             //System.out.println("getProviderAvatarList-->theavatar.getItemdataFk(): "+theavatar.getItemdataFk());
@@ -313,10 +340,7 @@ public class Itemdata implements Serializable {
             return false;
         }
         Itemdata other = (Itemdata) object;
-        if ((this.itemdataTId == null && other.itemdataTId != null) || (this.itemdataTId != null && !this.itemdataTId.equals(other.itemdataTId))) {
-            return false;
-        }
-        return true;
+        return !((this.itemdataTId == null && other.itemdataTId != null) || (this.itemdataTId != null && !this.itemdataTId.equals(other.itemdataTId)));
     }
 
     @Override
@@ -325,10 +349,12 @@ public class Itemdata implements Serializable {
     }
     
     public boolean isEdited(){
+        //System.out.println("isEdited: "+edited+", toString(): "+toString());
         return edited;
     }
     
     public void setEdited(boolean aBool){
+        //System.out.println("aBool: "+aBool+", toString(): "+toString());
         edited = aBool;
     }
     
@@ -364,14 +390,6 @@ public class Itemdata implements Serializable {
     public void setEdited(Long aLong){
         numOfRecommendations = aLong;
     }
-            
-    public boolean isUploadValidated(){
-        return uploadValidated;
-    }
-    
-    public void setUploadValidated(boolean aBool){
-        uploadValidated = aBool;
-    }
     
     public String getAddressString(){
         return addressSring;
@@ -384,88 +402,8 @@ public class Itemdata implements Serializable {
            addressSring +=  theAddress.toString();
         }
     }
+
     
-    public Part getFile() {
-        return file;
-    }
-
-    public void setFile(Part file) {
-        this.file = file;
-    }
-    
-    public boolean validateFile() {
-        String name = file.getSubmittedFileName();
-        if (name.length() == 0) {
-            resetFile();
-            setUploadValidated(false);
-            return isUploadValidated();           
-        } else if (name.length() > Global.MAX_IMAGE_FILE_NAME_LENGTH) {
-            resetFile();
-            setUploadValidated(false);
-            return isUploadValidated();
-        } else if ((!Global.PNG_FILE_TYPE.equals(file.getContentType())) && (!Global.JPEG_FILE_TYPE.equals(file.getContentType()))) {
-            resetFile();
-            setUploadValidated(false);            
-            return isUploadValidated();
-        } else if (file.getSize() > Global.MAX_IMAGE_FILE_SIZE) {
-            resetFile();
-            setUploadValidated(false);
-            return isUploadValidated();
-        }
-        setUploadValidated(true);        
-        return isUploadValidated();
-    }
-
-    public Avatar saveFileToDisk() {
-        Avatar theAvatar = new Avatar();
-        if (file != null) {                                    
-            try { 
-                //https://stackoverflow.com/questions/3481828/how-to-split-a-string-in-java
-                Global.CheckCreateDirectories();
-                //https://stackoverflow.com/questions/6233541/java-set-file-permissions-to-777-while-creating-a-file-object
-                InputStream inputStream = file.getInputStream();
-                String theSubmitedFileName = (new Date()).getTime()+Global.FILE_SPITTER+file.getSubmittedFileName();
-                try (FileOutputStream outputStream = Global.openItemdataForWrite( theSubmitedFileName )) {
-                    int bytesRead;
-                    final byte[] chunck = new byte[1024];
-                    while ((bytesRead = inputStream.read(chunck)) != -1){
-                        outputStream.write(chunck, 0, bytesRead);
-                    }
-                }                
-                theAvatar.setFileName(file.getName());
-                theAvatar.setFileSize(file.getSize());                
-                theAvatar.setMimeType(file.getContentType());
-                theAvatar.setSubmitedFileName(theSubmitedFileName);
-                this.setCurrentAvatar(Global.diritemdata.getAbsolutePath() + File.separator + theSubmitedFileName);
-                theAvatar.setLocation(Global.PROVIDER_IMAGES_FOLDER+theSubmitedFileName);
-                addProviderAvatarToList(theAvatar);
-                resetFile();
-                setMdate(new Date());
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Upload successfully ended!"));
-            } catch (IOException e) {                  
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Upload failed!"));
-            }
-        }
-        else{   
-                theAvatar.setLocation(Global.diritemdata.getAbsolutePath());
-                theAvatar.setSubmitedFileName(Global.DEFAULT_SHOPPING_IMAGE_NAME);
-                addProviderAvatarToList(theAvatar);
-                this.setCurrentAvatar(Global.diritemdata.getAbsolutePath() + File.separator + Global.DEFAULT_SHOPPING_IMAGE_NAME);
-        }
-        return theAvatar;
-    }
-
-    public void resetFile() {
-        try {
-            if (file != null) {
-                file.delete();
-            }
-        } catch (IOException ex) {
-            Logger.getLogger(Itemdata.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        file = null;
-    }    
-
     @XmlTransient
     public List<AdsConfiguration> getAdsConfigurationList() {
         return adsConfigurationList;

@@ -69,27 +69,37 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                 </h:panelGrid>
                 <h:dataTable id="itemdata_table" value="#{modifyItem.sortitemdatamodel}" var="model_item_data">
                     <h:column>
-                        <f:facet name="header"> #{modifyItem.date_}  </f:facet> 
+                        <f:facet name="header"> #{modifyItem.creationDate}  </f:facet> 
                         #{model_item_data.mdate}
                     </h:column>
                     
-                    <!--h:column>
-                        <f:facet name="header"> #{modifyItem.avatar}   </f:facet>                         
-                        <h:graphicImage id ="existing_model_avatar" value="#{model_item_data.currentAvatar}" alt="avatar is missing will use default" rendered="#{not model_item_data.edited}"/> 
-                    </h:column-->
+                    <h:column>
+                        <f:facet name="header"> #{modifyItem.updateDate}  </f:facet> 
+                        #{model_item_data.sdate}
+                    </h:column>
                     
                     <h:column>
                         <f:facet name="header"> #{modifyItem.avatar}</f:facet>                         
                         <h:graphicImage id="model_file_preview" url="#{model_item_data.lastAvatar.location}" 
-                                      alt="avatar is missing will use default" rendered="#{not model_item_data.edited}" 
+                                      alt="avatar is missing" rendered="#{not model_item_data.edited}" 
                                       width="50" 
                                       height="50"/>  
-                      
-                      <h:inputFile id="model_file" required="false" requiredMessage="No file selected ..."
-                                   value="#{model_item_data.file}" rendered="#{model_item_data.edited}">                                
-                          <f:ajax listener="#{model_item_data.validateFile()}" render="model_file_preview"/> 
-                      </h:inputFile>
+                                                
+                        <h:graphicImage id="model_previewImgId" 
+                                        value="/PreviewServlet/#{header['Content-Length']}?data=#{model_item_data.itemdataTId}" 
+                                    width="#{modifyItem.file.size gt 0 ? 50 : 0}" 
+                                    height="#{modifyItem.file.size gt 0 ? 50 : 0}"
+                                    rendered="#{model_item_data.edited}"/> 
                                                                     
+                    </h:column>                    
+                      
+                    <h:column>
+                        <f:facet name="header"  rendered="#{model_item_data.edited}"> #{modifyItem.upload}</f:facet> 
+                        
+                      <h:inputFile id="model_file" required="false" requiredMessage=""
+                          value="#{modifyItem.file}"  rendered="#{model_item_data.edited}">                                
+                          <f:ajax listener="#{modifyItem.validateFile()}" render="model_previewImgId"/> 
+                      </h:inputFile>
                     </h:column>
                     
                     <h:column>
@@ -140,24 +150,22 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                         </h:selectOneMenu>
                     </h:column> 
                   
-                    <h:column>
-                      <f:facet name="header">#{modifyItem.remove}</f:facet>
-                      
-                      <h:commandButton image="#{resource['images/common/red_minus.png']}" action="#{modifyItem.removeRowItemdata(model_item_data)}" /> 
+                    <h:column rendered="#{not model_item_data.edited}">
+                      <f:facet name="header" rendered="#{not model_item_data.edited}">#{modifyItem.remove}</f:facet>                      
+                      <h:commandButton image="#{resource['images/common/red_minus.png']}" 
+                                       action="#{modifyItem.removeRowItemdata(model_item_data)}"
+                                       rendered="#{not model_item_data.edited}"> 
+                          <f:ajax execute="@form" render="@form"/>
+                      </h:commandButton>
                     </h:column>
                     
                     <h:column>
                       <f:facet name="header">#{modifyItem.edit}</f:facet>
-                      <h:commandButton image="#{resource['images/common/green_plus.png']}" action="#{modifyItem.editRowItemdata(model_item_data)}" rendered="#{not model_item_data.edited}"> 
-                          <f:ajax render="@form"/>
+                      <h:commandButton image="#{resource['images/common/green_plus.png']}" action="#{modifyItem.editRowItemdata(model_item_data)}">  
+                                       <f:ajax execute="@form" render="@form"/>
                       </h:commandButton>
                     </h:column>
                 </h:dataTable>
-                 
-                 <h:commandButton value="#{modifyItem.saveItemLabel}" action="#{modifyItem.saveItem()}">
-                     <!-- <f:ajax execute="fileToUpload" render="@all"/> use @all in JSF 2.2.0 -->
-                     <f:ajax execute="@form" render="@form"/> <!-- works in JSF 2.2.5 -->
-                 </h:commandButton>
             
             </h:form>
             

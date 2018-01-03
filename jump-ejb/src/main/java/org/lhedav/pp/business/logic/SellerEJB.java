@@ -309,7 +309,11 @@ public class SellerEJB {
     public boolean PersistItemdata(@NotNull Itemdata anItemData){
         em.persist(anItemData);
         return true;
-    }    
+    }  
+    public boolean Updatetemdata(@NotNull Itemdata anItemData){
+        em.merge(anItemData);
+        return true;
+    }
     public EntityManager getEm(){
         return em;
     }
