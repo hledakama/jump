@@ -54,8 +54,6 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                     <h:outputLabel value="#{addItem.itemReference}"/>
                     <h:outputLabel value="#{addItem.name}"/>
                     
-                    
-                    
                     <h:outputText id = "service_kind" value="#{addItem.service.kind}"/>
                     <h:outputText id = "service_type" value="#{addItem.service.type}"/>
                     <h:outputText id = "service_reference" value="#{addItem.service.servicereference}"/>
@@ -111,9 +109,8 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                         <f:facet name="header"> #{addItem.avatar}</f:facet>                         
                         <h:graphicImage id="model_file_preview" url="#{model_item_data.lastAvatar.location}" 
                                       alt="avatar is missing" rendered="#{not model_item_data.edited}" 
-                                      width="50" 
-                                      height="50"/>  
-                                         
+                                      width="#{addItem.imageMinWidth}" 
+                                      height="#{addItem.imageMinHeighth}"/>
                     </h:column>
                     
            
@@ -190,10 +187,10 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                     <h:outputLabel value="#{addItem.unit}"/>
                     
                     <h:graphicImage id="previewImgId" 
-                                    value="/PreviewServlet/#{header['Content-Length']}" 
-                                    width="#{addItem.file.size gt 0 ? 100 : 0}" 
-                                    height="#{addItem.file.size gt 0 ? 100 : 0}"
-                    />
+                                    value="/PreviewServlet/#{header['Content-Length']}?data=#{-1}" 
+                                    width= "#{addItem.file.size gt 0 ? addItem.imageMinWidth : 0   }" 
+                                    height="#{addItem.file.size gt 0 ? addItem.imageMinHeighth : 0 }"
+                                    rendered="true"/>
                     
                     <h:inputFile id="fileToUpload_itemdata" required="false" requiredMessage="" value="#{addItem.file}">
                         <f:ajax render="previewImgId" listener="#{addItem.validateFile()}"/>           

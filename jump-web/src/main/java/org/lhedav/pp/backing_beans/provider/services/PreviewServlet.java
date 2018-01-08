@@ -9,7 +9,6 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
-import javax.ejb.EJB;
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -20,8 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
-import org.lhedav.pp.business.logic.SellerEJB;
-import org.lhedav.pp.business.model.service.Itemdata;
+import org.lhedav.pp.business.model.common.Global;
 
 /**
  *
@@ -30,8 +28,10 @@ import org.lhedav.pp.business.model.service.Itemdata;
 //https://docs.oracle.com/javaee/7/api/javax/servlet/annotation/MultipartConfig.html
 //https://docs.oracle.com/javaee/7/api/javax/servlet/annotation/WebServlet.html
 //http://www.codejava.net/java-ee/servlet/webservlet-annotation-examples
+//https://docs.oracle.com/javaee/6/tutorial/doc/gmhal.html
 @WebServlet(name = "PreviewServlet", urlPatterns = {"/PreviewServlet/*"})
-@MultipartConfig(/*location="/folder",*/ fileSizeThreshold=1024*1024,maxFileSize=1024*1024*3, maxRequestSize=1024*1024*3*3)
+@MultipartConfig(location="/opt/lhedav/images/tmp", fileSizeThreshold=1024*1024, 
+    maxFileSize=1024*1024*5, maxRequestSize=1024*1024*5*5)
 public class PreviewServlet extends HttpServlet {
 @Inject
 private AddItem additemBean;
@@ -66,25 +66,26 @@ private ModifyItem modifyitemBean;
             Part theFile = null; 
             //https://stackoverflow.com/questions/2633112/get-jsf-managed-bean-by-name-in-any-servlet-related-class
                         
-                if (data != null) {
+                if (data.equals("-1")) {
+                    System.out.println("preview2 add dat is null");
+                    if(additemBean != null){
+                        System.out.println("preview2 additemBean bean --");
+                        theFile = additemBean.getFile();
+                    }                                        
+                }
+                else{
                     System.out.println("preview2 modify data ok");
                     if(modifyitemBean != null){
                         System.out.println("preview2 modify bean ++");
                         theFile = modifyitemBean.getFile();
-                    }                                        
-                }
-                else{
-                    System.out.println("preview2 add dat is null");
-                    if(additemBean != null){
-                        theFile = additemBean.getFile();
                     }
                 }
                 if (theFile != null) {
                         System.out.println("preview3");
                         BufferedImage image = ImageIO.read(theFile.getInputStream());
-                        BufferedImage resizedImage = new BufferedImage(100, 100, BufferedImage.TYPE_INT_ARGB);
+                        BufferedImage  resizedImage = new BufferedImage(Global.IMAGE_MIN_WIDTH, Global.IMAGE_MIN_HEIGTH, BufferedImage.TYPE_INT_ARGB);
                         Graphics2D g = resizedImage.createGraphics();
-                        g.drawImage(image, 0, 0, 100, 100, null);
+                        g.drawImage(image, 0, 0, Global.IMAGE_MIN_WIDTH, Global.IMAGE_MIN_HEIGTH, null);
                         g.dispose();
                         ImageIO.write(resizedImage, "png", out);                    
                     }

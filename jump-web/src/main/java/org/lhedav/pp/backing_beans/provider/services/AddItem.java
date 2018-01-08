@@ -18,12 +18,10 @@ import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.CollectionDataModel;
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.json.JsonArray;
 import javax.servlet.http.Part;
 import javax.validation.constraints.NotNull;
-import org.lhedav.pp.business.cdi.producer.WholeDate;
 import org.lhedav.pp.business.data.Services;
 import org.lhedav.pp.business.json.ItemdataJsonBuilder;
 import org.lhedav.pp.business.logic.SellerEJB;
@@ -97,6 +95,12 @@ public class AddItem implements Serializable{
     private String submitRow = "submitRow";
     private boolean isInitiated = false; 
     private Part file;
+    private boolean fileNull = false;
+    private String defaultAvatarPath = Global.PROVIDER_IMAGES_FOLDER + 
+                                        "_"+ 
+                                        (new Date()).getTime()+ 
+                                        "_" + 
+                                        Global.DEFAULT_SHOPPING_IMAGE_NAME;
 
     AddItem() {
         
@@ -717,6 +721,15 @@ public class AddItem implements Serializable{
         }        
         return theResult;
     }  
+            
+    public boolean getFileNull() {
+        fileNull = (file == null);
+        return fileNull;
+    }
+
+    public void setFileNull(boolean aBool) {
+        this.fileNull = aBool;
+    }
     
     public Part getFile() {
         return file;
@@ -728,5 +741,33 @@ public class AddItem implements Serializable{
     
     public void validateFile(){
         Global.validateFile(file);
+    }
+        
+    public int getImageWidth(){
+        return Global.IMAGE_WIDTH;
+    }
+    
+    public int getImageHeighth(){
+        return Global.IMAGE_HEIGTH;
+    }
+    
+    public int getImageMinWidth(){
+        return Global.IMAGE_MIN_WIDTH;
+    }
+    
+    public int getImageMinHeighth(){
+        return Global.IMAGE_MIN_HEIGTH;
+    }
+    
+    public boolean isUploadValidated(){
+        return Global.isUploadValidated();
+    }
+    
+    public String getDefaultAvatarPath(){
+        return defaultAvatarPath;
+    }
+    
+    public void setDefaultAvatarPath(String aPath){
+        defaultAvatarPath = aPath;
     }
 }

@@ -40,6 +40,7 @@ public class Global {
         public static File diropt = new File(File.separator + "opt");
         public static File dirlhedav;
         public static File dirimages;
+        public static File dirtmp;
         public static File dirprovider;
         public static File diritemdata;
         public static File dirprofile;
@@ -55,7 +56,11 @@ public class Global {
         private static boolean uploadValidated = false;
         //http://blog4j.free.fr/index.php/2008/02/12/glassfish-les-alternate-docroot/
         public static String PROVIDER_IMAGES_FOLDER = "http://localhost:8080/jump-web-1.0-SNAPSHOT/itemdata/";
-              
+        public static int IMAGE_WIDTH  = 100;
+        public static int IMAGE_HEIGTH = 120;
+        
+        public static int IMAGE_MIN_WIDTH  = 50;
+        public static int IMAGE_MIN_HEIGTH = 60;
         public static byte[] getHash(String aRawData){
             MessageDigest m=null;
             try {
@@ -85,8 +90,9 @@ public class Global {
             System.out.println("dirimages creation");
             dirimages   = CheckDirCreateDir( dirlhedav, "images");
             System.out.println("dirprovider creation");
+            dirtmp   = CheckDirCreateDir( dirimages, "tmp");            
             dirprovider = CheckDirCreateDir( dirimages, "provider");
-            System.out.println("diritemdata creation");
+            System.out.println("diritemdata creation");            
             diritemdata = CheckDirCreateDir( dirprovider, "itemdata");
             dirprofile = CheckDirCreateDir( dirprovider, "profile");
             //https://www.mkyong.com/java/how-to-get-file-size-in-java/
@@ -145,7 +151,9 @@ public class Global {
                 Global.CheckCreateDirectories();
                 //https://stackoverflow.com/questions/6233541/java-set-file-permissions-to-777-while-creating-a-file-object
                 InputStream inputStream = aFile.getInputStream();
-                String theSubmitedFileName = (new Date()).getTime()+Global.FILE_SPITTER+aFile.getSubmittedFileName();
+                String theSubmitedFileName = (new Date()).getTime()+ 
+                                              Global.FILE_SPITTER  + 
+                                              aFile.getSubmittedFileName();
                 try (FileOutputStream outputStream = Global.openItemdataForWrite( theSubmitedFileName )) {
                     int bytesRead;
                     final byte[] chunck = new byte[1024];
@@ -181,7 +189,8 @@ public class Global {
     }
     
     public static void resetFile(Part aFile) {
-            if(aFile == null) return;
+        setUploadValidated(false);
+        if(aFile == null) return;
         try {           
                 aFile.delete();
         } catch (IOException ex) {

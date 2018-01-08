@@ -67,6 +67,7 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                     </h:selectOneMenu>                    
                     <h:message for="item_name"/>                    
                 </h:panelGrid>
+                
                 <h:dataTable id="itemdata_table" value="#{modifyItem.sortitemdatamodel}" var="model_item_data">
                     <h:column>
                         <f:facet name="header"> #{modifyItem.creationDate}  </f:facet> 
@@ -82,15 +83,14 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                         <f:facet name="header"> #{modifyItem.avatar}</f:facet>                         
                         <h:graphicImage id="model_file_preview" url="#{model_item_data.lastAvatar.location}" 
                                       alt="avatar is missing" rendered="#{not model_item_data.edited}" 
-                                      width="50" 
-                                      height="50"/>  
+                                      width="#{modifyItem.imageMinWidth}" 
+                                      height="#{modifyItem.imageMinHeighth}"/>  
                                                 
                         <h:graphicImage id="model_previewImgId" 
                                         value="/PreviewServlet/#{header['Content-Length']}?data=#{model_item_data.itemdataTId}" 
-                                    width="#{modifyItem.file.size gt 0 ? 50 : 0}" 
-                                    height="#{modifyItem.file.size gt 0 ? 50 : 0}"
+                                        width="#{modifyItem.file.size  gt 0 ? modifyItem.imageMinWidth   : 0}" 
+                                        height="#{modifyItem.file.size gt 0 ? modifyItem.imageMinHeighth : 0}"
                                     rendered="#{model_item_data.edited}"/> 
-                                                                    
                     </h:column>                    
                       
                     <h:column>
@@ -165,6 +165,8 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                                        <f:ajax execute="@form" render="@form"/>
                       </h:commandButton>
                     </h:column>
+                    
+                     
                 </h:dataTable>
             
             </h:form>

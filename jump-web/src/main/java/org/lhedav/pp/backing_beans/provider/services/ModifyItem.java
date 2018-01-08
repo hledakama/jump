@@ -10,10 +10,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
+//import javax.faces.component.html.HtmlDataTable;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.CollectionDataModel;
@@ -28,7 +28,6 @@ import org.lhedav.pp.business.model.common.Global;
 import org.lhedav.pp.business.model.service.Item;
 import org.lhedav.pp.business.model.service.Itemdata;
 import org.lhedav.pp.business.model.user.Address;
-import org.lhedav.pp.business.model.user.Avatar;
 import org.lhedav.pp.business.model.service.Service;
 import org.lhedav.pp.business.model.service.SortedDataModel;
 
@@ -97,8 +96,11 @@ public class ModifyItem implements Serializable{
     private String strLastItemContentDeleted = Global.STR_EMPTY;
     private int numOfItems = -1;
     private Part file;
+   // private HtmlDataTable table;
+   // private int rowsOnPage;
 
     ModifyItem() {
+     //   rowsOnPage = 2;
     }
     
     public synchronized void init() {
@@ -774,5 +776,63 @@ public class ModifyItem implements Serializable{
 
     public void validateFile(){
         Global.validateFile(file);
+    } 
+    
+  /*  public HtmlDataTable getTable() {
+        return table;
+    }
+
+    public void setTable(HtmlDataTable table) {
+        this.table = table;
     }    
+
+    public int getRowsOnPage() {
+        return rowsOnPage;
+    }
+
+    public void setRowsOnPage(int rowsOnPage) {
+        this.rowsOnPage = rowsOnPage;
+    }
+
+    public void goToFirstPage() {
+        table.setFirst(0);
+    }
+
+    public void goToPreviousPage() {
+        table.setFirst(table.getFirst() - table.getRows());
+    }
+
+    public void goToNextPage() {
+        table.setFirst(table.getFirst() + table.getRows());
+    }
+
+    public void goToLastPage() {
+        int totalRows = table.getRowCount();
+        int displayRows = table.getRows();
+        int full = totalRows / displayRows;
+        int modulo = totalRows % displayRows;
+
+        if (modulo > 0) {
+            table.setFirst(full * displayRows);
+        } else {            
+            table.setFirst((full - 1) * displayRows);
+        }
+    }*/
+    
+    public int getImageWidth(){
+        return Global.IMAGE_WIDTH;
+    }
+    
+    public int getImageHeighth(){
+        return Global.IMAGE_HEIGTH;
+    }
+    
+        
+    public int getImageMinWidth(){
+        return Global.IMAGE_MIN_WIDTH;
+    }
+    
+    public int getImageMinHeighth(){
+        return Global.IMAGE_MIN_HEIGTH;
+    }
 }
