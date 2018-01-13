@@ -6,18 +6,25 @@
 package org.lhedav.pp.business.data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -29,33 +36,33 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "Services.findAll", query = "SELECT s FROM Services s")
     , @NamedQuery(name = "Services.findByServicesTId", query = "SELECT s FROM Services s WHERE s.servicesTId = :servicesTId")
-    , @NamedQuery(name = "Services.findByName", query = "SELECT s FROM Services s WHERE s.name = :name")
-    , @NamedQuery(name = "Services.findByCategory", query = "SELECT s FROM Services s WHERE s.category = :category")
-    , @NamedQuery(name = "Services.findByItem", query = "SELECT s FROM Services s WHERE s.item = :item")})
+    , @NamedQuery(name = "Services.findByServicesType", query = "SELECT s FROM Services s WHERE s.serviceTypeFk = :serviceTypeFk")
+    , @NamedQuery(name = "Services.findByName", query = "SELECT s FROM Services s WHERE s.name = :name")})
 public class Services implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-        @TableGenerator( name = "sequence_services", table = "SEQUENCE", pkColumnName = "SEQ_NAME", pkColumnValue = "SERVICES_T_ID", valueColumnName = "SEQ_COUNT", initialValue = 0, allocationSize = 1 )
+    @TableGenerator( name = "sequence_services", table = "SEQUENCE", pkColumnName = "SEQ_NAME", pkColumnValue = "SERVICES_T_ID", valueColumnName = "SEQ_COUNT", initialValue = 0, allocationSize = 1 )
     @GeneratedValue( strategy = GenerationType.TABLE, generator = "sequence_services" )
     @Column(name = "SERVICES_T_ID")
     private Long servicesTId;
     @Size(max = 50)
     @Column(name = "NAME")
     private String name;
-    @Size(max = 50)
-    @Column(name = "CATEGORY")
-    private String category;
-    @Size(max = 50)
-    @Column(name = "ITEM")
-    private String item;
+    @OneToMany(mappedBy = "servicesFk")
+    private List<Categories> categoriesList;
+    @JoinColumn(name = "SERVICE_TYPE_FK", referencedColumnName = "SERVICE_TYPE_T_ID")
+    @ManyToOne
+    private ServiceType serviceTypeFk;
 
     public Services() {
+        categoriesList = new ArrayList();
     }
 
     public Services(Long servicesTId) {
         this.servicesTId = servicesTId;
+        categoriesList = new ArrayList();
     }
 
     public Long getServicesTId() {
@@ -74,20 +81,31 @@ public class Services implements Serializable {
         this.name = name;
     }
 
-    public String getCategory() {
-        return category;
+    @XmlTransient
+    public List<Categories> getCategoriesList() {
+        return categoriesList;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setCategoriesList(List<Categories> categoriesList) {
+        this.categoriesList = categoriesList;
     }
 
-    public String getItem() {
-        return item;
+    public ServiceType getServiceTypeFk() {
+        return serviceTypeFk;
     }
 
-    public void setItem(String item) {
-        this.item = item;
+    public void setServiceTypeFk(ServiceType serviceTypeFk) {
+        this.serviceTypeFk = serviceTypeFk;
+    }
+    
+     public void addCategoriesToList(Categories someCategories) {
+        if (!getCategoriesList().contains(someCategories)) {
+            getCategoriesList().add(someCategories);
+            /*if (someCategories.getServicesFk() != null) {
+                someCategories.getServicesFk().getCategoriesList().remove(getServicesFk);
+            }*/
+            someCategories.setServicesFk(this);
+        }
     }
 
     @Override

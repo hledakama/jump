@@ -95,7 +95,7 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                 <h:selectOneMenu id = "service_kind_add" required="true" value="#{publishService.service.kind}"
                                  valueChangeListener="#{publishService.onKindChanged}">
                     <f:selectItems value="#{publishService.servicesKinds}" />
-                    <f:ajax render="service_reference_add"/>
+                    <f:ajax render="@form"/>
                 </h:selectOneMenu>
                 <h:message for="service_kind_add"/>
                 
@@ -103,7 +103,7 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                 <h:selectOneMenu id = "service_type_add" required="true" value="#{publishService.service.type}"
                                  valueChangeListener="#{publishService.onTypeChanged}">
                     <f:selectItems value="#{publishService.servicesTypes}" />
-                    <f:ajax render="service_reference_add"/>
+                    <f:ajax render="@form"/>
                 </h:selectOneMenu>
                 <h:message for="service_type_add"/>
                 
@@ -111,7 +111,7 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                 <h:selectOneMenu id = "service_name_add" required="true" value="#{publishService.service.servicename}"
                                  valueChangeListener="#{publishService.onNameChanged}" >
                     <f:selectItems value="#{publishService.servicesNames}" />
-                    <f:ajax render="service_reference_add"/>
+                    <f:ajax render="@form"/>
                 </h:selectOneMenu>
                 <h:message for="service_name_add"/>
                 
@@ -119,7 +119,7 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                 <h:selectOneMenu id = "category_name_add" required="true" value="#{publishService.service.category}"
                                  valueChangeListener="#{publishService.onCategoryChanged}">
                     <f:selectItems value="#{publishService.categoriesNames}" />
-                    <f:ajax render="service_reference_add"/>
+                    <f:ajax render="@form"/>
                 </h:selectOneMenu>
                 <h:message for="category_name_add"/>
                 
@@ -167,7 +167,7 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                     <f:param name="category" value="#{publishService.service.category}"/>
                 </h:button>
             
-            <h:button id ="modifying_item" value="#{publishService.modifyServiceButtonLabel}"  outcome="modify-item" rendered="#{publishService.isModify()}">
+                <h:button id ="modifying_item" value="#{publishService.modifyServiceButtonLabel}"  outcome="modify-item" rendered="#{publishService.isModify()}">
                     <f:param name="kind" value="#{publishService.service.kind}"/>
                     <f:param name="type" value="#{publishService.service.type}"/>
                     <f:param name="service" value="#{publishService.service.servicename}"/>

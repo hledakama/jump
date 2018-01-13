@@ -6,18 +6,26 @@
 package org.lhedav.pp.business.data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -29,25 +37,33 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "ServiceType.findAll", query = "SELECT s FROM ServiceType s")
     , @NamedQuery(name = "ServiceType.findByServiceTypeTId", query = "SELECT s FROM ServiceType s WHERE s.serviceTypeTId = :serviceTypeTId")
+    , @NamedQuery(name = "ServiceType.findByServiceKind", query = "SELECT s FROM ServiceType s WHERE s.serviceKindFk = :serviceKindFk")
     , @NamedQuery(name = "ServiceType.findByType", query = "SELECT s FROM ServiceType s WHERE s.type = :type")})
 public class ServiceType implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-    @TableGenerator( name = "sequence_type", table = "SEQUENCE", pkColumnName = "SEQ_NAME", pkColumnValue = "SERVICE_TYPE_T_ID", valueColumnName = "SEQ_COUNT", initialValue = 0, allocationSize = 1 )
-    @GeneratedValue( strategy = GenerationType.TABLE, generator = "sequence_type" )  
+    @TableGenerator( name = "sequence_service_type", table = "SEQUENCE", pkColumnName = "SEQ_NAME", pkColumnValue = "SERVICE_TYPE_T_ID", valueColumnName = "SEQ_COUNT", initialValue = 0, allocationSize = 1 )
+    @GeneratedValue( strategy = GenerationType.TABLE, generator = "sequence_service_type" )
     @Column(name = "SERVICE_TYPE_T_ID")
     private Long serviceTypeTId;
     @Size(max = 50)
     @Column(name = "TYPE")
     private String type;
+    @JoinColumn(name = "SERVICE_KIND_FK", referencedColumnName = "SERVICE_KIND_T_ID")
+    @ManyToOne
+    private ServiceKind serviceKindFk;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "serviceTypeFk", orphanRemoval = true)
+    private List<Services> servicesList;
 
     public ServiceType() {
+        servicesList = new ArrayList();
     }
 
     public ServiceType(Long serviceTypeTId) {
         this.serviceTypeTId = serviceTypeTId;
+        servicesList = new ArrayList();
     }
 
     public Long getServiceTypeTId() {
@@ -64,6 +80,33 @@ public class ServiceType implements Serializable {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public ServiceKind getServiceKindFk() {
+        return serviceKindFk;
+    }
+
+    public void setServiceKindFk(ServiceKind serviceKindFk) {
+        this.serviceKindFk = serviceKindFk;
+    }
+
+    @XmlTransient
+    public List<Services> getServicesList() {
+        return servicesList;
+    }
+
+    public void setServicesList(List<Services> servicesList) {
+        this.servicesList = servicesList;
+    }
+    
+     public void addServicesToList(Services someServices) {
+        if (!getServicesList().contains(someServices)) {
+            getServicesList().add(someServices);
+            /*if (someServices.getServiceTypeFk() != null) {
+                someServices.getServiceTypeFk().getServicesList().remove(someServices);
+            }*/
+            someServices.setServiceTypeFk(this);
+        }
     }
 
     @Override

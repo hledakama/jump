@@ -13,6 +13,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
+import org.lhedav.pp.business.data.Categories;
+import org.lhedav.pp.business.data.Items;
 import org.lhedav.pp.business.model.common.Global;
 import org.lhedav.pp.business.model.service.Item;
 import org.lhedav.pp.business.model.service.Itemdata;
@@ -50,25 +52,64 @@ public class SellerEJB {
         return theKinds;
     }
     
-    public List<ServiceType> getServiceTypes(){
+    public ServiceKind getServiceKindByName(String aKind){ 
+        ServiceKind theResult;
+        try{
+        TypedQuery<ServiceKind> theQuery;
+        theQuery = em.createNamedQuery("ServiceKind.findByKind", ServiceKind.class);
+        theQuery.setParameter("kind", aKind);
+        theResult = theQuery.getSingleResult();
+        }        
+        catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
+
+        return theResult;
+    }
+    
+    
+    public List<ServiceType> getServiceTypes(ServiceKind aKind){
         List<ServiceType> theTypes;
         try{        
         TypedQuery<ServiceType> theQuery;
-        theQuery = em.createNamedQuery("ServiceType.findAll", ServiceType.class);
+        theQuery = em.createNamedQuery("ServiceType.findByServiceKind", ServiceType.class);
+        theQuery.setParameter("serviceKindFk", aKind);
         theTypes = theQuery.getResultList();
-    }
+        }
         catch(Exception e){
             e.printStackTrace();
             return null;
         }
         return theTypes;
     }
+    
+    public ServiceType getServiceTypeByName(String aType){
+        ServiceType theResult;
+        try{        
+        TypedQuery<ServiceType> theQuery;
+        theQuery = em.createNamedQuery("ServiceType.findByType", ServiceType.class);
+        theQuery.setParameter("type", aType);
+        theResult = theQuery.getSingleResult();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
+        return theResult;
+    }
         
-    public List<Services> getServicesData(){
+    public List<Services> getServicesData(ServiceType aType, boolean all){
        List<Services> theServices ;
         try{
         TypedQuery<Services> theQuery;
-        theQuery = em.createNamedQuery("Services.findAll", Services.class);
+        
+        if(all){
+            theQuery = em.createNamedQuery("Services.findAll", Services.class);
+        }else{
+            theQuery = em.createNamedQuery("Services.findByServicesType", Services.class);
+            theQuery.setParameter("serviceTypeFk", aType);
+        }
         theServices = theQuery.getResultList();
         }
         catch(Exception e){
@@ -76,6 +117,56 @@ public class SellerEJB {
             return null;
         }
         return theServices;
+    }
+    
+    public Services getServicesDataByName(String someServicesName){
+       Services theResult ;
+        try{
+        TypedQuery<Services> theQuery;
+        theQuery = em.createNamedQuery("Services.findByName", Services.class);
+        theQuery.setParameter("name", someServicesName);
+        theResult = theQuery.getSingleResult();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
+        return theResult;
+    }
+    
+    public List<Categories> getCategoriesData(Services someServices){
+       List<Categories> theCategories ;
+        try{
+        TypedQuery<Categories> theQuery;
+        theQuery = em.createNamedQuery("Categories.findByServices", Categories.class);
+        theQuery.setParameter("servicesFk", someServices);
+        theCategories = theQuery.getResultList();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
+        return theCategories;
+    }
+        
+    public List<Items> getItemsData(Categories someCategories, boolean all){
+       List<Items> theItems ;
+        try{
+        TypedQuery<Items> theQuery;
+        if(all){
+            theQuery = em.createNamedQuery("Items.findAll", Items.class);
+        }else{
+           theQuery = em.createNamedQuery("Items.findByCategories", Items.class);
+           theQuery.setParameter("categoriesFk", someCategories); 
+        }
+        
+        theItems = theQuery.getResultList();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
+        return theItems;
     }
     
     public List<Unit> getItemUnits(){

@@ -9,10 +9,13 @@ import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.TableGenerator;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -33,7 +36,8 @@ public class Unit implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-    @NotNull
+    @TableGenerator( name = "sequence_unit", table = "SEQUENCE", pkColumnName = "SEQ_NAME", pkColumnValue = "UNIT_T_ID", valueColumnName = "SEQ_COUNT", initialValue = 0, allocationSize = 1 )
+    @GeneratedValue( strategy = GenerationType.TABLE, generator = "sequence_unit" )
     @Column(name = "UNIT_T_ID")
     private Long unitTId;
     @Size(max = 10)

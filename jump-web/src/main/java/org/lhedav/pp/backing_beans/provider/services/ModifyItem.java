@@ -24,6 +24,7 @@ import javax.validation.constraints.NotNull;
 import org.lhedav.pp.business.json.ItemdataJsonBuilder;
 import org.lhedav.pp.business.logic.SellerEJB;
 import org.lhedav.pp.business.model.common.CRC32StringCollection;
+import static org.lhedav.pp.business.model.common.CRC32StringCollection.INVALID_CRC;
 import org.lhedav.pp.business.model.common.Global;
 import org.lhedav.pp.business.model.service.Item;
 import org.lhedav.pp.business.model.service.Itemdata;
@@ -105,8 +106,15 @@ public class ModifyItem implements Serializable{
     
     public synchronized void init() {
         System.out.println("init modify");
-        Service theService  = provider_services.getItemsFromService(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
-        List<Item> theItems = theService.getItemList();
+        Service theService = null;
+        List<Item> theItems = null;
+        if((service.getKind() != null) && (service.getType() != null) && (service.getServicename() != null) && (service.getCategory() != null)){
+           theService  = provider_services.getItemsFromService(service.getKind(), service.getType(), service.getServicename(), service.getCategory()); 
+        }
+        if(theService != null){
+        theItems = theService.getItemList();
+         }
+        
         if(itemsNames.contains(strItemDeletion)){
             //System.out.println("init removing strDeletion : "+strItemDeletion+", "+itemsNames.get(0)+", numOfItems: "+numOfItems);
             itemsNames.remove(strItemDeletion);
@@ -139,13 +147,19 @@ public class ModifyItem implements Serializable{
     //https://stackoverflow.com/questions/6341462/initializng-a-backing-bean-with-parameters-on-page-load-with-jsf-2-0
     public void loadService(){
         System.out.println("loadService modify ");
-        Service theService  = provider_services.getItemsFromService(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
-        List<Item> theItems = theService.getItemList();
+        Service theService = null;
+        if((service.getKind() != null) && (service.getType() != null) && (service.getServicename() != null) && (service.getCategory() != null)){
+           theService  = provider_services.getItemsFromService(service.getKind(), service.getType(), service.getServicename(), service.getCategory()); 
+        }
+        List<Item> theItems = null;
+        if(theService != null){
+            theItems = theService.getItemList();
+        }
         
         if(!isInitiated || isItemNameEmpty() || (theItems != null) && (numOfItems != (theItems.size())) ) {
             init();
             isInitiated = true;
-            numOfItems  = theItems.size();
+            numOfItems  = (theItems == null)?0 : theItems.size();
             //System.out.println("numOfItems: "+numOfItems+ ", theItems.size(): "+theItems.size());
         }
         loadService_(); 
@@ -218,14 +232,9 @@ public class ModifyItem implements Serializable{
     }
     
     public void resetItem(String anItemName){
+        Global.resetFile(file);
         item = new Item();
         item.setItemname(anItemName);
-        //System.out.println("resetItem-->anItemName: "+anItemName+", strLastItemContentDeleted: "+strLastItemContentDeleted+", itemsNames.size: "+itemsNames.size());
-        /*if(!strLastItemContentDeleted.equals(Global.STR_EMPTY)){
-            System.out.println("resetItem-->strLastItemContentDeleted not empty");
-            item.setItemname(strLastItemContentDeleted);
-            itemsNames.set(0, strLastItemContentDeleted);
-        }*/
         if(itemsNames.isEmpty()){
             item.setItemname(null);
         }
@@ -734,8 +743,12 @@ public class ModifyItem implements Serializable{
     }
     
     public void loadService_(){
-         System.out.println("loadService_ modify ");   
-        String theCrc = CRC32StringCollection.getServicereference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
+         System.out.println("loadService_ modify "); 
+         String theCrc = (CRC32StringCollection.INVALID_CRC + Global.STR_EMPTY);
+         if((service.getKind() != null) && (service.getType() != null) && (service.getServicename() != null) && (service.getCategory() != null)){
+            theCrc = CRC32StringCollection.getServicereference(service.getKind(), service.getType(), service.getServicename(), service.getCategory()); 
+         }
+        
         //System.out.println("loadService from AddItem.init, service-->theCrc: "+theCrc);
         Service theSavedService = provider_services.getServiceByServiceReference(theCrc);
         if(theSavedService == null){

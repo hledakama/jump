@@ -7,12 +7,18 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.Part;
 import javax.validation.constraints.NotNull;
+import org.lhedav.pp.business.data.Categories;
+import org.lhedav.pp.business.data.Items;
+import org.lhedav.pp.business.data.ServiceKind;
+import org.lhedav.pp.business.data.ServiceType;
+import org.lhedav.pp.business.data.Services;
 import org.lhedav.pp.business.model.service.Itemdata;
 import org.lhedav.pp.business.model.user.Avatar;
 
@@ -61,6 +67,12 @@ public class Global {
         
         public static int IMAGE_MIN_WIDTH  = 50;
         public static int IMAGE_MIN_HEIGTH = 60;
+        public final static String KIND = "KIND";
+        public final static String TYPE = "TYPE";
+        public final static String SERVICES = "SERVICES";
+        public final static String CATEGORIES = "CATEGORIES";
+        public final static String ITEMS = "ITEMS";
+        
         public static byte[] getHash(String aRawData){
             MessageDigest m=null;
             try {
@@ -204,6 +216,68 @@ public class Global {
     
     public static void setUploadValidated(boolean aBool){
         uploadValidated = aBool;
+    }
+    
+    public static void cleanList(List<String> someComboContent){
+        if((someComboContent == null) || (someComboContent.isEmpty())) return;
+        int theSize = someComboContent.size();
+        for(int index = 0; index < theSize; index++){
+            someComboContent.remove(index);
+        }
+    }
+    
+    public static void buildComboBoxContent(List<ServiceKind> aKindList, 
+                                          List<ServiceType> aTypeList, 
+                                          List<Services> someServicesList,
+                                          List<Categories> someCategories,
+                                          List<Items> someItems,
+                                          List<String> someComboContent,
+                                          String whatType){
+        
+        switch(whatType){
+            case KIND:
+                if((aKindList == null) || (someComboContent == null) || aKindList.isEmpty() || someComboContent.isEmpty()) return;
+                cleanList(someComboContent);
+                for(ServiceKind aKind : aKindList){
+                    if(aKind == null) continue;
+                    someComboContent.add(aKind.getKind());
+                }
+                break;
+            case TYPE:
+                if((aTypeList == null) || (someComboContent == null) || aTypeList.isEmpty() || someComboContent.isEmpty()) return;
+                cleanList(someComboContent);
+                for(ServiceType aType : aTypeList){
+                    if(aType == null) continue;
+                    someComboContent.add(aType.getType());
+                }
+                break;
+            case SERVICES:
+                if((someServicesList == null) || (someComboContent == null) || someServicesList.isEmpty() || someComboContent.isEmpty()) return;
+                cleanList(someComboContent);
+                for(Services someServices : someServicesList){
+                    if(someServices == null) continue;
+                    someComboContent.add(someServices.getName());
+                }
+                break;
+            case CATEGORIES:
+                if((someCategories == null) || (someComboContent == null) || someCategories.isEmpty() || someComboContent.isEmpty()) return;
+                cleanList(someComboContent);
+                for(Categories aCategory : someCategories){
+                    if(aCategory == null) continue;
+                    someComboContent.add(aCategory.getName());
+                }
+                break;
+            case ITEMS:
+                if((someItems == null) || (someComboContent == null) || someItems.isEmpty() || someComboContent.isEmpty()) return;
+                cleanList(someComboContent);
+                for(Items aData : someItems){
+                    if(aData == null) continue;
+                    someComboContent.add(aData.getName());
+                }
+                break;
+            default:
+                break;
+        }
     }
         
 }

@@ -22,6 +22,7 @@ import javax.inject.Named;
 import javax.json.JsonArray;
 import javax.servlet.http.Part;
 import javax.validation.constraints.NotNull;
+import org.lhedav.pp.business.data.Items;
 import org.lhedav.pp.business.data.Services;
 import org.lhedav.pp.business.json.ItemdataJsonBuilder;
 import org.lhedav.pp.business.logic.SellerEJB;
@@ -109,17 +110,24 @@ public class AddItem implements Serializable{
     @PostConstruct
     public void init() {
          //System.out.println("PostConstruct init");
-        List<Services> theServicesData = provider_services.getServicesData();
-        int theServicesSize = theServicesData.size();
+        List<Items> theItemsData = provider_services.getItemsData(null, true);
          
-        for (int index = 0; index < theServicesSize; index++) {
+        if(theItemsData != null){
+            Global.buildComboBoxContent(null, null, null, null, theItemsData, itemsNames,Global.ITEMS);
+        }
+        /*for (int index = 0; index < theServicesSize; index++) {
             String theString = theServicesData.get(index).getItem();
             if (itemsNames.contains(theString)) {
                 continue;
             }
             itemsNames.add(theString);
-        } 
-        resetItem(itemsNames.get(0));
+        }*/ 
+        if(!itemsNames.isEmpty()){
+          resetItem(itemsNames.get(0));  
+        }else{
+            resetItem(null);
+        }
+        
         unitsList = provider_services.getItemUnits(provider_services.getItemUnits());        
     }
     //https://stackoverflow.com/questions/6341462/initializng-a-backing-bean-with-parameters-on-page-load-with-jsf-2-0
@@ -179,6 +187,9 @@ public class AddItem implements Serializable{
         Global.resetFile(file);
         item = new Item();
         item.setItemname(anItemName);
+        if(itemsNames.isEmpty()){
+            item.setItemname(null);
+        }
         item.setItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
     }
     //https://www.mkyong.com/jsf2/how-to-update-row-in-jsf-datatable/

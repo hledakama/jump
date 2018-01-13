@@ -17,6 +17,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.CollectionDataModel;
 import javax.inject.Named;
+import org.lhedav.pp.business.data.Categories;
 import org.lhedav.pp.business.data.ServiceKind;
 import org.lhedav.pp.business.data.ServiceType;
 import org.lhedav.pp.business.data.Services;
@@ -73,41 +74,45 @@ public class PublishService {
     //https://community.oracle.com/thread/1726468
     @PostConstruct
     public void init() {
-        List<ServiceKind>  theKinds    = provider_services.getServiceKinds();
-        List<ServiceType> theTypes     = provider_services.getServiceTypes();
-        List<Services> theServicesData = provider_services.getServicesData();
-        
-        int theKindSize = theKinds.size(); 
-           for(int index = 0; index < theKindSize; index++){
-               String theString = theKinds.get(index).getKind();
-               if(servicesKinds.contains(theString)) continue;
-               servicesKinds.add(theString);
-           }
-        int theTypeSize = theTypes.size();
-            for(int index = 0; index < theTypeSize; index++){
-                String theString = theTypes.get(index).getType();
-               if(servicesTypes.contains(theString)) continue;
-                servicesTypes.add(theTypes.get(index).getType());
-            } 
-         
-        int theServicesSize = theServicesData.size();
-            for(int index = 0; index < theServicesSize; index++){
-                String theString = theServicesData.get(index).getName();
-               if(servicesNames.contains(theString)) continue;
-                servicesNames.add(theServicesData.get(index).getName());
-            }
+        List<ServiceKind>  theKinds = provider_services.getServiceKinds();
+        ServiceKind theFirstKind = null;
+        if((theKinds != null) && !theKinds.isEmpty()){
+            theFirstKind = theKinds.get(0);
+            Global.buildComboBoxContent(theKinds, null, null, null, null,  servicesKinds,Global.KIND);
+        }
+        List<ServiceType> theTypes = provider_services.getServiceTypes(theFirstKind);
+        ServiceType theFirstType = null;
+        if((theTypes != null) && (!theTypes.isEmpty())){
+            theFirstType = theTypes.get(0);
+            Global.buildComboBoxContent(null, theTypes, null, null, null, servicesTypes,Global.TYPE);
+        }
+        List<Services> theServicesData = provider_services.getServicesData(theFirstType, false);
+        Services theFirstServices = null;
+        if((theServicesData != null) && (!theServicesData.isEmpty())){
+            theFirstServices = theServicesData.get(0);
+            Global.buildComboBoxContent(null, null, theServicesData, null, null,  servicesNames,Global.SERVICES);
+        }
+        List<Categories> theCategoriesData = provider_services.getCategoriesData(theFirstServices);
+        Categories theFirstCategories = null;
+        if((theCategoriesData != null) && (!theCategoriesData.isEmpty())){
+            theFirstCategories = theCategoriesData.get(0);
+            Global.buildComboBoxContent(null, null, null, theCategoriesData, null,  categoriesNames,Global.CATEGORIES);
             
+        }
+        //List<Items> theItemsData = provider_services.getItemsData(theFirstCategories); 
         
-            for(int index = 0; index < theServicesSize; index++){
-               String theString = theServicesData.get(index).getCategory();
-               if(categoriesNames.contains(theString)) continue;
-                categoriesNames.add(theServicesData.get(index).getCategory());
-            }
-        
-        service.setKind(servicesKinds.get(0));
-        service.setType(servicesTypes.get(0));
-        service.setServicename(servicesNames.get(0));
-        service.setCategory(categoriesNames.get(0));
+        if(!servicesKinds.isEmpty()){
+            service.setKind(servicesKinds.get(0));
+        }
+        if(!servicesTypes.isEmpty()){
+            service.setType(servicesTypes.get(0));
+        }
+        if(!servicesNames.isEmpty()){
+            service.setServicename(servicesNames.get(0));
+        }
+        if(!categoriesNames.isEmpty()){
+            service.setCategory(categoriesNames.get(0));
+        }
         //System.out.println("setServicereference from PublishService.init");
         service.setServicereference();
         
@@ -328,11 +333,13 @@ public class PublishService {
        }
              
     public SortedDataModel<Item> getSortedItemModel() {
-           Service   theService;
+           Service   theService = null;
            //System.out.println("service.getServicename(): "+service.getServicename());
            //System.out.println("service.getKind(): "+service.getKind());
            //System.out.println("service.getType(): "+service.getType());
-           theService = provider_services.getItemsFromService(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
+           if((service.getKind() != null) && (service.getType() != null) && (service.getServicename() != null) && (service.getCategory() != null)){
+           theService  = provider_services.getItemsFromService(service.getKind(), service.getType(), service.getServicename(), service.getCategory()); 
+        }
            List<Item> theItems = new ArrayList();
            if(theService != null) {
               List<Item> theTempResult = theService.getItemList();
@@ -349,10 +356,16 @@ public class PublishService {
     
            public SortedDataModel<Service> getSortedServiceModel() {
            List<Service>   theServices = new ArrayList();
+           Service theService = null;
            //System.out.println("--service.getServicename(): "+service.getServicename());
            //System.out.println("--service.getKind(): "+service.getKind());
            //System.out.println("--service.getType(): "+service.getType());
-           theServices.add(provider_services.getItemsFromService(service.getKind(), service.getType(), service.getServicename(), service.getCategory()));
+           if((service.getKind() != null) && (service.getType() != null) && (service.getServicename() != null) && (service.getCategory() != null)){
+           theService  = provider_services.getItemsFromService(service.getKind(), service.getType(), service.getServicename(), service.getCategory()); 
+        }
+           if(theService != null){
+               theServices.add(theService);
+           }
             sortedServiceModel = new SortedDataModel<>(new CollectionDataModel<>(theServices));
            /* } catch (ParseException ex) {
             Logger.getLogger(AddModifyItem.class.getName()).log(Level.SEVERE, null, ex);
@@ -410,6 +423,25 @@ public class PublishService {
        //System.out.println("onKindChanged start, getServicereference: "+service.getServicereference()+ ", anEvent.getOldValue(): "+anEvent.getOldValue());
        String theNewKind = (String) anEvent.getNewValue();
        service.setKind(theNewKind);
+       ServiceKind theKind = provider_services.getServiceKindByName(theNewKind);
+       
+       List<ServiceType> theTypes = provider_services.getServiceTypes(theKind);
+        ServiceType theFirstType = null;
+        if((theTypes != null) && (!theTypes.isEmpty())){
+            theFirstType = theTypes.get(0);
+            Global.buildComboBoxContent(null, theTypes, null, null, null, servicesTypes,Global.TYPE);
+        }
+        List<Services> theServicesData = provider_services.getServicesData(theFirstType, false);
+        Services theFirstServices = null;
+        if((theServicesData != null) && (!theServicesData.isEmpty())){
+            theFirstServices = theServicesData.get(0);
+            Global.buildComboBoxContent(null, null, theServicesData, null, null, servicesNames,Global.SERVICES);
+        }
+        List<Categories> theCategoriesData = provider_services.getCategoriesData(theFirstServices);
+        if((theCategoriesData != null) && (!theCategoriesData.isEmpty())){
+            Global.buildComboBoxContent(null, null, null, theCategoriesData, null, categoriesNames,Global.CATEGORIES);
+        }                
+        
        //System.out.println("setServicereference from PublishService.onKindChanged");
        service.setServicereference();
       //System.out.println("onKindChanged end, getServicereference: "+service.getServicereference()+ ", theNewKind: "+theNewKind);
@@ -420,6 +452,19 @@ public class PublishService {
        //System.out.println("onTypeChanged start, getServicereference: "+service.getServicereference()+ ", anEvent.getOldValue(): "+anEvent.getOldValue());
        String theNewType = (String) anEvent.getNewValue();
        service.setType(theNewType);
+       ServiceType theType = provider_services.getServiceTypeByName(theNewType);
+       
+        List<Services> theServicesData = provider_services.getServicesData(theType, false);
+        Services theFirstServices = null;
+        if((theServicesData != null) && (!theServicesData.isEmpty())){
+            theFirstServices = theServicesData.get(0);
+            Global.buildComboBoxContent(null, null, theServicesData, null, null, servicesNames,Global.SERVICES);
+        }
+        List<Categories> theCategoriesData = provider_services.getCategoriesData(theFirstServices);
+        if((theCategoriesData != null) && (!theCategoriesData.isEmpty())){
+            Global.buildComboBoxContent(null, null, null, theCategoriesData, null, categoriesNames,Global.CATEGORIES);
+        }
+        
        //System.out.println("setServicereference from PublishService.onTypeChanged");
        service.setServicereference();
        //System.out.println("onTypeChanged end, getServicereference: "+service.getServicereference()+", theNewType: "+theNewType);
@@ -432,6 +477,13 @@ public class PublishService {
        String theNewName = (String) anEvent.getNewValue();
        service.setServicename(theNewName);
        //System.out.println("setServicereference from PublishService.onNameChanged");
+       Services theServices = provider_services.getServicesDataByName(theNewName);
+       
+       List<Categories> theCategoriesData = provider_services.getCategoriesData(theServices);
+        if((theCategoriesData != null) && (!theCategoriesData.isEmpty())){
+            Global.buildComboBoxContent(null, null, null, theCategoriesData, null, categoriesNames,Global.CATEGORIES);
+        }
+        
        service.setServicereference();
        //System.out.println("onNameChanged end, getServicereference: "+service.getServicereference()+", theNewName: "+theNewName);
        updateAddModifyButton();
@@ -485,8 +537,14 @@ public class PublishService {
     }
     
     public boolean isModify() {
-        Service theService = provider_services.getItemsFromService(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
-        List<Item> theItems = theService.getItemList();
+        Service theService = null;
+        if((service.getKind() != null) && (service.getType() != null) && (service.getServicename() != null) && (service.getCategory() != null)){
+           theService  = provider_services.getItemsFromService(service.getKind(), service.getType(), service.getServicename(), service.getCategory()); 
+        }
+        List<Item> theItems = null;
+        if(theService != null){
+            theItems = theService.getItemList();
+        }
         //System.out.println("PublushService-->, null != theItems: "+(null != theItems));
         setModify(null != theItems);
         return modify;
