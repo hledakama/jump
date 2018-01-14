@@ -555,3 +555,6 @@ public class PublishService {
     }
     
 }
+
+//https://stackoverflow.com/questions/2095397/what-is-the-difference-between-jsf-servlet-and-jsp?rq=1
+//https://stackoverflow.com/questions/24401196/reading-and-writing-a-xml-file-in-jsf

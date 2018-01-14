@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<db>
+ <version value="1.01"/>
+ <static>
+  <provider>
+      <kinds>
+          <kind value="domestic">
+              <types value="">
+                    <type value="beauty">
+                        <services value="">
+                            <service value="">
+                                  <categories value="">
+                                      <category value="">
+                                          <items value="">
+                                                <item value="">
+                                                      <settings value=""><!-- settings is an interface each item should implement. leave it empty in the xml. Provider will fill in from his account-->
+                                                      </settings>
+                                                </item>
+                                                <item value="">
+                                                      <settings value="">
+                                                      </settings>
+                                                </item>
+                                          </items> 
+                                      </category>                                                   
+                                  </categories> 
+                            </service>                 
+                        </services>
+                    </type>
+                    <type value="entertainment">
+                        <services value="">
+                            <service value="">
+                                  <categories value="">
+                                      <category value="">
+                                          <items value="">
+                                                <item value="">
+                                                      <settings value="">
+                                                      </settings>
+                                                </item>
+                                                <item value="">
+                                                      <settings value="">
+                                                      </settings>
+                                                </item>
+                                          </items> 
+                                      </category>                                                   
+                                  </categories> 
+                            </service>                 
+                        </services>
+                    </type>
+                    <type value="transportation">
+                        <services value="">
+                            <service value="">
+                                  <categories value="">
+                                      <category value="">
+                                          <items value="">
+                                                <item value="">
+                                                      <settings value="">
+                                                      </settings>
+                                                </item>
+                                                <item value="">
+                                                      <settings value="">
+                                                      </settings>
+                                                </item>
+                                          </items> 
+                                      </category>                                                   
+                                  </categories> 
+                            </service>                 
+                        </services>
+                    </type>
+                    <type value="safety">
+                        <services value="">
+                            <service value="">
+                                  <categories value="">
+                                      <category value="">
+                                          <items value="">
+                                                <item value="">
+                                                      <settings value="">
+                                                      </settings>
+                                                </item>
+                                                <item value="">
+                                                      <settings value="">
+                                                      </settings>
+                                                </item>
+                                          </items> 
+                                      </category>                                                   
+                                  </categories> 
+                            </service>                 
+                        </services>
+                    </type>
+                    <type value="administration">
+                        <services value="">
+                            <service value="">
+                                  <categories value="">
+                                      <category value="">
+                                          <items value="">
+                                                <item value="">
+                                                      <settings value="">
+                                                      </settings>
+                                                </item>
+                                                <item value="">
+                                                      <settings value="">
+                                                      </settings>
+                                                </item>
+                                          </items> 
+                                      </category>                                                   
+                                  </categories> 
+                            </service>                 
+                        </services>
+                    </type>
+                    <type value="beauty">
+                        <services value="">
+                            <service value="">
+                                  <categories value="">
+                                      <category value="">
+                                          <items value="">
+                                                <item value="">
+                                                      <settings value="">
+                                                      </settings>
+                                                </item>
+                                                <item value="">
+                                                      <settings value="">
+                                                      </settings>
+                                                </item>
+                                          </items> 
+                                      </category>                                                   
+                                  </categories> 
+                            </service>                 
+                        </services>
+                    </type>
+                    <type value="beauty">
+                        <services value="">
+                            <service value="">
+                                  <categories value="">
+                                      <category value="">
+                                          <items value="">
+                                                <item value="">
+                                                      <settings value="">
+                                                      </settings>
+                                                </item>
+                                                <item value="">
+                                                      <settings value="">
+                                                      </settings>
+                                                </item>
+                                          </items> 
+                                      </category>                                                   
+                                  </categories> 
+                            </service>                 
+                        </services>
+                    </type>
+                    <type value="beauty">
+                        <services value="">
+                            <service value="">
+                                  <categories value="">
+                                      <category value="">
+                                          <items value="">
+                                                <item value="">
+                                                      <settings value="">
+                                                      </settings>
+                                                </item>
+                                                <item value="">
+                                                      <settings value="">
+                                                      </settings>
+                                                </item>
+                                          </items> 
+                                      </category>                                                   
+                                  </categories> 
+                            </service>                 
+                        </services>
+                    </type>
+              </types>
+          </kind>
+          <kind value="professional">
+              <types value="">
+                    <type value="">                  
+                        <services value="">
+                            <service value="">
+                                  <categories value="">
+                                      <category value="">
+                                          <items value="">
+                                                <item value="">
+                                                      <settings value="">
+                                                      </settings>
+                                                </item>
+                                                <item value="">
+                                                      <settings value="">
+                                                      </settings>
+                                                </item>
+                                          </items> 
+                                      </category>                                                   
+                                  </categories> 
+                            </service>                 
+                        </services>
+                    </type>
+              </types>
+          </kind>
+      </kinds>
+      <units>
+          <unit value="sec">
+              
+          </unit>
+          <unit value="min">
+              
+          </unit>
+          <unit value="hour">
+              
+          </unit>
+          <unit value="m">
+              
+          </unit>
+          <unit value="km">
+              
+          </unit>
+      </units>
+      
+  </provider>
+ </static>
+</db>
