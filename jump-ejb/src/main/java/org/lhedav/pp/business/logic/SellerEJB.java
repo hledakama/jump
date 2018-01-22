@@ -31,8 +31,7 @@ import org.lhedav.pp.business.data.Unit;
 
 @Stateless
 @LocalBean
-public class SellerEJB {
-    
+public class SellerEJB {  
     
     @PersistenceContext(unitName = Global.PERSISTENCE_UNIT)
     private EntityManager em;
@@ -241,24 +240,60 @@ public class SellerEJB {
             em.persist(aService);
             return true;
         }
-
     }
     
-   /* public boolean PersistItem(@NotNull Item anItem){
-        //https://stackoverflow.com/questions/15643732/duplicate-entry-for-key-primary-using-jpa-to-persist-into-database
-        Item theSavedItem = getItemByItemReference(anItem.getItemreference());
-        if(theSavedItem == null){
-            System.out.println("anItem persist, anItem.getItemTId()"+ anItem.getItemTId());
-            em.persist(anItem);
-            return true;
-        } 
-        else{
-            System.out.println("anItem merge, anItem.getItemTId()"+ anItem.getItemTId()+", theSavedItem.getItemTId(): "+theSavedItem.getItemTId());
-            //anItem.setItemTId(theSavedItem.getItemTId());
-            //em.merge(anItem);
+       
+    public boolean PersistServiceKind(@NotNull ServiceKind aServiceKind){
+        List<ServiceKind> theKinds = getServiceKinds();
+        System.out.println("theKinds == null: "+ (theKinds == null));
+        ServiceKind theKind = null;
+        for(ServiceKind aKind: theKinds){
+            if(aKind == null) continue;
+            System.out.println("aKind.getKind(): "+aKind.getKind()+", aServiceKind.getKind(): "+aServiceKind.getKind()+ " theKinds.size(): "+theKinds.size());
+            if(aKind.getKind().equals(aServiceKind.getKind())){
+                theKind = aKind;
+                theKind.setMerged(true);                
+                break;
+            }
+        }
+        if((theKind != null) && theKind.isMerged()){
+            System.out.println("aServiceKind merge ");
+            theKind.setServiceTypeList(aServiceKind.getServiceTypeList());
+            em.merge(theKind);
+            //Global.mergeItemsStructures(aServiceKind.getServiceTypeList(), theKinds);
             return false;
         }
-    }*/
+        else{
+             System.out.println("aServiceKind persist, getServiceKindTId: "+aServiceKind.getServiceKindTId());
+            em.persist(aServiceKind);
+            return true;
+        }
+    }
+    
+    public boolean PersistServiceUnits(@NotNull Unit aUnit){
+        List<Unit> theUnits = getItemUnits();
+        Unit theUnit = null;
+        for(Unit someUnit: theUnits){
+            if(someUnit == null) continue;
+            System.out.println("aUnit.getUnit(): "+aUnit.getUnit()+", someUnit.getUnit(): "+someUnit.getUnit());       
+            if(someUnit.getUnit().equals(aUnit.getUnit())){
+                theUnit = someUnit;
+                theUnit.setMerged(true);
+                break;
+            }
+        }
+        if((theUnit != null) && theUnit.isMerged()){
+            // enable the merge later if thelist of settings is created within Items
+            /*System.out.println("aUnit merge ");
+            em.merge(aUnit);*/
+            return false;
+        }
+        else{
+             System.out.println("aUnit persist, getUnitTId: "+aUnit.getUnitTId());
+            em.persist(aUnit);
+            return true;
+        }
+    }
     
     
     //***************************  Item   *********************************************

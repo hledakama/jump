@@ -1,0 +1,95 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<!--
+    TODO define vocabulary identification
+    PUBLIC ID: -//vendor//vocabulary//EN
+    SYSTEM ID: http://server/path/globalConfiguration.dtd
+
+-->
+
+<!--
+    An example how to use this DTD from your XML document:
+
+    <?xml version="1.0"?>
+
+    <!DOCTYPE db SYSTEM "globalConfiguration.dtd">
+
+    <db>
+    ...
+    </db>
+-->
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT db (version|static)*>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT version EMPTY>
+<!ATTLIST version
+    value CDATA #IMPLIED
+  >
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT static (provider)*>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT provider (kinds|units)*>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT kinds (kind)*>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT kind (types)*>
+<!ATTLIST kind
+    value CDATA #IMPLIED
+  >
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT types (type)*>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT type (services)*>
+<!ATTLIST type
+    value CDATA #IMPLIED
+  >
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT services (service)*>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT service (categories)*>
+<!ATTLIST service
+    value CDATA #IMPLIED
+  >
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT categories (category)*>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT category (items)*>
+<!ATTLIST category
+    value CDATA #IMPLIED
+  >
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT items (item)*>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT item (settings)*>
+<!ATTLIST item
+    value CDATA #IMPLIED
+  >
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT settings EMPTY>
+<!ATTLIST settings
+    value CDATA #IMPLIED
+  >
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT units (unit)*>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT unit EMPTY>
+<!ATTLIST unit
+    value CDATA #IMPLIED
+  >

@@ -25,7 +25,7 @@ import javax.persistence.TableGenerator;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-import org.lhedav.pp.business.model.service.Itemdata;
+import org.lhedav.pp.business.model.common.Global;
 
 /**
  *
@@ -100,12 +100,17 @@ public class Categories implements Serializable {
     }
     
      public void addItemsToList(Items someItems) {
-        if (!getItemsList().contains(someItems)) {
+        System.out.println("cat toString: "+toString());
+        if (!Global.isThereMatching(null, null, null, null, itemsList, someItems.getName(),Global.ITEMS)) {
+            System.out.println("added someItems.getItemsTId(): "+someItems.getItemsTId() + ", someItems.getName(): "+someItems.getName());
             getItemsList().add(someItems);
             /*if (someItems.getCategoriesFk() != null) {
                 someItems.getCategoriesFk().getItemsList().remove(someItems);
             }*/
             someItems.setCategoriesFk(this);
+        }else{
+            System.out.println("not added someItems.getItemsTId(): "+someItems.getItemsTId() + ", someItems.getName(): "+someItems.getName());
+            System.out.println("not added getItemsList().get(0).getItemsTId(): "+getItemsList().get(0).getItemsTId() + ", getItemsList().get(0).getName(): "+getItemsList().get(0).getName());
         }
     }
 

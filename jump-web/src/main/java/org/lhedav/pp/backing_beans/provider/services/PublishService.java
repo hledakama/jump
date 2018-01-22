@@ -5,9 +5,11 @@
  */
 package org.lhedav.pp.backing_beans.provider.services;
 
+
 import org.lhedav.pp.business.logic.SellerEJB;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -18,11 +20,14 @@ import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.CollectionDataModel;
 import javax.inject.Named;
 import org.lhedav.pp.business.data.Categories;
+import org.lhedav.pp.business.data.Items;
 import org.lhedav.pp.business.data.ServiceKind;
 import org.lhedav.pp.business.data.ServiceType;
 import org.lhedav.pp.business.data.Services;
+import org.lhedav.pp.business.data.Unit;
 import org.lhedav.pp.business.model.common.Global;
 import static org.lhedav.pp.business.model.common.Global.GLOBAL_DISPLAY_MESSAGE;
+import org.lhedav.pp.business.model.common.parsing.sax.ConfigurationParser;
 import org.lhedav.pp.business.model.service.Item;
 import org.lhedav.pp.business.model.service.Service;
 import org.lhedav.pp.business.model.service.SortedDataModel;
@@ -67,6 +72,8 @@ public class PublishService {
     private SortedDataModel<Service> sortedServiceModel;
     private boolean publishChecked;
     private boolean modify;
+    private HashMap<String, List> objParsedConfig;
+    private boolean isParsed = false;
     
     
     PublishService(){ 
@@ -74,10 +81,48 @@ public class PublishService {
     //https://community.oracle.com/thread/1726468
     @PostConstruct
     public void init() {
-        List<ServiceKind>  theKinds = provider_services.getServiceKinds();
+        List<ServiceKind> theKinds;
+        List<Unit> theUnits;
+        /*HashMap<String, List> thePreviousConfig = objParsedConfig;
+        if((objParsedConfig == null) || !isParsed){            
+            objParsedConfig = ConfigurationParser.parse(FacesContext.getCurrentInstance());
+            if(objParsedConfig != null){
+                theKinds = (List<ServiceKind>)(objParsedConfig.get(ConfigurationParser.KIND_KEY));
+                if(theKinds != null){
+                    for(ServiceKind aKind: ConfigurationParser.objListOfKinds){
+                        provider_services.PersistServiceKind(aKind);
+                        List<ServiceType> theTypeContent = aKind.getServiceTypeList();
+                        for(ServiceType aType: theTypeContent){
+                           System.out.println("init--> aType.getType() "+aType.getType()+ ", aKind.getKind(): "+aKind.getKind()); 
+                            List<Services> theServList = aType.getServicesList();
+                            for(Services theServices : theServList){
+                                 System.out.println("init--> theServices.getName() "+theServices.getName()+ ", aType.getType(): "+aType.getType());
+                                 List<Categories> theCatList = theServices.getCategoriesList();
+                                 for(Categories aCat:theCatList){
+                                     System.out.println("init--> aCat.getName() "+aCat.getName()+ ", theServices.getName(): "+theServices.getName());
+                                     List<Items> theItems = aCat.getItemsList();
+                                     for(Items someItem: theItems){
+                                         System.out.println("init--> someItem.getName() "+someItem.getName()+ ", aCat.getName(): "+aCat.getName());
+                                     }
+                                 }
+                            }
+                        }
+                        
+                    }
+                }
+            
+                theUnits = (List<Unit>)(objParsedConfig.get(ConfigurationParser.UNIT_KEY));
+                for(Unit aUnit: theUnits){
+                    provider_services.PersistServiceUnits(aUnit);
+                }
+                isParsed = true;
+            }
+        }*/
+        
+        theKinds = provider_services.getServiceKinds();
         ServiceKind theFirstKind = null;
         if((theKinds != null) && !theKinds.isEmpty()){
-            theFirstKind = theKinds.get(0);
+            theFirstKind = theKinds.get(0);            
             Global.buildComboBoxContent(theKinds, null, null, null, null,  servicesKinds,Global.KIND);
         }
         List<ServiceType> theTypes = provider_services.getServiceTypes(theFirstKind);
@@ -558,3 +603,4 @@ public class PublishService {
 
 //https://stackoverflow.com/questions/2095397/what-is-the-difference-between-jsf-servlet-and-jsp?rq=1
 //https://stackoverflow.com/questions/24401196/reading-and-writing-a-xml-file-in-jsf
+//https://stackoverflow.com/questions/1311912/how-do-i-autoindent-in-netbeans

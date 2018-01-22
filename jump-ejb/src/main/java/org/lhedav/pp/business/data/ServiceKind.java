@@ -20,9 +20,11 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
+import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import org.lhedav.pp.business.model.common.Global;
 
 /**
  *
@@ -49,6 +51,8 @@ public class ServiceKind implements Serializable {
     @Size(max = 50)
     @Column(name = "KIND")
     private String kind;
+    @Transient
+    private boolean merged = false;
 
     public ServiceKind() {
         serviceTypeList = new ArrayList();
@@ -110,13 +114,21 @@ public class ServiceKind implements Serializable {
     }
     
     public void addServiceTypeToList(ServiceType aServiceType) {
-        if (!getServiceTypeList().contains(aServiceType)) {
+        if (!Global.isThereMatching(null, serviceTypeList, null, null, null, aServiceType.getType(),Global.TYPE)) {
             getServiceTypeList().add(aServiceType);
             /*if (aServiceType.getServiceKindFk() != null) {
                 aServiceType.getServiceKindFk().getServiceTypeList().remove(aServiceType);
             }*/
             aServiceType.setServiceKindFk(this);
         }
+    }
+    
+    public boolean isMerged(){
+        return merged;
+    }
+    
+    public void setMerged(boolean aBool){
+        merged = aBool;
     }
     
 }

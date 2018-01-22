@@ -26,6 +26,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import org.lhedav.pp.business.model.common.Global;
 
 /**
  *
@@ -100,7 +101,7 @@ public class ServiceType implements Serializable {
     }
     
      public void addServicesToList(Services someServices) {
-        if (!getServicesList().contains(someServices)) {
+        if (!Global.isThereMatching(null, null, servicesList, null, null, someServices.getName(),Global.SERVICES)) {
             getServicesList().add(someServices);
             /*if (someServices.getServiceTypeFk() != null) {
                 someServices.getServiceTypeFk().getServicesList().remove(someServices);

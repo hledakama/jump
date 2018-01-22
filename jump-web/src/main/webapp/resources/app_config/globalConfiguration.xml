@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE db SYSTEM "globalConfiguration.dtd">
+<db>
+ <version value="1.01"/>
+ <static>
+  <provider>
+      <kinds>
+          <kind value="domestic">
+              <types>
+                    <type value="beauty">
+                        <services>
+                            <service value="men hair cut">
+                                  <categories>
+                                      <category value="african">
+                                          <items>
+                                                <item value="ras congo">
+                                                      <settings value=""/>
+                                                </item>
+                                                <item value="afro">
+                                                      <settings value=""/>
+                                                </item>
+                                          </items> 
+                                      </category>                                                   
+                                  </categories> 
+                            </service>                 
+                        </services>
+                    </type>
+                    <type value="entertainment">
+                        <services>
+                            <service value="weeding ceremonies">
+                                  <categories>
+                                      <category value="honey moon">
+                                          <items>
+                                                <item value="Canada">
+                                                      <settings value=""/>
+                                                </item>
+                                                <item value="south America">
+                                                      <settings value=""/>
+                                                </item>
+                                          </items> 
+                                      </category>                                                   
+                                  </categories> 
+                            </service>                 
+                        </services>
+                    </type>
+                    <type value="transportation">
+                        <services>
+                            <service value="garage">
+                                  <categories>
+                                      <category value="mechanic">
+                                          <items>
+                                                <item value="wheel replacement">
+                                                      <settings value=""/>
+                                                </item>
+                                                <item value="air filter change">
+                                                      <settings value=""/>
+                                                </item>
+                                          </items> 
+                                      </category>                                                   
+                                  </categories> 
+                            </service>                 
+                        </services>
+                    </type>
+                    <type value="administration">
+                        <services>
+                            <service value="finance">
+                                  <categories>
+                                      <category value="annual taxe declaration">
+                                          <items>
+                                                <item value="family">
+                                                      <settings value=""/>
+                                                </item>
+                                                <item value="single">
+                                                      <settings value=""/>
+                                                </item>
+                                          </items> 
+                                      </category>                                                   
+                                  </categories> 
+                            </service>                 
+                        </services>
+                    </type>
+                    <type value="safety">
+                        <services>
+                            <service value="home remote monitoring">
+                                  <categories>
+                                      <category value="alarm">
+                                          <items>
+                                                <item value="out door camera installation">
+                                                      <settings value=""/>
+                                                </item>
+                                                <item value="movement sensor">
+                                                      <settings value=""/>
+                                                </item>
+                                          </items> 
+                                      </category>                                                   
+                                  </categories> 
+                            </service>                 
+                        </services>
+                    </type>                   
+              </types>
+          </kind>
+          <kind value="professional">
+              <types>
+                    <type value="software">                  
+                        <services>
+                            <service value="software design">
+                                  <categories>
+                                      <category value="android">
+                                          <items>
+                                                <item value="smart phone">
+                                                      <settings value=""/>
+                                                </item>
+                                                <item value="laptop">
+                                                      <settings value=""/>
+                                                </item>
+                                          </items> 
+                                      </category>                                                   
+                                  </categories> 
+                            </service>                 
+                        </services>
+                    </type>
+              </types>
+          </kind>
+      </kinds>
+      <units>
+          <unit value="sec"/> 
+          <unit value="min"/> 
+          <unit value="hour"/> 
+          <unit value="m"/> 
+          <unit value="km"/> 
+      </units>
+      
+  </provider>
+ </static>
+</db>

@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -21,10 +22,10 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import org.lhedav.pp.business.model.common.Global;
 
 /**
  *
@@ -50,7 +51,7 @@ public class Services implements Serializable {
     @Size(max = 50)
     @Column(name = "NAME")
     private String name;
-    @OneToMany(mappedBy = "servicesFk")
+    @OneToMany(mappedBy = "servicesFk",  cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Categories> categoriesList;
     @JoinColumn(name = "SERVICE_TYPE_FK", referencedColumnName = "SERVICE_TYPE_T_ID")
     @ManyToOne
@@ -99,7 +100,7 @@ public class Services implements Serializable {
     }
     
      public void addCategoriesToList(Categories someCategories) {
-        if (!getCategoriesList().contains(someCategories)) {
+        if (!Global.isThereMatching(null, null, null, categoriesList, null, someCategories.getName(),Global.CATEGORIES)) {
             getCategoriesList().add(someCategories);
             /*if (someCategories.getServicesFk() != null) {
                 someCategories.getServicesFk().getCategoriesList().remove(getServicesFk);

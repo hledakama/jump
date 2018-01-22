@@ -16,6 +16,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -43,6 +44,8 @@ public class Unit implements Serializable {
     @Size(max = 10)
     @Column(name = "UNIT")
     private String unit;
+    @Transient
+    private boolean merged = false;
 
     public Unit() {
     }
@@ -90,6 +93,14 @@ public class Unit implements Serializable {
     @Override
     public String toString() {
         return "org.lhedav.pp.business.data.Unit[ unitTId=" + unitTId + " ]";
+    }
+    
+    public boolean isMerged(){
+        return merged;
+    }
+    
+    public void setMerged(boolean aBool){
+        merged = aBool;
     }
     
 }
