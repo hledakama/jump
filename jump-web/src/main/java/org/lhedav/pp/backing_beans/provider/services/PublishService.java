@@ -73,7 +73,7 @@ public class PublishService {
     private boolean publishChecked;
     private boolean modify;
     private HashMap<String, List> objParsedConfig;
-    private boolean isParsed = false;
+    private static boolean isParsed = false;
     
     
     PublishService(){ 
@@ -82,8 +82,8 @@ public class PublishService {
     @PostConstruct
     public void init() {
         List<ServiceKind> theKinds;
-        List<Unit> theUnits;
-        /*HashMap<String, List> thePreviousConfig = objParsedConfig;
+        /*List<Unit> theUnits;
+        HashMap<String, List> thePreviousConfig = objParsedConfig;
         if((objParsedConfig == null) || !isParsed){            
             objParsedConfig = ConfigurationParser.parse(FacesContext.getCurrentInstance());
             if(objParsedConfig != null){

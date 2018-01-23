@@ -66,7 +66,7 @@ public class Service implements Serializable {
     @Size(max = 50)
     @Column(name = "CATEGORY")
     private String category;
-    @Size(max = 10)
+    @Size(max = 50)
     @Column(name = "KIND")
     private String kind;
     @Column(name = "PUBLISHED")
@@ -77,7 +77,7 @@ public class Service implements Serializable {
     @Size(max = 50)
     @Column(name = "SERVICEREFERENCE")
     private String servicereference;
-    @Size(max = 20)
+    @Size(max = 50)
     @Column(name = "TYPE_")
     private String type;
     @XmlTransient

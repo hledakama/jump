@@ -244,7 +244,7 @@ public class SellerEJB {
     
        
     public boolean PersistServiceKind(@NotNull ServiceKind aServiceKind){
-        List<ServiceKind> theKinds = getServiceKinds();
+        /*List<ServiceKind> theKinds = getServiceKinds();
         System.out.println("theKinds == null: "+ (theKinds == null));
         ServiceKind theKind = null;
         for(ServiceKind aKind: theKinds){
@@ -263,11 +263,11 @@ public class SellerEJB {
             //Global.mergeItemsStructures(aServiceKind.getServiceTypeList(), theKinds);
             return false;
         }
-        else{
+        else{*/
              System.out.println("aServiceKind persist, getServiceKindTId: "+aServiceKind.getServiceKindTId());
             em.persist(aServiceKind);
             return true;
-        }
+        //}
     }
     
     public boolean PersistServiceUnits(@NotNull Unit aUnit){

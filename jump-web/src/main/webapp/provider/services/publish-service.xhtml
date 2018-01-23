@@ -43,7 +43,8 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                 
                 <h:column>
                     <f:facet name="header">#{publishService.kind}</f:facet>                        
-                    <h:selectOneMenu id = "service_kind" value="#{publishService.service.kind}" rendered="#{model_service.edited}" valueChangeListener="#{publishService.onKindChanged}">
+                    <h:selectOneMenu id = "service_kind" required="true" value="#{publishService.service.kind}" 
+                        valueChangeListener="#{publishService.onKindChanged}"  rendered="#{model_service.edited}">
                     <f:selectItems value="#{publishService.servicesKinds}" />                    
                     </h:selectOneMenu>
                     <h:outputText value="#{model_service.kind}" rendered="#{not model_service.edited}" />

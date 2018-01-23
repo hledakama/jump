@@ -218,13 +218,14 @@ public class Global {
     public static void setUploadValidated(boolean aBool){
         uploadValidated = aBool;
     }
-    
+    //https://www.w3resource.com/java-tutorial/arraylist/arraylist_removeall.php
     public static void cleanList(List<String> someComboContent){
         if((someComboContent == null) || (someComboContent.isEmpty())) return;
-        int theSize = someComboContent.size();
+        /*int theSize = someComboContent.size();
         for(int index = 0; index < theSize; index++){
             someComboContent.remove(index);
-        }
+        }*/
+        someComboContent.removeAll(someComboContent);
     }
     
     public static void buildComboBoxContent(List<ServiceKind> aKindList, 
