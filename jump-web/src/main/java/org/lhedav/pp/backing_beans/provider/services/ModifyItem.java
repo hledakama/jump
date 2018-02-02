@@ -24,7 +24,6 @@ import javax.validation.constraints.NotNull;
 import org.lhedav.pp.business.json.ItemdataJsonBuilder;
 import org.lhedav.pp.business.logic.SellerEJB;
 import org.lhedav.pp.business.model.common.CRC32StringCollection;
-import static org.lhedav.pp.business.model.common.CRC32StringCollection.INVALID_CRC;
 import org.lhedav.pp.business.model.common.Global;
 import org.lhedav.pp.business.model.service.Item;
 import org.lhedav.pp.business.model.service.Itemdata;

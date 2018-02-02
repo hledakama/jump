@@ -44,7 +44,7 @@ public class SellerEJB {
         theKinds = theQuery.getResultList();
         }        
         catch(Exception e){
-            e.printStackTrace();
+           // e.printStackTrace();
             return null;
         }
 
@@ -60,7 +60,26 @@ public class SellerEJB {
         theResult = theQuery.getSingleResult();
         }        
         catch(Exception e){
-            e.printStackTrace();
+            //e.printStackTrace();
+            return null;
+        }
+
+        return theResult;
+    }
+    
+    public ServiceKind getServiceKind(@NotNull String someKind, @NotNull String someType, @NotNull String someServices, @NotNull String someCategory){ 
+        ServiceKind theResult;
+        try{
+        TypedQuery<ServiceKind> theQuery;
+        theQuery = em.createNamedQuery("ServiceKind.findByKind", ServiceKind.class);
+        theQuery.setParameter("kind", someKind);
+        theQuery.setParameter("type", someType);
+        theQuery.setParameter("services", someServices);
+        theQuery.setParameter("categories", someCategory);
+        theResult = theQuery.getSingleResult();
+        }        
+        catch(Exception e){
+            //e.printStackTrace();
             return null;
         }
 
@@ -77,7 +96,7 @@ public class SellerEJB {
         theTypes = theQuery.getResultList();
         }
         catch(Exception e){
-            e.printStackTrace();
+            //e.printStackTrace();
             return null;
         }
         return theTypes;
@@ -92,7 +111,7 @@ public class SellerEJB {
         theResult = theQuery.getSingleResult();
         }
         catch(Exception e){
-            e.printStackTrace();
+            //e.printStackTrace();
             return null;
         }
         return theResult;
@@ -112,11 +131,13 @@ public class SellerEJB {
         theServices = theQuery.getResultList();
         }
         catch(Exception e){
-            e.printStackTrace();
+            //e.printStackTrace();
             return null;
         }
         return theServices;
     }
+    
+    
     
     public Services getServicesDataByName(String someServicesName){
        Services theResult ;
@@ -127,7 +148,7 @@ public class SellerEJB {
         theResult = theQuery.getSingleResult();
         }
         catch(Exception e){
-            e.printStackTrace();
+            //e.printStackTrace();
             return null;
         }
         return theResult;
@@ -142,10 +163,25 @@ public class SellerEJB {
         theCategories = theQuery.getResultList();
         }
         catch(Exception e){
-            e.printStackTrace();
+            //e.printStackTrace();
             return null;
         }
         return theCategories;
+    }
+    
+    public Categories getCategoryByName(String aCategory){
+       Categories theCategory ;
+        try{
+        TypedQuery<Categories> theQuery;
+        theQuery = em.createNamedQuery("Categories.findByName", Categories.class);
+        theQuery.setParameter("name", aCategory);
+        theCategory = theQuery.getSingleResult();
+        }
+        catch(Exception e){
+            //e.printStackTrace();
+            return null;
+        }
+        return theCategory;
     }
         
     public List<Items> getItemsData(Categories someCategories, boolean all){
@@ -162,7 +198,7 @@ public class SellerEJB {
         theItems = theQuery.getResultList();
         }
         catch(Exception e){
-            e.printStackTrace();
+            //e.printStackTrace();
             return null;
         }
         return theItems;
@@ -176,7 +212,7 @@ public class SellerEJB {
         theUnits = theQuery.getResultList();
         }
         catch(Exception e){
-            e.printStackTrace();
+            //e.printStackTrace();
             return null;
         }
         return theUnits;
@@ -244,30 +280,18 @@ public class SellerEJB {
     
        
     public boolean PersistServiceKind(@NotNull ServiceKind aServiceKind){
-        /*List<ServiceKind> theKinds = getServiceKinds();
+        List<ServiceKind> theKinds = getServiceKinds();
         System.out.println("theKinds == null: "+ (theKinds == null));
-        ServiceKind theKind = null;
-        for(ServiceKind aKind: theKinds){
-            if(aKind == null) continue;
-            System.out.println("aKind.getKind(): "+aKind.getKind()+", aServiceKind.getKind(): "+aServiceKind.getKind()+ " theKinds.size(): "+theKinds.size());
-            if(aKind.getKind().equals(aServiceKind.getKind())){
-                theKind = aKind;
-                theKind.setMerged(true);                
-                break;
-            }
-        }
-        if((theKind != null) && theKind.isMerged()){
+        if(aServiceKind.isMerged()){
             System.out.println("aServiceKind merge ");
-            theKind.setServiceTypeList(aServiceKind.getServiceTypeList());
-            em.merge(theKind);
-            //Global.mergeItemsStructures(aServiceKind.getServiceTypeList(), theKinds);
+            em.merge(aServiceKind);
             return false;
         }
-        else{*/
+        else{
              System.out.println("aServiceKind persist, getServiceKindTId: "+aServiceKind.getServiceKindTId());
             em.persist(aServiceKind);
             return true;
-        //}
+        }
     }
     
     public boolean PersistServiceUnits(@NotNull Unit aUnit){

@@ -21,6 +21,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -36,6 +37,7 @@ import org.lhedav.pp.business.model.common.Global;
 @NamedQueries({
     @NamedQuery(name = "ServiceKind.findAll", query = "SELECT s FROM ServiceKind s")
     , @NamedQuery(name = "ServiceKind.findByServiceKindTId", query = "SELECT s FROM ServiceKind s WHERE s.serviceKindTId = :serviceKindTId")
+    , @NamedQuery(name = "ServiceKind.findByComponents", query = "SELECT s FROM ServiceKind s WHERE s.serviceKindTId = :serviceKindTId")
     , @NamedQuery(name = "ServiceKind.findByKind", query = "SELECT s FROM ServiceKind s WHERE s.kind = :kind")})
 public class ServiceKind implements Serializable {
 
@@ -123,12 +125,36 @@ public class ServiceKind implements Serializable {
         }
     }
     
+    public List<Services> getListOfServices(@NotNull String aType){
+         for(ServiceType someType: serviceTypeList){
+             if(someType == null) continue;
+             if(someType.getType().equals(aType)){
+                 return someType.getServicesList();
+             }
+         }
+         return null;
+     }
+    
+    public List<Categories> getListOfCategories(@NotNull String aType, @NotNull String aServices){
+         for(ServiceType someType: serviceTypeList){
+             if(someType == null) continue;
+             if(someType.getType().equals(aType)){
+                 for(Services someServices: someType.getServicesList()){
+                    if(someServices == null) continue;
+                    if(someServices.getName().equals(aServices)){
+                        return someServices.getCategoriesList();
+                    }
+                 }                    
+             }
+         }
+         return null;
+     }
+    
     public boolean isMerged(){
         return merged;
     }
     
     public void setMerged(boolean aBool){
         merged = aBool;
-    }
-    
+    } 
 }

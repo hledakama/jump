@@ -31,10 +31,16 @@
                                   <categories>
                                       <category value="honey moon">
                                           <items>
+                                                <item value="Cote d'Ivoire">
+                                                      <settings value=""/>
+                                                </item>
                                                 <item value="Canada">
                                                       <settings value=""/>
                                                 </item>
                                                 <item value="south America">
+                                                      <settings value=""/>
+                                                </item>
+                                                <item value="Ghana">
                                                       <settings value=""/>
                                                 </item>
                                           </items> 
@@ -53,6 +59,15 @@
                                                       <settings value=""/>
                                                 </item>
                                                 <item value="air filter change">
+                                                      <settings value=""/>
+                                                </item>
+                                                <item value="light controller">
+                                                      <settings value=""/>
+                                                </item>
+                                                <item value="baby sit">
+                                                      <settings value=""/>
+                                                </item>
+                                                <item value="gear">
                                                       <settings value=""/>
                                                 </item>
                                           </items> 
@@ -74,9 +89,67 @@
                                                       <settings value=""/>
                                                 </item>
                                           </items> 
+                                      </category>
+                                      <category value="tontine">
+                                          <items>
+                                                <item value="6 mois">
+                                                      <settings value=""/>
+                                                </item>
+                                                <item value="12 mois">
+                                                      <settings value=""/>
+                                                </item>
+                                          </items> 
                                       </category>                                                   
                                   </categories> 
-                            </service>                 
+                            </service>
+                            <service value="day care">
+                                  <categories>
+                                      <category value="home full time">
+                                          <items>
+                                                <item value="babies">
+                                                      <settings value=""/>
+                                                </item>
+                                                <item value="kids">
+                                                      <settings value=""/>
+                                                </item>
+                                          </items> 
+                                      </category>
+                                      <category value="home part time">
+                                          <items>
+                                                <item value="babies">
+                                                      <settings value=""/>
+                                                </item>
+                                                <item value="kids">
+                                                      <settings value=""/>
+                                                </item>
+                                          </items> 
+                                      </category>                                                                                        
+                                  </categories> 
+                            </service>  
+                            <service value="trainning">
+                                  <categories>
+                                      <category value="programmimg">
+                                          <items>
+                                                <item value="java">
+                                                      <settings value=""/>
+                                                </item>
+                                                <item value="c++">
+                                                      <settings value=""/>
+                                                </item>
+                                          </items> 
+                                      </category>
+                                      <category value="language">
+                                          <items>
+                                                <item value="english">
+                                                      <settings value=""/>
+                                                </item>
+                                                <item value="french">
+                                                      <settings value=""/>
+                                                </item>
+                                          </items> 
+                                      </category>                                                                                        
+                                  </categories> 
+                            </service>                                                           
                         </services>
                     </type>
                     <type value="safety">

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -228,71 +229,74 @@ public class Global {
         someComboContent.removeAll(someComboContent);
     }
     
-    public static void buildComboBoxContent(List<ServiceKind> aKindList, 
-                                          List<ServiceType> aTypeList, 
-                                          List<Services> someServicesList,
-                                          List<Categories> someCategories,
-                                          List<Items> someItems,
-                                          List<String> someComboContent,
-                                          String whatType){
+    public static List<String> buildComboBoxContent(List<ServiceKind> aKindList, 
+                                            List<ServiceType> aTypeList, 
+                                            List<Services> someServicesList,
+                                            List<Categories> someCategories,
+                                            List<Items> someItems,
+                                            @NotNull List<String> someComboContent,
+                                            @NotNull String whatType,
+                                            String inFirstRank){
         
         
+        if(!someComboContent.isEmpty()){
+            cleanList(someComboContent);
+        }
+        if(inFirstRank != null){
+            someComboContent.add(inFirstRank);
+        }
         
         switch(whatType){
             case KIND:
-                System.out.println("whatType: "+whatType+", someComboContent.size(): "+someComboContent.size()+ "aKindList == null "+ (aKindList == null));
-                if((aKindList == null) || (someComboContent == null) || aKindList.isEmpty()) return;
-                cleanList(someComboContent);
+                System.out.println("buildComboBoxContent whatType: "+whatType+", someComboContent.size(): "+someComboContent.size()+ " aKindList.size(): "+ (aKindList.size()));
+                if(aKindList.isEmpty()) return null;                
                 for(ServiceKind aKind : aKindList){
-                    if(aKind == null) continue;
+                    if((aKind == null) || (someComboContent.contains(aKind.getKind()))) continue;
                     someComboContent.add(aKind.getKind());
-                    System.out.println("aKind.getKind(): "+aKind.getKind());
+                    System.out.println("buildComboBoxContent aKind.getKind(): "+aKind.getKind());
                 }
                 break;
             case TYPE:
-                System.out.println("whatType: "+whatType+", someComboContent.size(): "+someComboContent.size()+ "aTypeList == null "+ (aTypeList == null));
-                if((aTypeList == null) || (someComboContent == null) || aTypeList.isEmpty()) return;
-                cleanList(someComboContent);
+                System.out.println("buildComboBoxContent whatType: "+whatType+", someComboContent.size(): "+someComboContent.size()+ " aTypeList.size(): "+ (aTypeList.size()));
+                if(aTypeList.isEmpty()) return null;
                 for(ServiceType aType : aTypeList){
-                    if(aType == null) continue;
+                    if((aType == null) || (someComboContent.contains(aType.getType()))) continue;
                     someComboContent.add(aType.getType());
-                    System.out.println("aType.getType(): "+aType.getType());
+                    System.out.println("buildComboBoxContent aType.getType(): "+aType.getType());
                 }
                 break;
             case SERVICES:
-                System.out.println("whatType: "+whatType+", someComboContent.size(): "+someComboContent.size()+ "someServicesList == null "+ (someServicesList == null));
-                if((someServicesList == null) || (someComboContent == null) || someServicesList.isEmpty()) return;
-                cleanList(someComboContent);
+                System.out.println("buildComboBoxContent whatType: "+whatType+", someComboContent.size(): "+someComboContent.size()+ " someServicesList.size(): "+ (someServicesList.size()));
+                if(someServicesList.isEmpty()) return null;
                 for(Services someServices : someServicesList){
-                    if(someServices == null) continue;
+                    if((someServices == null) || (someComboContent.contains(someServices.getName()))) continue;
                     someComboContent.add(someServices.getName());
-                    System.out.println("someServices.getName(): "+someServices.getName());
+                    System.out.println("buildComboBoxContent someServices.getName(): "+someServices.getName());
                 }
                 break;
             case CATEGORIES:
-                System.out.println("whatType: "+whatType+", someComboContent.size(): "+someComboContent.size()+ "someCategories == null "+ (someCategories == null));
-                if((someCategories == null) || (someComboContent == null) || someCategories.isEmpty()) return;
-                cleanList(someComboContent);
+                System.out.println("buildComboBoxContent whatType: "+whatType+", someComboContent.size(): "+someComboContent.size()+ " someCategories.size(): "+ (someCategories.size()));
+                if(someCategories.isEmpty()) return null;
                 for(Categories aCategory : someCategories){
-                    if(aCategory == null) continue;
+                    if((aCategory == null) || (someComboContent.contains(aCategory.getName()))) continue;
                     someComboContent.add(aCategory.getName());
-                    System.out.println("aCategory.getName(): "+aCategory.getName());
+                    System.out.println("buildComboBoxContent aCategory.getName(): "+aCategory.getName());
                 }
                 break;
             case ITEMS:
-                System.out.println("whatType: "+whatType+", someComboContent.size(): "+someComboContent.size()+ "someItems == null "+ (someItems == null));
-                if((someItems == null) || (someComboContent == null) || someItems.isEmpty()) return;
-                cleanList(someComboContent);
+                System.out.println("buildComboBoxContent whatType: "+whatType+", someComboContent.size(): "+someComboContent.size()+ " someItems.size() "+ (someItems.size()));
+                if(someItems.isEmpty()) return null;
                 for(Items aData : someItems){
-                    if(aData == null) continue;
+                    if((aData == null) || (someComboContent.contains(aData.getName()))) continue;
                     someComboContent.add(aData.getName());
-                    System.out.println("aData.getName(): "+aData.getName());
+                    System.out.println("buildComboBoxContent aData.getName(): "+aData.getName());
                 }
                 break;
             default:
-                System.out.println(" default-->whatType: "+whatType+", someComboContent.size(): "+someComboContent.size());
+                System.out.println("buildComboBoxContent default-->whatType: "+whatType+", someComboContent.size(): "+someComboContent.size());
                 break;
         }
+        return someComboContent;
     }
     
     public static boolean isThereMatching(List<ServiceKind> aKindList, 
@@ -300,12 +304,12 @@ public class Global {
                                             List<Services> someServicesList,
                                             List<Categories> someCategories,
                                             List<Items> someItems,
-                                            String strToCheck,
-                                            String whatType){
+                                            @NotNull String strToCheck,
+                                            @NotNull String whatType){
         
         switch(whatType){
             case KIND:
-                System.out.println("whatType: "+whatType+ " aKindList == null "+ (aKindList == null)+ ", strToCheck: "+strToCheck);
+                System.out.println("isThereMatching whatType: "+whatType+ " aKindList == null "+ (aKindList == null)+ ", strToCheck: "+strToCheck);
                 if((aKindList == null) || aKindList.isEmpty()) return false;
                 for(ServiceKind aKind : aKindList){
                     if(aKind == null) continue;
@@ -315,7 +319,7 @@ public class Global {
                 }
                 return false;
             case TYPE:
-                System.out.println("whatType: "+whatType+ " aTypeList == null "+ (aTypeList == null)+ ", strToCheck: "+strToCheck);
+                System.out.println("isThereMatching whatType: "+whatType+ " aTypeList == null "+ (aTypeList == null)+ ", strToCheck: "+strToCheck);
                 if((aTypeList == null)  || aTypeList.isEmpty()) return false;
                 for(ServiceType aType : aTypeList){
                     if(aType == null) continue;
@@ -325,7 +329,7 @@ public class Global {
                 }
                 return false;
             case SERVICES:
-                System.out.println("whatType: "+whatType+ " someServicesList == null "+ (someServicesList == null)+ ", strToCheck: "+strToCheck);
+                System.out.println("isThereMatching whatType: "+whatType+ " someServicesList == null "+ (someServicesList == null)+ ", strToCheck: "+strToCheck);
                 if((someServicesList == null)  || someServicesList.isEmpty()) return false ;
                 for(Services someServices : someServicesList){
                     if(someServices == null) continue;
@@ -335,7 +339,7 @@ public class Global {
                 }
                 return false;
             case CATEGORIES:
-                System.out.println("whatType: "+whatType+ " someCategories == null "+ (someCategories == null)+ ", strToCheck: "+strToCheck);
+                System.out.println("isThereMatching whatType: "+whatType+ " someCategories == null "+ (someCategories == null)+ ", strToCheck: "+strToCheck);
                 if((someCategories == null)|| someCategories.isEmpty()) return false;
                 for(Categories someCategory : someCategories){
                     if(someCategory == null) continue;
@@ -345,7 +349,7 @@ public class Global {
                 }
                 return false;
             case ITEMS:
-                System.out.println("whatType: "+whatType+ " someItems == null "+ (someItems == null)+ ", strToCheck: "+strToCheck);
+                System.out.println("isThereMatching whatType: "+whatType+ " someItems == null "+ (someItems == null)+ ", strToCheck: "+strToCheck);
                 if((someItems == null)|| someItems.isEmpty()) return false;
                 for(Items someElement : someItems){
                     if(someElement == null) continue;
@@ -355,72 +359,84 @@ public class Global {
                 }
                 return false;
             default:
-                System.out.println(" default-->whatType: "+whatType);
+                System.out.println("isThereMatching default-->whatType: "+whatType);
                 return false;
         }
     }
     
     public static List<ServiceKind> mergeKindStructures(List<ServiceKind> parsedKindList, List<ServiceKind> dbParsedList){
-        if((parsedKindList == null) || parsedKindList.isEmpty() || (dbParsedList == null)) return null;                
+        if((parsedKindList == null) || parsedKindList.isEmpty()) return null;                
+        if(dbParsedList == null){
+           dbParsedList = new ArrayList();
+       }
         for(ServiceKind aKind : parsedKindList){
             if(Global.isThereMatching(dbParsedList, null, null, null, null, aKind.getKind(),Global.KIND)) {
-                System.out.println("continue aKind.getKind(): "+aKind.getKind());
+                System.out.println("mergeKindStructures continue aKind.getKind(): "+aKind.getKind());
                 continue;
             }
             dbParsedList.add(aKind);
-            System.out.println("aKind.getKind(): "+aKind.getKind());
+            System.out.println("mergeKindStructures aKind.getKind(): "+aKind.getKind());
         }
         return dbParsedList;
     }
     
     public static List<ServiceType> mergeTypeStructures(List<ServiceType> parsedTypeList, List<ServiceType> dbParsedList){
-        if((parsedTypeList == null) || parsedTypeList.isEmpty() || (dbParsedList == null)) return null;                
+        if((parsedTypeList == null) || parsedTypeList.isEmpty() ) return null;                
+        if(dbParsedList == null){
+           dbParsedList = new ArrayList();
+       }
         for(ServiceType aType : parsedTypeList){
             if(Global.isThereMatching(null, dbParsedList, null, null, null, aType.getType(),Global.TYPE)) {
-                System.out.println("aType.getType(): "+aType.getType());
+                System.out.println("mergeTypeStructures aType.getType(): "+aType.getType());
                 continue;
             }
             dbParsedList.add(aType);
-            System.out.println("aType.getType(): "+aType.getType());
+            System.out.println("mergeTypeStructures aType.getType(): "+aType.getType());
         }
         return dbParsedList;
     }
     
     public static List<Services> mergeServicesStructures(List<Services> parsedServicesList, List<Services> dbParsedList){
-        if((parsedServicesList == null) || parsedServicesList.isEmpty() || (dbParsedList == null)) return null;                
+        if((parsedServicesList == null) || parsedServicesList.isEmpty()) return null;                
+        if(dbParsedList == null){
+           dbParsedList = new ArrayList();
+       }
         for(Services someServices : parsedServicesList){
             if(Global.isThereMatching(null, null, dbParsedList, null, null, someServices.getName(),Global.SERVICES)) {
-                System.out.println("continue someServices.getName: "+someServices.getName());
+                System.out.println("mergeServicesStructures continue someServices.getName: "+someServices.getName());
                 continue;
             }
             dbParsedList.add(someServices);
-            System.out.println("someServices.getName: "+someServices.getName());
+            System.out.println("mergeServicesStructures someServices.getName: "+someServices.getName());
         }
         return dbParsedList;
     }
     
     public static List<Categories> mergeCategoriesStructures(List<Categories> parsedCategoriesList, List<Categories> dbParsedList){
-       if((parsedCategoriesList == null) || parsedCategoriesList.isEmpty() || (dbParsedList == null)) return null;                
+       if((parsedCategoriesList == null) || parsedCategoriesList.isEmpty()) return null; 
+       if(dbParsedList == null){
+           dbParsedList = new ArrayList();
+       }
         for(Categories someCategory : parsedCategoriesList){
             if(Global.isThereMatching(null, null, null, dbParsedList, null, someCategory.getName(),Global.CATEGORIES)) {
-                System.out.println("continue someCategory.getName: "+someCategory.getName());
+                System.out.println("mergeCategoriesStructures continue someCategory.getName: "+someCategory.getName());
                 continue;
             }
             dbParsedList.add(someCategory);
-            System.out.println("someCategory.getName: "+someCategory.getName());
+            System.out.println("mergeCategoriesStructures someCategory.getName: "+someCategory.getName());
         } 
         return dbParsedList;
     }
     
     public static List<Items> mergeItemsStructures(List<Items> parsedItemsList, List<Items> dbParsedList){
-      if((parsedItemsList == null) || parsedItemsList.isEmpty() || (dbParsedList == null)) return null;                
+      if((parsedItemsList == null) || parsedItemsList.isEmpty() ) return null;                
         for(Items someItem : parsedItemsList){
             if(Global.isThereMatching(null, null, null, null, dbParsedList, someItem.getName(),Global.ITEMS)) {
-                System.out.println("continue someItem.getName(): "+someItem.getName());
+                System.out.println("mergeItemsStructures continue someItem.getName(): "+someItem.getName());
                 continue;
             }
             dbParsedList.add(someItem);
-            System.out.println("someItem.getName(): "+someItem.getName());
+            System.out.println("mergeItemsStructures someItem.getName(): "+someItem.getName());
         } 
         return dbParsedList;
     }        

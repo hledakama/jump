@@ -113,7 +113,7 @@ public class AddItem implements Serializable{
         List<Items> theItemsData = provider_services.getItemsData(null, true);
          
         if(theItemsData != null){
-            Global.buildComboBoxContent(null, null, null, null, theItemsData, itemsNames,Global.ITEMS);
+            Global.buildComboBoxContent(null, null, null, null, theItemsData, itemsNames,Global.ITEMS, null);
         }
         /*for (int index = 0; index < theServicesSize; index++) {
             String theString = theServicesData.get(index).getItem();

@@ -108,7 +108,8 @@ public class ServiceType implements Serializable {
             }*/
             someServices.setServiceTypeFk(this);
         }
-    }
+    }   
+
 
     @Override
     public int hashCode() {
