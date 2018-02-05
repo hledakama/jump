@@ -5,10 +5,13 @@
  */
 package org.lhedav.pp.business.logic;
 
+
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -23,6 +26,7 @@ import org.lhedav.pp.business.data.ServiceKind;
 import org.lhedav.pp.business.data.ServiceType;
 import org.lhedav.pp.business.data.Services;
 import org.lhedav.pp.business.data.Unit;
+import org.lhedav.pp.business.cdi.event.ProviderEvent;
 
 /**
  *
@@ -31,10 +35,72 @@ import org.lhedav.pp.business.data.Unit;
 
 @Stateless
 @LocalBean
-public class SellerEJB {  
+public class ProviderEJB {  
     
     @PersistenceContext(unitName = Global.PERSISTENCE_UNIT)
     private EntityManager em;
+    
+    @Inject
+    @ProviderEvent(name = "serviceAddedEvent")
+    private Event<Service> serviceAddedEvent;
+    
+    @Inject
+    @ProviderEvent(name = "serviceRemovedEvent")
+    private Event<Service> serviceRemovedEvent;
+    
+    @Inject
+    @ProviderEvent(name = "serviceMergedEvent")
+    private Event<Service> serviceMergedEvent;
+    
+        @Inject
+    @ProviderEvent(name = "itemAddedEvent")
+    private Event<Item> itemAddedEvent;
+    
+    @Inject
+    @ProviderEvent(name = "itemMergedEvent")
+    private Event<Item> itemMergedEvent;
+    
+    @Inject
+    @ProviderEvent(name = "itemRemovedEvent")
+    private Event<Item> itemRemovedEvent;
+    
+        @Inject
+    @ProviderEvent(name = "itemdataAddedEvent")
+    private Event<Itemdata> itemdataAddedEvent;
+    
+    @Inject
+    @ProviderEvent(name = "itemdataMergedEvent")
+    private Event<Itemdata> itemdataMergedEvent;
+    
+    @Inject
+    @ProviderEvent(name = "itemdataRemovedEvent")
+    private Event<Itemdata> itemdataRemovedEvent;
+    
+    
+    
+    
+    
+    @Inject
+    @ProviderEvent(name = "serviceKindAddedEvent")
+    private Event<ServiceKind> serviceKindAddedEvent;
+    
+    @Inject
+    @ProviderEvent(name = "serviceKindMergedEvent")
+    private Event<ServiceKind> serviceKindMergedEvent;
+    
+    @Inject
+    @ProviderEvent(name = "unitAddedEvent")
+    private Event<Unit> unitAddedEvent;
+    
+    @Inject
+    @ProviderEvent(name = "unitMergedEvent")
+    private Event<Unit> unitMergedEvent;
+    
+
+    
+    
+    
+    
     //https://stackoverflow.com/questions/17231535/java-lang-classcastexception-sametype-cannot-be-cast-to-sametype
     public List<ServiceKind> getServiceKinds(){ 
         List<ServiceKind> theKinds;
@@ -47,7 +113,6 @@ public class SellerEJB {
            // e.printStackTrace();
             return null;
         }
-
         return theKinds;
     }
     
@@ -63,26 +128,15 @@ public class SellerEJB {
             //e.printStackTrace();
             return null;
         }
-
         return theResult;
     }
     
-    public ServiceKind getServiceKind(@NotNull String someKind, @NotNull String someType, @NotNull String someServices, @NotNull String someCategory){ 
-        ServiceKind theResult;
-        try{
-        TypedQuery<ServiceKind> theQuery;
-        theQuery = em.createNamedQuery("ServiceKind.findByKind", ServiceKind.class);
-        theQuery.setParameter("kind", someKind);
-        theQuery.setParameter("type", someType);
-        theQuery.setParameter("services", someServices);
-        theQuery.setParameter("categories", someCategory);
-        theResult = theQuery.getSingleResult();
-        }        
-        catch(Exception e){
-            //e.printStackTrace();
-            return null;
+    public List<Categories> getCategories(@NotNull String someKind, @NotNull String someType, @NotNull String someServices){ 
+        ServiceKind theKind = getServiceKindByName(someKind);
+        List<Categories> theResult = null;
+        if(theKind != null){
+            theResult = theKind.getListOfCategories(someType, someServices);
         }
-
         return theResult;
     }
     
@@ -135,8 +189,7 @@ public class SellerEJB {
             return null;
         }
         return theServices;
-    }
-    
+    }    
     
     
     public Services getServicesDataByName(String someServicesName){
@@ -168,6 +221,7 @@ public class SellerEJB {
         }
         return theCategories;
     }
+    
     
     public Categories getCategoryByName(String aCategory){
        Categories theCategory ;
@@ -225,9 +279,7 @@ public class SellerEJB {
             theResult.add(aUnit.getUnit());
         }
         return theResult;
-    }        
-    
-    
+    } 
     
     public Service getServiceByServiceReference(@NotNull String aReference){
         try{
@@ -269,15 +321,16 @@ public class SellerEJB {
             System.out.println("aService merge ");
             //aService.setServiceTId(theSavedService.getServiceTId());
             em.merge(aService);
+            serviceMergedEvent.fire(aService);
             return false;
         }
         else{
              System.out.println("aService persist, aService.getServiceTId(): "+aService.getServiceTId());
             em.persist(aService);
+            serviceAddedEvent.fire(aService);
             return true;
         }
-    }
-    
+    }    
        
     public boolean PersistServiceKind(@NotNull ServiceKind aServiceKind){
         List<ServiceKind> theKinds = getServiceKinds();
@@ -285,11 +338,13 @@ public class SellerEJB {
         if(aServiceKind.isMerged()){
             System.out.println("aServiceKind merge ");
             em.merge(aServiceKind);
+            serviceKindMergedEvent.fire(aServiceKind);
             return false;
         }
         else{
              System.out.println("aServiceKind persist, getServiceKindTId: "+aServiceKind.getServiceKindTId());
             em.persist(aServiceKind);
+            serviceKindAddedEvent.fire(aServiceKind);
             return true;
         }
     }
@@ -310,11 +365,13 @@ public class SellerEJB {
             // enable the merge later if thelist of settings is created within Items
             /*System.out.println("aUnit merge ");
             em.merge(aUnit);*/
+            unitMergedEvent.fire(theUnit);
             return false;
         }
         else{
              System.out.println("aUnit persist, getUnitTId: "+aUnit.getUnitTId());
             em.persist(aUnit);
+            unitAddedEvent.fire(theUnit);
             return true;
         }
     }
@@ -377,27 +434,21 @@ public class SellerEJB {
     }
     
     public boolean updateItemdata(@NotNull Itemdata anItemdata){
-        em.merge(anItemdata);            
-            return true;
+        em.merge(anItemdata);  
+        itemdataMergedEvent.fire(anItemdata);
+        return true;
     }
-    
-    public boolean deleteItemdata(@NotNull Service aService, @NotNull Itemdata anItemdata){
-        try{//em.remove(em.merge(anItemdata));
-            
-        }
-        catch(Exception e){
-            e.printStackTrace();
-        }
+        
+    public boolean updateItem(@NotNull Item anItem){
+        em.merge(anItem); 
+        itemRemovedEvent.fire(anItem);
         return true;
     }
     
-    public boolean updateItem(@NotNull Item anItem){
-        em.merge(anItem);            
-            return true;
-    }
-    
     public boolean deleteItem(@NotNull Item anItem){
-        try{em.remove(em.merge(anItem));
+        try{
+            em.remove(em.merge(anItem));
+            itemRemovedEvent.fire(anItem);
         }
         catch(Exception e){
             return false;
@@ -418,10 +469,12 @@ public class SellerEJB {
     
     public boolean updateItemData(@NotNull Itemdata anItemData){
         em.merge(anItemData);
+        itemdataMergedEvent.fire(anItemData);
             return true;
     }
     public boolean deleteItemData(Itemdata aData){
         em.remove(em.merge(aData));
+        itemdataRemovedEvent.fire(aData);
         return false;
     }
     public Itemdata getItemdataByReference(@NotNull String aReference){
@@ -458,10 +511,12 @@ public class SellerEJB {
     }    
     public boolean PersistItemdata(@NotNull Itemdata anItemData){
         em.persist(anItemData);
+        itemdataAddedEvent.fire(anItemData);
         return true;
     }  
     public boolean Updatetemdata(@NotNull Itemdata anItemData){
         em.merge(anItemData);
+        itemdataMergedEvent.fire(anItemData);
         return true;
     }
     public EntityManager getEm(){

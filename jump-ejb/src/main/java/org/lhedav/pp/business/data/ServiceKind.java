@@ -150,6 +150,25 @@ public class ServiceKind implements Serializable {
          return null;
      }
     
+    public List<Items> getListOfItems(@NotNull String aType, @NotNull String aServices, @NotNull String aCategories){
+         for(ServiceType someType: serviceTypeList){
+             if(someType == null) continue;
+             if(someType.getType().equals(aType)){
+                 for(Services someServices: someType.getServicesList()){
+                    if(someServices == null) continue;
+                    if(someServices.getName().equals(aServices)){
+                        for(Categories someCat: someServices.getCategoriesList()){
+                            if(someCat == null) continue;
+                            if(someCat.getName().equals(aCategories))
+                            return someCat.getItemsList();
+                        }
+                    }
+                 }                    
+             }
+         }
+         return null;
+     }
+    
     public boolean isMerged(){
         return merged;
     }

@@ -6,7 +6,7 @@
 package org.lhedav.pp.backing_beans.provider.services;
 
 
-import org.lhedav.pp.business.logic.SellerEJB;
+import org.lhedav.pp.business.logic.ProviderEJB;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -21,14 +21,11 @@ import javax.faces.model.CollectionDataModel;
 import javax.inject.Named;
 import javax.validation.constraints.NotNull;
 import org.lhedav.pp.business.data.Categories;
-import org.lhedav.pp.business.data.Items;
 import org.lhedav.pp.business.data.ServiceKind;
 import org.lhedav.pp.business.data.ServiceType;
 import org.lhedav.pp.business.data.Services;
-import org.lhedav.pp.business.data.Unit;
 import org.lhedav.pp.business.model.common.Global;
 import static org.lhedav.pp.business.model.common.Global.GLOBAL_DISPLAY_MESSAGE;
-import org.lhedav.pp.business.model.common.parsing.sax.ConfigurationParser;
 import org.lhedav.pp.business.model.service.Item;
 import org.lhedav.pp.business.model.service.Service;
 import org.lhedav.pp.business.model.service.SortedDataModel;
@@ -46,7 +43,6 @@ public class PublishService {
     private List<String> servicesTypes   = new ArrayList();
     private List<String> servicesNames   = new ArrayList();
     private List<String> categoriesNames = new ArrayList();
-    // make a HashMap servicesNames/categoriesNames from the parsed XML 
     private String pageTitle = "Publishing service";
     private String nav1 = "User account";
     private String nav2 = "Services";
@@ -68,7 +64,7 @@ public class PublishService {
     private String modifyServiceButtonLabel = "Modify";
     private String publishButtonLabel = "Publish";
             @EJB
-    private SellerEJB provider_services;
+    private ProviderEJB provider_logic;
     private SortedDataModel<Item> sortedItemModel;
     private SortedDataModel<Service> sortedServiceModel;
     private boolean publishChecked;
@@ -81,12 +77,17 @@ public class PublishService {
     PublishService(){ 
     }
     //https://community.oracle.com/thread/1726468
+    /*https://dzone.com/articles/cdi-part-2-qualifiers-in-java-polymorphism-in-di
+    https://rocksolutions.blog/2010/11/10/ejb-vs-web-services-vs-jms/
+    
+    
+    */
     @PostConstruct
     public void init() {
         System.out.println("***** loadServices  from init******");
         loadServices();
     }
-    
+    // todo: from setting choose to make service configurable i.e. load the latest used or the default one.
     public void loadServices(){
         System.out.println("***** loadServices ******");
         System.out.println("***** loadServices ****** servicesKinds.size(): "+servicesKinds.size());
@@ -171,25 +172,25 @@ public class PublishService {
                 isParsed = true;
         }*/
         if(!isParsed){
-            theKinds = provider_services.getServiceKinds();
+            theKinds = provider_logic.getServiceKinds();
             ServiceKind theFirstKind = null;
             if((theKinds != null) && !theKinds.isEmpty()){
                 theFirstKind = theKinds.get(0);            
                 Global.buildComboBoxContent(theKinds, null, null, null, null,  servicesKinds,Global.KIND, null);
             }
-            List<ServiceType> theTypes = provider_services.getServiceTypes(theFirstKind);
+            List<ServiceType> theTypes = provider_logic.getServiceTypes(theFirstKind);
             ServiceType theFirstType = null;
             if((theTypes != null) && (!theTypes.isEmpty())){
                 theFirstType = theTypes.get(0);
                 Global.buildComboBoxContent(null, theTypes, null, null, null, servicesTypes,Global.TYPE, null);
             }
-            List<Services> theServicesData = provider_services.getServicesData(theFirstType, false);
+            List<Services> theServicesData = provider_logic.getServicesData(theFirstType, false);
             Services theFirstServices = null;
             if((theServicesData != null) && (!theServicesData.isEmpty())){
                 theFirstServices = theServicesData.get(0);
                 Global.buildComboBoxContent(null, null, theServicesData, null, null,  servicesNames,Global.SERVICES, null);
             }
-            List<Categories> theCategoriesData = provider_services.getCategoriesData(theFirstServices);
+            List<Categories> theCategoriesData = provider_logic.getCategoriesData(theFirstServices);
             Categories theFirstCategories = null;
             if((theCategoriesData != null) && (!theCategoriesData.isEmpty())){
                 theFirstCategories = theCategoriesData.get(0);
@@ -217,7 +218,7 @@ public class PublishService {
             System.out.println("loadServices before service.getServicename(): "+service.getServicename());
             System.out.println("loadServices before service.getCategory(): "+service.getCategory());
             //yyyyy service.getKind(): null, someKind == null: true
-            ServiceKind someKind = provider_services.getServiceKindByName(service.getKind());
+            ServiceKind someKind = provider_logic.getServiceKindByName(service.getKind());
             System.out.println("yyyyy service.getKind(): "+service.getKind()+", someKind == null: "+(someKind == null));
             if(someKind != null){
                 System.out.println("yyyyy launched");
@@ -237,7 +238,7 @@ public class PublishService {
     public boolean isServiceEmpty(){
         //System.out.println("setServicereference from PublishService.isServiceEmpty");
         service.setServicereference();
-        Collection<Item>   theItems = provider_services.getItemsListByServiceReference(service.getServicereference());
+        Collection<Item>   theItems = provider_logic.getItemsListByServiceReference(service.getServicereference());
         boolean isNotEmpty = (theItems != null) && (theItems.size() > 0);
         if(theItems != null){
             //java.lang.System.out.println("listSize: "+theItems.size()+", ");
@@ -444,7 +445,7 @@ public class PublishService {
         loadServices();
            Service   theService = null;
            if((service.getKind() != null) && (service.getType() != null) && (service.getServicename() != null) && (service.getCategory() != null)){
-           theService  = provider_services.getItemsFromService(service.getKind(), service.getType(), service.getServicename(), service.getCategory()); 
+           theService  = provider_logic.getItemsFromService(service.getKind(), service.getType(), service.getServicename(), service.getCategory()); 
         }
            List<Item> theItems = new ArrayList();
            if(theService != null) {
@@ -466,7 +467,7 @@ public class PublishService {
            //System.out.println("--service.getKind(): "+service.getKind());
            //System.out.println("--service.getType(): "+service.getType());
            if((service.getKind() != null) && (service.getType() != null) && (service.getServicename() != null) && (service.getCategory() != null)){
-           theService  = provider_services.getItemsFromService(service.getKind(), service.getType(), service.getServicename(), service.getCategory()); 
+           theService  = provider_logic.getItemsFromService(service.getKind(), service.getType(), service.getServicename(), service.getCategory()); 
         }
            if(theService != null){
                theServices.add(theService);
@@ -488,10 +489,10 @@ public class PublishService {
          }
          //System.out.println("setServicereference from PublishService.Publish");
          service.setServicereference();
-         Service theRetrived = provider_services.getServiceByServiceReference(service.getServicereference());
+         Service theRetrived = provider_logic.getServiceByServiceReference(service.getServicereference());
          theRetrived.setPublished((short)1);
          
-         if(provider_services.PersistService(service)){
+         if(provider_logic.PersistService(service)){
              theCtx.addMessage(GLOBAL_DISPLAY_MESSAGE, new FacesMessage(FacesMessage.SEVERITY_INFO, 
                                                                         "Publishing service.",
                                                                         "The service is published successfully"));
@@ -527,7 +528,7 @@ public class PublishService {
     public void onKindChanged(ValueChangeEvent anEvent){
        isComboSelected = true;       
        String theNewKind = (String) anEvent.getNewValue();
-       ServiceKind theKind = provider_services.getServiceKindByName(theNewKind);
+       ServiceKind theKind = provider_logic.getServiceKindByName(theNewKind);
        System.out.println("onKindChanged theNewKind: "+theNewKind+ ", theKind == null: "+(theKind == null));
        if(theKind != null){
            updateComboxes(theKind, theNewKind, Global.KIND, true);
@@ -539,7 +540,7 @@ public class PublishService {
          System.out.println("onTypeChanged ===========service.getKind(): "+service.getKind());
        isComboSelected = true;
        String theNewType = (String) anEvent.getNewValue();
-       ServiceKind theKind = provider_services.getServiceKindByName(service.getKind());
+       ServiceKind theKind = provider_logic.getServiceKindByName(service.getKind());
        System.out.println("onTypeChanged theNewType: "+theNewType+ ", theKind == null: "+(theKind == null));
        if(theKind != null){
            updateComboxes(theKind, theNewType, Global.TYPE, true);
@@ -553,7 +554,7 @@ public class PublishService {
        System.out.println("onNameChanged ===========service.getKind(): "+service.getKind());
        isComboSelected = true;
        String theNewName = (String) anEvent.getNewValue();
-       ServiceKind theKind = provider_services.getServiceKindByName(service.getKind());
+       ServiceKind theKind = provider_logic.getServiceKindByName(service.getKind());
         System.out.println("onNameChanged theNewName: "+theNewName+ ", theKind == null: "+(theKind == null));
        if(theKind != null){
            updateComboxes(theKind, theNewName, Global.SERVICES, true);
@@ -566,7 +567,7 @@ public class PublishService {
         System.out.println("onCategoryChanged ===========service.getKind(): "+service.getKind());
        isComboSelected = true;
        String theNewCategory = (String) anEvent.getNewValue();
-       ServiceKind theKind = provider_services.getServiceKindByName(service.getKind());
+       ServiceKind theKind = provider_logic.getServiceKindByName(service.getKind());
        System.out.println("onCategoryChanged theNewCategory: "+theNewCategory+ ", theKind == null: "+(theKind == null));
        if(theKind != null){
            updateComboxes(theKind, theNewCategory, Global.CATEGORIES, true);
@@ -595,7 +596,7 @@ public class PublishService {
        
         if(whatType.equals(Global.KIND)){
             if(!fromGui){
-                List<ServiceKind>theKinds = provider_services.getServiceKinds();
+                List<ServiceKind>theKinds = provider_logic.getServiceKinds();
                 Global.buildComboBoxContent(theKinds, null, null, null, null,  servicesKinds,Global.KIND, service.getKind());
             }            
            theKind = aKind;    
@@ -605,17 +606,17 @@ public class PublishService {
            whatType.equals(Global.KIND)){
             inFirstRank = null;
             //theTypes = theKind.getServiceTypeList();//
-            theKind = provider_services.getServiceKindByName(service.getKind());
-             provider_services.getServiceTypes(theKind);
+            theKind = provider_logic.getServiceKindByName(service.getKind());
+             provider_logic.getServiceTypes(theKind);
              System.out.println("updateComboxes theTypes == null: "+(theTypes == null));
              theTypes = theKind.getServiceTypeList();
              if(!fromGui){
-                     theFirstType = provider_services.getServiceTypeByName(service.getType());
+                     theFirstType = provider_logic.getServiceTypeByName(service.getType());
                      inFirstRank = service.getType();
              }else{
                  if((theTypes != null) && (!theTypes.isEmpty())){            
                  if(whatType.equals(Global.TYPE)){
-                     theFirstType = provider_services.getServiceTypeByName(aNewSelected);
+                     theFirstType = provider_logic.getServiceTypeByName(aNewSelected);
                  } /*else if (service.getType() != null){
                      theFirstType = provider_services.getServiceTypeByName(service.getType());
                  }*/ else{
@@ -632,18 +633,18 @@ public class PublishService {
            whatType.equals(Global.TYPE) ||
            whatType.equals(Global.KIND)){
              inFirstRank = null;
-             theKind = provider_services.getServiceKindByName(service.getKind());
+             theKind = provider_logic.getServiceKindByName(service.getKind());
              theServicesData = theKind.getListOfServices(service.getType());//provider_services.getServicesData(theFirstType, false);
              System.out.println("updateComboxes theServicesData == null: "+(theServicesData == null));
              
              if(!fromGui){
-                 theFirstServices = provider_services.getServicesDataByName(service.getServicename());
+                 theFirstServices = provider_logic.getServicesDataByName(service.getServicename());
                  inFirstRank = service.getServicename();
              }else{
                 if((theServicesData != null) && (!theServicesData.isEmpty())){
 
                    if(whatType.equals(Global.SERVICES)){
-                      theFirstServices = provider_services.getServicesDataByName(aNewSelected);
+                      theFirstServices = provider_logic.getServicesDataByName(aNewSelected);
                    }/*else if (Global.isThereMatching(null, 
                                             null, 
                                             theFirstType.getServicesList(),
@@ -668,7 +669,7 @@ public class PublishService {
            whatType.equals(Global.SERVICES) ||
            whatType.equals(Global.TYPE) || 
            whatType.equals(Global.KIND)){
-            theKind = provider_services.getServiceKindByName(service.getKind());
+            theKind = provider_logic.getServiceKindByName(service.getKind());
             theCategoriesData = theKind.getListOfCategories(service.getType(), service.getServicename());
             inFirstRank = null;
             if(!fromGui){
@@ -700,32 +701,32 @@ public class PublishService {
     
     public String editItemRow(Item anItem) {
         anItem.setEdited(true);
-        provider_services.updateItem(anItem);
+        provider_logic.updateItem(anItem);
       return Global.STAY_ON_CURRENT_PAGE;        
     }
        
     public String deleteItemRow(Item anItem) {
-        provider_services.deleteItem(anItem);
-        provider_services.updateItem(anItem);
+        provider_logic.deleteItem(anItem);
+        provider_logic.updateItem(anItem);
       return Global.STAY_ON_CURRENT_PAGE;       
     }
     
     
     public String editServiceRow(Service aService) {
         aService.setEdited(true);
-        provider_services.PersistService(aService);
+        provider_logic.PersistService(aService);
       return Global.STAY_ON_CURRENT_PAGE;        
     }
        
     public String deleteServiceRow(Service aService) {
-        provider_services.deleteService(aService);
-        provider_services.PersistService(aService);
+        provider_logic.deleteService(aService);
+        provider_logic.PersistService(aService);
       return Global.STAY_ON_CURRENT_PAGE;       
     }
     
     public void updateAddModifyButton(){
         service.setServicereference();
-        Service theRegistered = provider_services.getServiceByServiceReference(service.getServicereference());
+        Service theRegistered = provider_logic.getServiceByServiceReference(service.getServicereference());
         if(theRegistered == null){
             // display add label
         }
@@ -738,7 +739,7 @@ public class PublishService {
     public boolean isModify() {
         Service theService = null;
         if((service.getKind() != null) && (service.getType() != null) && (service.getServicename() != null) && (service.getCategory() != null)){
-           theService  = provider_services.getItemsFromService(service.getKind(), service.getType(), service.getServicename(), service.getCategory()); 
+           theService  = provider_logic.getItemsFromService(service.getKind(), service.getType(), service.getServicename(), service.getCategory()); 
         }
         List<Item> theItems = null;
         if(theService != null){

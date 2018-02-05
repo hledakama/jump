@@ -23,9 +23,10 @@ import javax.json.JsonArray;
 import javax.servlet.http.Part;
 import javax.validation.constraints.NotNull;
 import org.lhedav.pp.business.data.Items;
+import org.lhedav.pp.business.data.ServiceKind;
 import org.lhedav.pp.business.data.Services;
 import org.lhedav.pp.business.json.ItemdataJsonBuilder;
-import org.lhedav.pp.business.logic.SellerEJB;
+import org.lhedav.pp.business.logic.ProviderEJB;
 import org.lhedav.pp.business.model.common.CRC32StringCollection;
 import org.lhedav.pp.business.model.common.Global;
 import org.lhedav.pp.business.model.service.Item;
@@ -79,7 +80,7 @@ public class AddItem implements Serializable{
     private String sortType;
     private boolean virtualItemdata;
     @EJB
-    private SellerEJB provider_services;
+    private ProviderEJB provider_logic;
     private boolean itemNameChanged = false; 
     private List<String> itemsNames = new ArrayList();
     private List<String> unitsList = new ArrayList();
@@ -107,38 +108,46 @@ public class AddItem implements Serializable{
         
     }
 
-    @PostConstruct
+    //@PostConstruct
     public void init() {
          //System.out.println("PostConstruct init");
-        List<Items> theItemsData = provider_services.getItemsData(null, true);
+         List<Items> theItemsData = null;
+         ServiceKind theKind = provider_logic.getServiceKindByName(service.getKind());
+         if(theKind != null){
+             theItemsData = theKind.getListOfItems(service.getType(), 
+                                                   service.getServicename(), 
+                                                   service.getCategory());
+         }
          
         if(theItemsData != null){
-            Global.buildComboBoxContent(null, null, null, null, theItemsData, itemsNames,Global.ITEMS, null);
+            Global.buildComboBoxContent(
+                    null, 
+                    null, 
+                    null, 
+                    null, 
+                    theItemsData, 
+                    itemsNames,
+                    Global.ITEMS, 
+                    null);
         }
-        /*for (int index = 0; index < theServicesSize; index++) {
-            String theString = theServicesData.get(index).getItem();
-            if (itemsNames.contains(theString)) {
-                continue;
-            }
-            itemsNames.add(theString);
-        }*/ 
         if(!itemsNames.isEmpty()){
           resetItem(itemsNames.get(0));  
         }else{
             resetItem(null);
         }
         
-        unitsList = provider_services.getItemUnits(provider_services.getItemUnits());        
+        unitsList = provider_logic.getItemUnits(provider_logic.getItemUnits());        
     }
     //https://stackoverflow.com/questions/6341462/initializng-a-backing-bean-with-parameters-on-page-load-with-jsf-2-0
     public void loadService(){
+        init();
         loadService_();
         setSortitemdatamodel();
     }    
    
     public String sortItemByReference(final String dir) {
         service.setServicereference();
-        Collection<Item> theCollection = provider_services.getItemsListByServiceReference(service.getServicereference());
+        Collection<Item> theCollection = provider_logic.getItemsListByServiceReference(service.getServicereference());
         List theList = new ArrayList(theCollection);
         Collections.sort(theList, new Comparator<Item>() {
             @Override
@@ -178,7 +187,7 @@ public class AddItem implements Serializable{
                 service.removeItemFromList(item);
                 resetItem(theItemName);
             }
-            provider_services.PersistService(service);
+            provider_logic.PersistService(service);
         }
         return Global.STAY_ON_CURRENT_PAGE;
     }
@@ -202,7 +211,7 @@ public class AddItem implements Serializable{
 
     public String submitRowItemdata(@NotNull Itemdata anItemdata) {
         // validation must be performed before here
-        provider_services.updateItemdata(anItemdata);
+        provider_logic.updateItemdata(anItemdata);
         System.out.println("additem submitRowItemdata setEdited false");
         //anItemdata.setEdited(false);
         return Global.STAY_ON_CURRENT_PAGE;
@@ -238,7 +247,7 @@ public class AddItem implements Serializable{
         //}
         //System.out.println("=========== addItem end =============");
         service.setServicereference();
-        provider_services.PersistService(service);        
+        provider_logic.PersistService(service);        
         //after persisting
         itemdata = new Itemdata();
         return Global.STAY_ON_CURRENT_PAGE;
@@ -276,7 +285,7 @@ public class AddItem implements Serializable{
     
      */
     public String ShowHideDetails(@NotNull Itemdata anItemdata) {
-        provider_services.updateItemData(anItemdata);
+        provider_logic.updateItemData(anItemdata);
         JsonArray jsonDetails = ItemdataJsonBuilder.buildProviderAddress(anItemdata);
         return Global.STAY_ON_CURRENT_PAGE;
     }
@@ -665,7 +674,7 @@ public class AddItem implements Serializable{
                 for(Itemdata theData: theList){
                 if(theData == null) continue;
                 theData.setEdited(false);
-                provider_services.Updatetemdata(theData);
+                provider_logic.Updatetemdata(theData);
                 }
             }
         }
@@ -675,7 +684,7 @@ public class AddItem implements Serializable{
     }
     
     public boolean isItemExists(@NotNull String anItemName){
-        List<Item> theItems = provider_services.getItemsListByServiceReference(service.getServicereference());
+        List<Item> theItems = provider_logic.getItemsListByServiceReference(service.getServicereference());
         if(theItems == null) return false;
         for(Item theItem: theItems){
             if(theItem.getItemname().equals(anItemName)){
@@ -702,7 +711,7 @@ public class AddItem implements Serializable{
     public void loadService_(){            
         String theCrc = CRC32StringCollection.getServicereference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
         //System.out.println("loadService from AddItem.init, service-->theCrc: "+theCrc);
-        Service theSavedService = provider_services.getServiceByServiceReference(theCrc);
+        Service theSavedService = provider_logic.getServiceByServiceReference(theCrc);
         if(theSavedService == null){
             service.setServicereference();
         }

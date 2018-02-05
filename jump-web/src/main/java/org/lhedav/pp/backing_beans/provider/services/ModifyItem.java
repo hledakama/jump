@@ -22,7 +22,7 @@ import javax.json.JsonArray;
 import javax.servlet.http.Part;
 import javax.validation.constraints.NotNull;
 import org.lhedav.pp.business.json.ItemdataJsonBuilder;
-import org.lhedav.pp.business.logic.SellerEJB;
+import org.lhedav.pp.business.logic.ProviderEJB;
 import org.lhedav.pp.business.model.common.CRC32StringCollection;
 import org.lhedav.pp.business.model.common.Global;
 import org.lhedav.pp.business.model.service.Item;
@@ -76,7 +76,7 @@ public class ModifyItem implements Serializable{
     private String sortType;
     private boolean virtualItemdata;
     @EJB
-    private SellerEJB provider_services;
+    private ProviderEJB provider_logic;
     private boolean itemNameChanged = false; 
     private List<String> itemsNames = new ArrayList();
     private List<String> unitsList = new ArrayList();
@@ -108,7 +108,7 @@ public class ModifyItem implements Serializable{
         Service theService = null;
         List<Item> theItems = null;
         if((service.getKind() != null) && (service.getType() != null) && (service.getServicename() != null) && (service.getCategory() != null)){
-           theService  = provider_services.getItemsFromService(service.getKind(), service.getType(), service.getServicename(), service.getCategory()); 
+           theService  = provider_logic.getItemsFromService(service.getKind(), service.getType(), service.getServicename(), service.getCategory()); 
         }
         if(theService != null){
         theItems = theService.getItemList();
@@ -128,6 +128,7 @@ public class ModifyItem implements Serializable{
                 removeName(0, strLastItemContentDeleted);
                 strLastItemContentDeleted = Global.STR_EMPTY;
             }
+            
             for (Item theItem: theItems) {
                 String theItemName = theItem.getItemname();
                 if(!itemsNames.contains(theItemName)){
@@ -141,14 +142,15 @@ public class ModifyItem implements Serializable{
                 resetItem(itemsNames.get(0));
             }
         }
-        unitsList = provider_services.getItemUnits(provider_services.getItemUnits()); 
+        //converting List<Unit> to List<String>
+        unitsList = provider_logic.getItemUnits(provider_logic.getItemUnits()); 
     }
     //https://stackoverflow.com/questions/6341462/initializng-a-backing-bean-with-parameters-on-page-load-with-jsf-2-0
     public void loadService(){
         System.out.println("loadService modify ");
         Service theService = null;
         if((service.getKind() != null) && (service.getType() != null) && (service.getServicename() != null) && (service.getCategory() != null)){
-           theService  = provider_services.getItemsFromService(service.getKind(), service.getType(), service.getServicename(), service.getCategory()); 
+           theService  = provider_logic.getItemsFromService(service.getKind(), service.getType(), service.getServicename(), service.getCategory()); 
         }
         List<Item> theItems = null;
         if(theService != null){
@@ -167,7 +169,7 @@ public class ModifyItem implements Serializable{
    
     public String sortItemByReference(final String dir) {
         service.setServicereference();
-        Collection<Item> theCollection = provider_services.getItemsListByServiceReference(service.getServicereference());
+        Collection<Item> theCollection = provider_logic.getItemsListByServiceReference(service.getServicereference());
         List theList = new ArrayList(theCollection);
         Collections.sort(theList, new Comparator<Item>() {
             @Override
@@ -218,7 +220,7 @@ public class ModifyItem implements Serializable{
                 }
             }
             service.replaceItem(item);
-            provider_services.PersistService(service);
+            provider_logic.PersistService(service);
             init();
         }
         //System.out.println("=========== after removeRowItemdata start  =============");
@@ -254,13 +256,13 @@ public class ModifyItem implements Serializable{
             System.out.println("editRowItemdata file != null, ");
             Global.saveFileToDisk(anItemdata, false, file);
         }
-        provider_services.Updatetemdata(anItemdata);
+        provider_logic.Updatetemdata(anItemdata);
         return Global.STAY_ON_CURRENT_PAGE;
     }
 
     public String submitRowItemdata(@NotNull Itemdata anItemdata) {
         // validation must be performed before here
-        provider_services.updateItemdata(anItemdata);
+        provider_logic.updateItemdata(anItemdata);
         System.out.println("modifyitem submitRowItemdata setEdited false");
         //anItemdata.setEdited(false);
         return Global.STAY_ON_CURRENT_PAGE;
@@ -321,7 +323,7 @@ public class ModifyItem implements Serializable{
     
      */
     public String ShowHideDetails(@NotNull Itemdata anItemdata) {
-        provider_services.updateItemData(anItemdata);
+        provider_logic.updateItemData(anItemdata);
         JsonArray jsonDetails = ItemdataJsonBuilder.buildProviderAddress(anItemdata);
         return Global.STAY_ON_CURRENT_PAGE;
     }
@@ -713,7 +715,7 @@ public class ModifyItem implements Serializable{
     }
     
     public boolean isItemExists(@NotNull String anItemName){
-        List<Item> theItems = provider_services.getItemsListByServiceReference(service.getServicereference());
+        List<Item> theItems = provider_logic.getItemsListByServiceReference(service.getServicereference());
         if(theItems == null) return false;
         for(Item theItem: theItems){
             if(theItem.getItemname().equals(anItemName)){
@@ -749,7 +751,7 @@ public class ModifyItem implements Serializable{
          }
         
         //System.out.println("loadService from AddItem.init, service-->theCrc: "+theCrc);
-        Service theSavedService = provider_services.getServiceByServiceReference(theCrc);
+        Service theSavedService = provider_logic.getServiceByServiceReference(theCrc);
         if(theSavedService == null){
             service.setServicereference();
         }

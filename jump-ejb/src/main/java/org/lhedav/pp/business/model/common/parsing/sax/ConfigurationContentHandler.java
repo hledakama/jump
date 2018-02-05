@@ -17,7 +17,7 @@ import org.lhedav.pp.business.data.ServiceKind;
 import org.lhedav.pp.business.data.ServiceType;
 import org.lhedav.pp.business.data.Services;
 import org.lhedav.pp.business.data.Unit;
-import org.lhedav.pp.business.logic.SellerEJB;
+import org.lhedav.pp.business.logic.ProviderEJB;
 
 /**
  *
@@ -33,7 +33,7 @@ public class ConfigurationContentHandler implements ContentHandler{
   private Unit objUnit;
   private Locator objLocator;  
     @EJB
-  private SellerEJB provider_services;
+  private ProviderEJB provider_logic;
   
   public ConfigurationContentHandler(){
       
