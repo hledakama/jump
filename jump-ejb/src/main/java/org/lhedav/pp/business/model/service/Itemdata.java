@@ -110,6 +110,8 @@ public class Itemdata implements Serializable {
     private Long qty;
     @Column(name = "VIRTUAL_")
     private Short virtual;
+    @Column(name = "PUBLISH_")
+    private Short publish;
     @Column(name = "EDITED")
     private boolean edited = false;
     @XmlTransient
@@ -140,6 +142,7 @@ public class Itemdata implements Serializable {
     private Avatar lastAvatar;
         @Transient
     private int avatarRank;
+        
         
         
         
@@ -259,8 +262,16 @@ public class Itemdata implements Serializable {
         return virtual;
     }
 
-    public void setVirtual(Short virtual) {
-        this.virtual = virtual;
+    public void setVirtual(Short aVirtual) {
+        this.virtual = aVirtual;
+    }
+    
+    public Short getPublish() {
+        return this.publish;
+    }
+
+    public void setPublish(Short aPublish) {
+        this.publish = aPublish;
     }
 
     

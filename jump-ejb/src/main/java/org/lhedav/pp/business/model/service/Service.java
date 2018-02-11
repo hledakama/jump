@@ -9,6 +9,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -48,6 +50,7 @@ import org.lhedav.pp.business.model.user.Account;
     , @NamedQuery(name = "Service.findByServicename", query = "SELECT s FROM Service s WHERE s.servicename = :servicename")
     , @NamedQuery(name = "Service.findByServicereference", query = "SELECT s FROM Service s WHERE s.servicereference = :servicereference")
     , @NamedQuery(name = "Service.findByType", query = "SELECT s FROM Service s WHERE s.type = :type")
+    , @NamedQuery(name = "Service.findByAccountTFk", query = "SELECT s FROM Service s WHERE s.accountFk = :accountFk")
     , @NamedQuery(name = "Service.findByServiceNameKindTypeCategory", query = "SELECT s FROM Service s WHERE ((s.servicename = :servicename) AND (s.kind = :kind) AND (s.type = :type) AND (s.category = :category))")
 })
 public class Service implements Serializable {
@@ -87,6 +90,8 @@ public class Service implements Serializable {
     private boolean edited = false;
     @Transient
     private boolean merged = false;
+    
+            
 
     
         public final static String KIND_HOUSEHOLD      = "HOUSE_HOLD";
@@ -109,8 +114,8 @@ public class Service implements Serializable {
     public Service(Long serviceTId) {
         itemList = new ArrayList();
         this.serviceTId = serviceTId;
-    }
-
+    }    
+    
     public Long getServiceTId() {
         return serviceTId;
     }

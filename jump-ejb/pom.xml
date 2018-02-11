@@ -54,7 +54,30 @@
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
-        
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <scope>test</scope>
+            <version>2.44.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.opera</groupId>
+            <artifactId>operadriver</artifactId>
+            <scope>test</scope>
+            <version>1.5</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.seleniumhq.selenium</groupId>
+                    <artifactId>selenium-remote-driver</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+            <version>4.11</version>
+        </dependency>
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-api</artifactId>
@@ -89,8 +112,45 @@
             <version>2.5</version>
             <scope>compile</scope>
             <optional>true</optional>
+        </dependency>   
+        
+        <!-- https://mvnrepository.com/artifact/org.slf4j/jul-to-slf4j -->
+        <!--dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jul-to-slf4j</artifactId>
+            <version>1.7.5</version>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency-->
+      
+      <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.5</version>
+            <scope>compile</scope>
+            <!--optional>true</optional-->
         </dependency>
 
+      
+      <!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-core -->
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-core</artifactId>
+        <version>1.0.13</version>
+        <scope>compile</scope>
+        <optional>true</optional>
+      </dependency>
+
+      
+      <!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->
+      <!--dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>1.0.13</version>
+        <scope>compile</scope>
+        <optional>true</optional>
+      </dependency-->
     </dependencies>
 
     <build>

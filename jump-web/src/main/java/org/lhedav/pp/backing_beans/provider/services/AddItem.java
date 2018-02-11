@@ -18,6 +18,7 @@ import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.CollectionDataModel;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.json.JsonArray;
 import javax.servlet.http.Part;
@@ -35,6 +36,7 @@ import org.lhedav.pp.business.model.user.Address;
 import org.lhedav.pp.business.model.user.Avatar;
 import org.lhedav.pp.business.model.service.Service;
 import org.lhedav.pp.business.model.service.SortedDataModel;
+import org.lhedav.pp.business.model.user.Account;
 
 /**
  *
@@ -71,6 +73,7 @@ public class AddItem implements Serializable{
     private String price = "Price";
     private String qty = "Qty";
     private String virtual = "Virtual";
+    private String publish = "Publish";
     private String remove = "Remove";
     private String nextItemLabel = "Add new line";
     private String saveItemLabel = "Save item";
@@ -79,8 +82,11 @@ public class AddItem implements Serializable{
     private SortedDataModel<Itemdata> sortitemdatamodel;
     private String sortType;
     private boolean virtualItemdata;
+    private boolean publishItemdata;
     @EJB
     private ProviderEJB provider_logic;
+    @Inject
+    private Account userAccount;
     private boolean itemNameChanged = false; 
     private List<String> itemsNames = new ArrayList();
     private List<String> unitsList = new ArrayList();
@@ -107,8 +113,13 @@ public class AddItem implements Serializable{
     AddItem() {
         
     }
+    
+    @PostConstruct
+    public void initUserAccount(){
+        userAccount.setAccountTId(Long.MIN_VALUE);// TODO, fecth from profile
+    }
 
-    //@PostConstruct
+    
     public void init() {
          //System.out.println("PostConstruct init");
          List<Items> theItemsData = null;
@@ -247,6 +258,7 @@ public class AddItem implements Serializable{
         //}
         //System.out.println("=========== addItem end =============");
         service.setServicereference();
+        service.setAccountFk(userAccount);
         provider_logic.PersistService(service);        
         //after persisting
         itemdata = new Itemdata();
@@ -534,6 +546,14 @@ public class AddItem implements Serializable{
     public void setVirtual(String aStatus) {
         virtual = aStatus;
     }
+    
+    public String getPublish() {
+        return publish;
+    }
+
+    public void setPublish(String aStatus) {
+        publish = aStatus;
+    }
 
     public List<String> getItemsNames() {
       return itemsNames;
@@ -699,12 +719,26 @@ public class AddItem implements Serializable{
     }
 
     //https://stackoverflow.com/questions/5706513/bind-hselectbooleancheckbox-value-to-int-integer-instead-of-boolean-boolean
-    public void setVirtualItemdata(boolean virtual) {
+    public void setVirtualItemdata(boolean aVirtual) {
         if (itemdata == null) {
             virtualItemdata = false;
         } else {
-            virtualItemdata = virtual;
+            virtualItemdata = aVirtual;
             itemdata.setVirtual(virtualItemdata ? (short) 1 : (short) 0);
+        }
+    }
+    
+    public boolean isPublishItemdata() {
+        return publishItemdata;
+    }
+
+    //https://stackoverflow.com/questions/5706513/bind-hselectbooleancheckbox-value-to-int-integer-instead-of-boolean-boolean
+    public void setPublishItemdata(boolean aPublish) {
+        if (itemdata == null) {
+            publishItemdata = false;
+        } else {
+            publishItemdata = aPublish;
+            itemdata.setPublish(publishItemdata ? (short) 1 : (short) 0);
         }
     }
     

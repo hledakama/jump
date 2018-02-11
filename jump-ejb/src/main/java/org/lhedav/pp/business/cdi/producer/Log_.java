@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.lhedav.pp.business.cdi.event;
+package org.lhedav.pp.business.cdi.producer;
 
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
@@ -18,10 +18,9 @@ import javax.inject.Qualifier;
  *
  * @author client
  */
-//http://www.next-presso.com/2014/06/you-think-you-know-everything-about-cdi-events-think-again/
 @Qualifier
 @Retention(RUNTIME)
 @Target({METHOD, FIELD, PARAMETER, TYPE})
-public @interface ProviderEvent {
+public @interface Log_ {
     String name()default "";
 }

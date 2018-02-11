@@ -84,16 +84,16 @@ public class PublishService {
     */
     @PostConstruct
     public void init() {
-        System.out.println("***** loadServices  from init******");
+        //System.out.println("***** loadServices  from init******");
         loadServices();
     }
     // todo: from setting choose to make service configurable i.e. load the latest used or the default one.
     public void loadServices(){
-        System.out.println("***** loadServices ******");
-        System.out.println("***** loadServices ****** servicesKinds.size(): "+servicesKinds.size());
-        System.out.println("***** loadServices ****** servicesTypes.size(): "+servicesTypes.size());
-        System.out.println("***** loadServices ****** servicesNames.size(): "+servicesNames.size());
-        System.out.println("***** loadServices ****** categoriesNames.size(): "+categoriesNames.size());
+        //System.out.println("***** loadServices ******");
+        //System.out.println("***** loadServices ****** servicesKinds.size(): "+servicesKinds.size());
+        //System.out.println("***** loadServices ****** servicesTypes.size(): "+servicesTypes.size());
+        //System.out.println("***** loadServices ****** servicesNames.size(): "+servicesNames.size());
+        //System.out.println("***** loadServices ****** categoriesNames.size(): "+categoriesNames.size());
         List<ServiceKind> theKinds;
         /*List<Unit> theUnits;
         HashMap<String, List> thePreviousConfig = objParsedConfig;
@@ -213,15 +213,15 @@ public class PublishService {
             updateAddModifyButton();
             isParsed = true;            
         }else{
-            System.out.println("loadServices before service.getKind(): "+service.getKind());
-            System.out.println("loadServices before service.getType(): "+service.getType());
-            System.out.println("loadServices before service.getServicename(): "+service.getServicename());
-            System.out.println("loadServices before service.getCategory(): "+service.getCategory());
+            //System.out.println("loadServices before service.getKind(): "+service.getKind());
+            //System.out.println("loadServices before service.getType(): "+service.getType());
+            //System.out.println("loadServices before service.getServicename(): "+service.getServicename());
+            //System.out.println("loadServices before service.getCategory(): "+service.getCategory());
             //yyyyy service.getKind(): null, someKind == null: true
             ServiceKind someKind = provider_logic.getServiceKindByName(service.getKind());
-            System.out.println("yyyyy service.getKind(): "+service.getKind()+", someKind == null: "+(someKind == null));
+            //System.out.println("yyyyy service.getKind(): "+service.getKind()+", someKind == null: "+(someKind == null));
             if(someKind != null){
-                System.out.println("yyyyy launched");
+                //System.out.println("yyyyy launched");
                 updateComboxes(someKind, service.getKind(), Global.KIND, false);
             }
         }        
@@ -441,7 +441,7 @@ public class PublishService {
        }
              
     public SortedDataModel<Item> getSortedItemModel() {
-        System.out.println("***** loadServices  from getSortedItemModel******");
+        //System.out.println("***** loadServices  from getSortedItemModel******");
         loadServices();
            Service   theService = null;
            if((service.getKind() != null) && (service.getType() != null) && (service.getServicename() != null) && (service.getCategory() != null)){
@@ -529,62 +529,62 @@ public class PublishService {
        isComboSelected = true;       
        String theNewKind = (String) anEvent.getNewValue();
        ServiceKind theKind = provider_logic.getServiceKindByName(theNewKind);
-       System.out.println("onKindChanged theNewKind: "+theNewKind+ ", theKind == null: "+(theKind == null));
+       //System.out.println("onKindChanged theNewKind: "+theNewKind+ ", theKind == null: "+(theKind == null));
        if(theKind != null){
            updateComboxes(theKind, theNewKind, Global.KIND, true);
-           System.out.println("onKindChanged, theKind.getKind(): "+theKind.getKind() );
+           //System.out.println("onKindChanged, theKind.getKind(): "+theKind.getKind() );
        }       
     }
     //In setServicereference, kind: BEAUTY, type: ADMINISTRATION, servicename: COIFFURE HOMME, category: AFRICAINE
      public void onTypeChanged(ValueChangeEvent anEvent){
-         System.out.println("onTypeChanged ===========service.getKind(): "+service.getKind());
+         //System.out.println("onTypeChanged ===========service.getKind(): "+service.getKind());
        isComboSelected = true;
        String theNewType = (String) anEvent.getNewValue();
        ServiceKind theKind = provider_logic.getServiceKindByName(service.getKind());
-       System.out.println("onTypeChanged theNewType: "+theNewType+ ", theKind == null: "+(theKind == null));
+       //System.out.println("onTypeChanged theNewType: "+theNewType+ ", theKind == null: "+(theKind == null));
        if(theKind != null){
            updateComboxes(theKind, theNewType, Global.TYPE, true);
-           System.out.println("onTypeChanged, theKind.getKind(): "+theKind.getKind() );
+           //System.out.println("onTypeChanged, theKind.getKind(): "+theKind.getKind() );
        }
        
     }
      
      
     public void onNameChanged(ValueChangeEvent anEvent){  
-       System.out.println("onNameChanged ===========service.getKind(): "+service.getKind());
+       //System.out.println("onNameChanged ===========service.getKind(): "+service.getKind());
        isComboSelected = true;
        String theNewName = (String) anEvent.getNewValue();
        ServiceKind theKind = provider_logic.getServiceKindByName(service.getKind());
-        System.out.println("onNameChanged theNewName: "+theNewName+ ", theKind == null: "+(theKind == null));
+        //System.out.println("onNameChanged theNewName: "+theNewName+ ", theKind == null: "+(theKind == null));
        if(theKind != null){
            updateComboxes(theKind, theNewName, Global.SERVICES, true);
-           System.out.println("onNameChanged, theKind.getKind(): "+theKind.getKind() );
+           //System.out.println("onNameChanged, theKind.getKind(): "+theKind.getKind() );
        }
       
     }    
     
     public void onCategoryChanged(ValueChangeEvent anEvent){  
-        System.out.println("onCategoryChanged ===========service.getKind(): "+service.getKind());
+        //System.out.println("onCategoryChanged ===========service.getKind(): "+service.getKind());
        isComboSelected = true;
        String theNewCategory = (String) anEvent.getNewValue();
        ServiceKind theKind = provider_logic.getServiceKindByName(service.getKind());
-       System.out.println("onCategoryChanged theNewCategory: "+theNewCategory+ ", theKind == null: "+(theKind == null));
+       //System.out.println("onCategoryChanged theNewCategory: "+theNewCategory+ ", theKind == null: "+(theKind == null));
        if(theKind != null){
            updateComboxes(theKind, theNewCategory, Global.CATEGORIES, true);
-           System.out.println("onCategoryChanged, theKind.getKind(): "+theKind.getKind() );
+           //System.out.println("onCategoryChanged, theKind.getKind(): "+theKind.getKind() );
        }
        
     }
     
     public void updateComboxes(@NotNull ServiceKind aKind, @NotNull String aNewSelected, @NotNull String whatType, boolean fromGui){
-       System.out.println("++++++++++++++++++++++++++++++++updateComboxes++++++++++++++++++++++++++++++++++++");
+       //System.out.println("++++++++++++++++++++++++++++++++updateComboxes++++++++++++++++++++++++++++++++++++");
         isComboSelected = fromGui;
-       System.out.println("updateComboxes start, getServicereference: "+service.getServicereference()+", fromGui: "+fromGui);
-       System.out.println("updateComboxes aNewSelected: "+aNewSelected +", whatType: "+whatType);
-       System.out.println("updateComboxes before service.getKind(): "+service.getKind());
-       System.out.println("updateComboxes before service.getType(): "+service.getType());
-       System.out.println("updateComboxes before service.getServicename(): "+service.getServicename());
-       System.out.println("updateComboxes before service.getCategory(): "+service.getCategory());
+       //System.out.println("updateComboxes start, getServicereference: "+service.getServicereference()+", fromGui: "+fromGui);
+       //System.out.println("updateComboxes aNewSelected: "+aNewSelected +", whatType: "+whatType);
+       //System.out.println("updateComboxes before service.getKind(): "+service.getKind());
+       //System.out.println("updateComboxes before service.getType(): "+service.getType());
+       //System.out.println("updateComboxes before service.getServicename(): "+service.getServicename());
+       //System.out.println("updateComboxes before service.getCategory(): "+service.getCategory());
        
        ServiceKind theKind = null;
        String inFirstRank = null;
@@ -608,7 +608,7 @@ public class PublishService {
             //theTypes = theKind.getServiceTypeList();//
             theKind = provider_logic.getServiceKindByName(service.getKind());
              provider_logic.getServiceTypes(theKind);
-             System.out.println("updateComboxes theTypes == null: "+(theTypes == null));
+             //System.out.println("updateComboxes theTypes == null: "+(theTypes == null));
              theTypes = theKind.getServiceTypeList();
              if(!fromGui){
                      theFirstType = provider_logic.getServiceTypeByName(service.getType());
@@ -624,7 +624,7 @@ public class PublishService {
                  }                  
                 }
              }
-             System.out.println("updateComboxes theFirstType: "+theFirstType.getType());
+             //System.out.println("updateComboxes theFirstType: "+theFirstType.getType());
              servicesTypes = Global.buildComboBoxContent(null, theTypes, null, null, null, servicesTypes,Global.TYPE, inFirstRank); 
              service.setType(theFirstType.getType());
         }
@@ -635,7 +635,7 @@ public class PublishService {
              inFirstRank = null;
              theKind = provider_logic.getServiceKindByName(service.getKind());
              theServicesData = theKind.getListOfServices(service.getType());//provider_services.getServicesData(theFirstType, false);
-             System.out.println("updateComboxes theServicesData == null: "+(theServicesData == null));
+             //System.out.println("updateComboxes theServicesData == null: "+(theServicesData == null));
              
              if(!fromGui){
                  theFirstServices = provider_logic.getServicesDataByName(service.getServicename());
@@ -661,7 +661,7 @@ public class PublishService {
                 }
             }
              
-             System.out.println("updateComboxes theFirstServices: "+theFirstServices.getName());
+             //System.out.println("updateComboxes theFirstServices: "+theFirstServices.getName());
              servicesNames = Global.buildComboBoxContent(null, null, theServicesData, null, null, servicesNames,Global.SERVICES, inFirstRank);
             service.setServicename(theFirstServices.getName());
         }
@@ -675,7 +675,7 @@ public class PublishService {
             if(!fromGui){
                 inFirstRank = service.getCategory();
             }
-//            System.out.println("updateComboxes theCategoriesData == null: "+(theCategoriesData == null)+ ", theCategoriesData.size: "+theCategoriesData.size());
+//            //System.out.println("updateComboxes theCategoriesData == null: "+(theCategoriesData == null)+ ", theCategoriesData.size: "+theCategoriesData.size());
             if((theCategoriesData != null) && (!theCategoriesData.isEmpty())){
                 categoriesNames = Global.buildComboBoxContent(null, null, null, theCategoriesData, null, categoriesNames,Global.CATEGORIES, inFirstRank);
             }           
@@ -688,15 +688,15 @@ public class PublishService {
            }
         }
        
-       System.out.println("updateComboxes service.getKind(): "+service.getKind());
-       System.out.println("updateComboxes service.getType(): "+service.getType());
-       System.out.println("updateComboxes service.getServicename(): "+service.getServicename());
-       System.out.println("updateComboxes service.getCategory(): "+service.getCategory());
+       //System.out.println("updateComboxes service.getKind(): "+service.getKind());
+       //System.out.println("updateComboxes service.getType(): "+service.getType());
+       //System.out.println("updateComboxes service.getServicename(): "+service.getServicename());
+       //System.out.println("updateComboxes service.getCategory(): "+service.getCategory());
        
        service.setServicereference();
-       System.out.println("updateComboxes service.setServicereference(): "+service.getServicereference());
+       //System.out.println("updateComboxes service.setServicereference(): "+service.getServicereference());
        updateAddModifyButton();    
-       System.out.println("----------------------------------END---------------------------------------------");
+       //System.out.println("----------------------------------END---------------------------------------------");
     }
     
     public String editItemRow(Item anItem) {

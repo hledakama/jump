@@ -67,6 +67,7 @@ public class ModifyItem implements Serializable{
     private String price = "Price";
     private String qty = "Qty";
     private String virtual = "Virtual";
+    private String publish = "Publish";
     private String remove = "Remove";
     private String nextItemLabel = "Add new line";
     private String saveItemLabel = "Save item";
@@ -571,6 +572,14 @@ public class ModifyItem implements Serializable{
 
     public void setVirtual(String aStatus) {
         virtual = aStatus;
+    }
+    
+    public String getPublish() {
+        return publish;
+    }
+
+    public void setPublish(String aStatus) {
+        publish = aStatus;
     }
 
     public List<String> getItemsNames() {

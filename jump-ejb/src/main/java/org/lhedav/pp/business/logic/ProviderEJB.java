@@ -12,9 +12,12 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
+import javax.interceptor.ExcludeClassInterceptors;
+import javax.interceptor.Interceptors;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 import org.lhedav.pp.business.data.Categories;
 import org.lhedav.pp.business.data.Items;
@@ -27,6 +30,7 @@ import org.lhedav.pp.business.data.ServiceType;
 import org.lhedav.pp.business.data.Services;
 import org.lhedav.pp.business.data.Unit;
 import org.lhedav.pp.business.cdi.event.ProviderEvent;
+import org.lhedav.pp.business.cdi.interceptor.LoggingInterceptor;
 
 /**
  *
@@ -35,6 +39,8 @@ import org.lhedav.pp.business.cdi.event.ProviderEvent;
 
 @Stateless
 @LocalBean
+//@Transactional//(Transactional.TxType.REQUIRES_NEW)
+//@Interceptors(LoggingInterceptor.class)
 public class ProviderEJB {  
     
     @PersistenceContext(unitName = Global.PERSISTENCE_UNIT)
@@ -96,12 +102,10 @@ public class ProviderEJB {
     @ProviderEvent(name = "unitMergedEvent")
     private Event<Unit> unitMergedEvent;
     
-
-    
-    
     
     
     //https://stackoverflow.com/questions/17231535/java-lang-classcastexception-sametype-cannot-be-cast-to-sametype
+   // @ExcludeClassInterceptors
     public List<ServiceKind> getServiceKinds(){ 
         List<ServiceKind> theKinds;
         try{
@@ -116,6 +120,7 @@ public class ProviderEJB {
         return theKinds;
     }
     
+    //@ExcludeClassInterceptors
     public ServiceKind getServiceKindByName(String aKind){ 
         ServiceKind theResult;
         try{
@@ -131,6 +136,7 @@ public class ProviderEJB {
         return theResult;
     }
     
+   // @ExcludeClassInterceptors
     public List<Categories> getCategories(@NotNull String someKind, @NotNull String someType, @NotNull String someServices){ 
         ServiceKind theKind = getServiceKindByName(someKind);
         List<Categories> theResult = null;
@@ -141,6 +147,7 @@ public class ProviderEJB {
     }
     
     
+   // @ExcludeClassInterceptors
     public List<ServiceType> getServiceTypes(ServiceKind aKind){
         List<ServiceType> theTypes;
         try{        
@@ -156,6 +163,7 @@ public class ProviderEJB {
         return theTypes;
     }
     
+   // @ExcludeClassInterceptors
     public ServiceType getServiceTypeByName(String aType){
         ServiceType theResult;
         try{        
@@ -171,6 +179,7 @@ public class ProviderEJB {
         return theResult;
     }
         
+   // @ExcludeClassInterceptors
     public List<Services> getServicesData(ServiceType aType, boolean all){
        List<Services> theServices ;
         try{
@@ -192,6 +201,7 @@ public class ProviderEJB {
     }    
     
     
+   // @ExcludeClassInterceptors
     public Services getServicesDataByName(String someServicesName){
        Services theResult ;
         try{
@@ -207,6 +217,7 @@ public class ProviderEJB {
         return theResult;
     }
     
+   // @ExcludeClassInterceptors
     public List<Categories> getCategoriesData(Services someServices){
        List<Categories> theCategories ;
         try{
@@ -222,7 +233,7 @@ public class ProviderEJB {
         return theCategories;
     }
     
-    
+   // @ExcludeClassInterceptors
     public Categories getCategoryByName(String aCategory){
        Categories theCategory ;
         try{
@@ -238,6 +249,7 @@ public class ProviderEJB {
         return theCategory;
     }
         
+   // @ExcludeClassInterceptors
     public List<Items> getItemsData(Categories someCategories, boolean all){
        List<Items> theItems ;
         try{
@@ -258,6 +270,8 @@ public class ProviderEJB {
         return theItems;
     }
     
+    
+    //@ExcludeClassInterceptors
     public List<Unit> getItemUnits(){
        List<Unit> theUnits ;
         try{
@@ -272,6 +286,7 @@ public class ProviderEJB {
         return theUnits;
     } 
     
+    //@ExcludeClassInterceptors
     public List<String> getItemUnits(List<Unit> aList){
         if(aList == null) return null;
         List<String> theResult = new ArrayList();
@@ -281,6 +296,7 @@ public class ProviderEJB {
         return theResult;
     } 
     
+    //@ExcludeClassInterceptors
     public Service getServiceByServiceReference(@NotNull String aReference){
         try{
         TypedQuery<Service> theQuery;
@@ -297,6 +313,7 @@ public class ProviderEJB {
          }
     }
      
+    //@ExcludeClassInterceptors
     public Service getItemsFromService(@NotNull String aKind, @NotNull String aType, @NotNull String aServiceName, @NotNull String aCategory){
        try{
         TypedQuery<Service> theQuery;
@@ -318,14 +335,14 @@ public class ProviderEJB {
     
     public boolean PersistService(@NotNull Service aService){
         if(aService.isMerged()){
-            System.out.println("aService merge ");
+            //System.out.println("aService merge ");
             //aService.setServiceTId(theSavedService.getServiceTId());
             em.merge(aService);
             serviceMergedEvent.fire(aService);
             return false;
         }
         else{
-             System.out.println("aService persist, aService.getServiceTId(): "+aService.getServiceTId());
+             //System.out.println("aService persist, aService.getServiceTId(): "+aService.getServiceTId());
             em.persist(aService);
             serviceAddedEvent.fire(aService);
             return true;
@@ -334,15 +351,15 @@ public class ProviderEJB {
        
     public boolean PersistServiceKind(@NotNull ServiceKind aServiceKind){
         List<ServiceKind> theKinds = getServiceKinds();
-        System.out.println("theKinds == null: "+ (theKinds == null));
+        //System.out.println("theKinds == null: "+ (theKinds == null));
         if(aServiceKind.isMerged()){
-            System.out.println("aServiceKind merge ");
+            //System.out.println("aServiceKind merge ");
             em.merge(aServiceKind);
             serviceKindMergedEvent.fire(aServiceKind);
             return false;
         }
         else{
-             System.out.println("aServiceKind persist, getServiceKindTId: "+aServiceKind.getServiceKindTId());
+             //System.out.println("aServiceKind persist, getServiceKindTId: "+aServiceKind.getServiceKindTId());
             em.persist(aServiceKind);
             serviceKindAddedEvent.fire(aServiceKind);
             return true;
@@ -354,7 +371,7 @@ public class ProviderEJB {
         Unit theUnit = null;
         for(Unit someUnit: theUnits){
             if(someUnit == null) continue;
-            System.out.println("aUnit.getUnit(): "+aUnit.getUnit()+", someUnit.getUnit(): "+someUnit.getUnit());       
+            //System.out.println("aUnit.getUnit(): "+aUnit.getUnit()+", someUnit.getUnit(): "+someUnit.getUnit());       
             if(someUnit.getUnit().equals(aUnit.getUnit())){
                 theUnit = someUnit;
                 theUnit.setMerged(true);
@@ -369,7 +386,7 @@ public class ProviderEJB {
             return false;
         }
         else{
-             System.out.println("aUnit persist, getUnitTId: "+aUnit.getUnitTId());
+             //System.out.println("aUnit persist, getUnitTId: "+aUnit.getUnitTId());
             em.persist(aUnit);
             unitAddedEvent.fire(theUnit);
             return true;
@@ -379,7 +396,7 @@ public class ProviderEJB {
     
     //***************************  Item   *********************************************
     
-        
+    //@ExcludeClassInterceptors    
     public Item getItemByItemReference(@NotNull String aReference){
         TypedQuery<Item> theQuery;
         try{        
@@ -396,6 +413,7 @@ public class ProviderEJB {
         }        
     }
     
+    //@ExcludeClassInterceptors
     public List<Item> getItemsListByServiceReference(@NotNull String aReference){
        java.util.List<Service> theList = null;
         try{
@@ -433,17 +451,20 @@ public class ProviderEJB {
         }
     }
     
+    //@ExcludeClassInterceptors
     public boolean updateItemdata(@NotNull Itemdata anItemdata){
         em.merge(anItemdata);  
         itemdataMergedEvent.fire(anItemdata);
         return true;
     }
-        
+      
+    //@ExcludeClassInterceptors
     public boolean updateItem(@NotNull Item anItem){
         em.merge(anItem); 
         itemRemovedEvent.fire(anItem);
         return true;
     }
+    
     
     public boolean deleteItem(@NotNull Item anItem){
         try{
@@ -457,7 +478,8 @@ public class ProviderEJB {
     }
 
         public boolean deleteService(@NotNull Service aService){
-        try{em.remove(em.merge(aService));
+        try{
+            em.remove(em.merge(aService));
         }
         catch(Exception e){
             return false;
@@ -467,16 +489,21 @@ public class ProviderEJB {
     
     //***************************  ItemData   *********************************************
     
+        //@ExcludeClassInterceptors
     public boolean updateItemData(@NotNull Itemdata anItemData){
         em.merge(anItemData);
         itemdataMergedEvent.fire(anItemData);
-            return true;
+        return true;
     }
+    
+    //@ExcludeClassInterceptors
     public boolean deleteItemData(Itemdata aData){
         em.remove(em.merge(aData));
         itemdataRemovedEvent.fire(aData);
         return false;
     }
+    
+    //@ExcludeClassInterceptors
     public Itemdata getItemdataByReference(@NotNull String aReference){
         TypedQuery<Itemdata> theQuery;
         try{
@@ -493,6 +520,8 @@ public class ProviderEJB {
              return null;
         }
     }
+    
+    //@ExcludeClassInterceptors
     public Itemdata getItemdataById(@NotNull String anItemDataId){
         TypedQuery<Itemdata> theQuery;
         try{
@@ -514,14 +543,20 @@ public class ProviderEJB {
         itemdataAddedEvent.fire(anItemData);
         return true;
     }  
+    
+    //@ExcludeClassInterceptors
     public boolean Updatetemdata(@NotNull Itemdata anItemData){
         em.merge(anItemData);
         itemdataMergedEvent.fire(anItemData);
         return true;
     }
+    
+    //@ExcludeClassInterceptors
     public EntityManager getEm(){
         return em;
     }
+    
+    //@ExcludeClassInterceptors
     public void setEm(EntityManager anEm){
         em = anEm;
     }    

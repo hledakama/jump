@@ -66,11 +66,11 @@ public class ProviderObservers {
     
     
     
-    public void addItemdata(@Observes @ProviderEvent(name = "serviceKindAddedEvent") ServiceKind aKind){
+    public void addServiceKind(@Observes @ProviderEvent(name = "serviceKindAddedEvent") ServiceKind aKind){
         
     }
     
-    public void mergeItemdata(@Observes @ProviderEvent(name = "serviceKindMergedEvent") ServiceKind aKind){
+    public void mergeServiceKind(@Observes @ProviderEvent(name = "serviceKindMergedEvent") ServiceKind aKind){
         
     }
     

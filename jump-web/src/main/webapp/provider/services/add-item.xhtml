@@ -176,7 +176,7 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                     </h:column>
                 </h:dataTable>
                 
-                <h:panelGrid columns="8">
+                <h:panelGrid columns="9">
                     <h:outputLabel value="#{addItem.avatar}"/>
                     <h:outputLabel value="#{addItem.upload}"/>
                     <h:outputLabel value="#{addItem.comment}"/>
@@ -185,6 +185,7 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                     <h:outputLabel value="#{addItem.qty}"/>
                     <h:outputLabel value="#{addItem.virtual}"/>
                     <h:outputLabel value="#{addItem.unit}"/>
+                    <h:outputLabel value="#{addItem.publish}"/>
                     
                     <h:graphicImage id="previewImgId" 
                                     value="/PreviewServlet/#{header['Content-Length']}?data=#{-1}" 
@@ -210,7 +211,9 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                     
                     <h:selectOneMenu id = "unit_itemdata" required="true" value="#{addItem.itemdata.unit}">
                         <f:selectItems value="#{addItem.unitsList}" />
-                    </h:selectOneMenu>                    
+                    </h:selectOneMenu>
+
+                    <h:selectBooleanCheckbox id = "itemdata_publish" value="#{addItem.publishItemdata}"/>                    
                 </h:panelGrid>
                  
                  <h:commandButton value="#{addItem.saveItemLabel}" action="#{addItem.saveItem()}">

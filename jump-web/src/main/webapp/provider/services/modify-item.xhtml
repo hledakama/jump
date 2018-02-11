@@ -149,6 +149,14 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                             <f:selectItems value="#{modifyItem.unitsList}" />
                         </h:selectOneMenu>
                     </h:column> 
+                    
+                    <h:column>
+                        <f:facet name="header">#{modifyItem.publish}</f:facet>  
+                        <h:outputText value="#{model_item_data.publish}"   rendered="#{not model_item_data.edited}"/>
+                      
+                        <h:inputText value="#{model_item_data.publish}" rendered="#{model_item_data.edited}">
+                      </h:inputText>
+                    </h:column>
                   
                     <h:column rendered="#{not model_item_data.edited}">
                       <f:facet name="header" rendered="#{not model_item_data.edited}">#{modifyItem.remove}</f:facet>                      
