@@ -14,11 +14,11 @@ xmlns:f="http://xmlns.jcp.org/jsf/core"
 xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
     
  <f:metadata>
-   <f:viewParam name="kind"      value="#{modifyItem.service.kind}"/>
-   <f:viewParam name="type"      value="#{modifyItem.service.type}"/>
-   <f:viewParam name="service"   value="#{modifyItem.service.servicename}"/> 
-   <f:viewParam name="category"  value="#{modifyItem.service.category}"/>  
-   <f:event type="preRenderView" listener="#{modifyItem.loadService}"/>
+   <f:viewParam name="kind"      value="#{modifyItemBean.service.kind}"/>
+   <f:viewParam name="type"      value="#{modifyItemBean.service.type}"/>
+   <f:viewParam name="service"   value="#{modifyItemBean.service.servicename}"/> 
+   <f:viewParam name="category"  value="#{modifyItemBean.service.category}"/>  
+   <f:event type="preRenderView" listener="#{modifyItemBean.loadService}"/>
  </f:metadata>
     
     <ui:composition template="/WEB-INF/masterTemplate.xhtml">        
@@ -29,18 +29,18 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
         -->
         <ui:define name="title"> 
             <h:outputStylesheet name="css/datatable_styles.css" />
-            <h:outputText value="#{modifyItem.pageTitle}"/> 
+            <h:outputText value="#{modifyItemBean.pageTitle}"/> 
         </ui:define> 
         
 
         <ui:define name="location"> 
-            <h:outputText value="#{modifyItem.nav1}"/><h:graphicImage value="#{resource['images/common/nav_arrow.png']}" alt="/"/>
-            <h:outputText value="#{modifyItem.nav2}"/><h:graphicImage value="#{resource['images/common/nav_arrow.png']}" alt="/"/>
-            <h:outputText value="#{modifyItem.nav3}"/><h:graphicImage value="#{resource['images/common/nav_arrow.png']}" alt="/"/>
-            <h:outputText value="#{modifyItem.nav4}"/><h:graphicImage value="#{resource['images/common/nav_arrow.png']}" alt="/"/>
-            <h:outputText value="#{modifyItem.service.servicename}"/><h:graphicImage value="#{resource['images/common/nav_arrow.png']}" alt="/"/>
-            <h:outputText value="#{modifyItem.service.category}"/><h:graphicImage value="#{resource['images/common/nav_arrow.png']}" alt="/"/>
-            <h:outputText value="#{modifyItem.nav5}"/>
+            <h:outputText value="#{modifyItemBean.nav1}"/><h:graphicImage value="#{resource['images/common/nav_arrow.png']}" alt="/"/>
+            <h:outputText value="#{modifyItemBean.nav2}"/><h:graphicImage value="#{resource['images/common/nav_arrow.png']}" alt="/"/>
+            <h:outputText value="#{modifyItemBean.nav3}"/><h:graphicImage value="#{resource['images/common/nav_arrow.png']}" alt="/"/>
+            <h:outputText value="#{modifyItemBean.nav4}"/><h:graphicImage value="#{resource['images/common/nav_arrow.png']}" alt="/"/>
+            <h:outputText value="#{modifyItemBean.service.servicename}"/><h:graphicImage value="#{resource['images/common/nav_arrow.png']}" alt="/"/>
+            <h:outputText value="#{modifyItemBean.service.category}"/><h:graphicImage value="#{resource['images/common/nav_arrow.png']}" alt="/"/>
+            <h:outputText value="#{modifyItemBean.nav5}"/>
         </ui:define>
         
         <ui:define name="content">
@@ -48,69 +48,69 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
             <h:form id="modify_item_form_id" enctype="multipart/form-data">
                 <h:messages id= "globalMessagesId" infoStyle="color:blue" warnStyle="color:orange" errorStyle="color:red"/>
                 <h:panelGrid columns="5">
-                    <h:outputLabel value="#{modifyItem.serviceKind}"/>
-                    <h:outputLabel value="#{modifyItem.serviceType}"/>
-                    <h:outputLabel value="#{modifyItem.serviceReference}"/>
-                    <h:outputLabel value="#{modifyItem.itemReference}"/>
-                    <h:outputLabel value="#{modifyItem.name}"/>
+                    <h:outputLabel value="#{modifyItemBean.serviceKind}"/>
+                    <h:outputLabel value="#{modifyItemBean.serviceType}"/>
+                    <h:outputLabel value="#{modifyItemBean.serviceReference}"/>
+                    <h:outputLabel value="#{modifyItemBean.itemReference}"/>
+                    <h:outputLabel value="#{modifyItemBean.name}"/>
                     
-                    <h:outputText id = "service_kind" value="#{modifyItem.service.kind}"/>
-                    <h:outputText id = "service_type" value="#{modifyItem.service.type}"/>
-                    <h:outputText id = "service_reference" value="#{modifyItem.service.servicereference}"/>
-                    <h:outputText id = "item_reference" value="#{modifyItem.item.itemreference}"/>                    
+                    <h:outputText id = "service_kind" value="#{modifyItemBean.service.kind}"/>
+                    <h:outputText id = "service_type" value="#{modifyItemBean.service.type}"/>
+                    <h:outputText id = "service_reference" value="#{modifyItemBean.service.servicereference}"/>
+                    <h:outputText id = "item_reference" value="#{modifyItemBean.item.itemreference}"/>                    
                     <!--https://stackoverflow.com/questions/14824178/getting-selected-value-of-a-selectonemenu-->                    
-                    <h:selectOneMenu id = "item_name" required="true" value="#{modifyItem.item.itemname}"
-                                     valueChangeListener="#{modifyItem.onNameChanged}">
-                        <f:selectItems value="#{modifyItem.itemsNames}"/>
+                    <h:selectOneMenu id = "item_name" required="true" value="#{modifyItemBean.item.itemname}"
+                                     valueChangeListener="#{modifyItemBean.onNameChanged}">
+                        <f:selectItems value="#{modifyItemBean.itemsNames}"/>
                         <f:validateLength minimum="3" maximum="50"/>
                         <f:ajax render="@form"/>
                     </h:selectOneMenu>                    
                     <h:message for="item_name"/>                    
                 </h:panelGrid>
                 
-                <h:dataTable id="itemdata_table" value="#{modifyItem.sortitemdatamodel}" var="model_item_data">
+                <h:dataTable id="itemdata_table" value="#{modifyItemBean.sortitemdatamodel}" var="model_item_data">
                     <h:column>
-                        <f:facet name="header"> #{modifyItem.creationDate}  </f:facet> 
+                        <f:facet name="header"> #{modifyItemBean.creationDate}  </f:facet> 
                         #{model_item_data.mdate}
                     </h:column>
                     
                     <h:column>
-                        <f:facet name="header"> #{modifyItem.updateDate}  </f:facet> 
+                        <f:facet name="header"> #{modifyItemBean.updateDate}  </f:facet> 
                         #{model_item_data.sdate}
                     </h:column>
                     
                     <h:column>
-                        <f:facet name="header"> #{modifyItem.avatar}</f:facet>                         
+                        <f:facet name="header"> #{modifyItemBean.avatar}</f:facet>                         
                         <h:graphicImage id="model_file_preview" url="#{model_item_data.lastAvatar.location}" 
                                       alt="avatar is missing" rendered="#{not model_item_data.edited}" 
-                                      width="#{modifyItem.imageMinWidth}" 
-                                      height="#{modifyItem.imageMinHeighth}"/>  
+                                      width="#{modifyItemBean.imageMinWidth}" 
+                                      height="#{modifyItemBean.imageMinHeighth}"/>  
                                                 
                         <h:graphicImage id="model_previewImgId" 
                                         value="/PreviewServlet/#{header['Content-Length']}?data=#{model_item_data.itemdataTId}" 
-                                        width="#{modifyItem.file.size  gt 0 ? modifyItem.imageMinWidth   : 0}" 
-                                        height="#{modifyItem.file.size gt 0 ? modifyItem.imageMinHeighth : 0}"
+                                        width="#{modifyItemBean.file.size  gt 0 ? modifyItemBean.imageMinWidth   : 0}" 
+                                        height="#{modifyItemBean.file.size gt 0 ? modifyItemBean.imageMinHeighth : 0}"
                                     rendered="#{model_item_data.edited}"/> 
                     </h:column>                    
                       
                     <h:column>
-                        <f:facet name="header"  rendered="#{model_item_data.edited}"> #{modifyItem.upload}</f:facet> 
+                        <f:facet name="header"  rendered="#{model_item_data.edited}"> #{modifyItemBean.upload}</f:facet> 
                         
                       <h:inputFile id="model_file" required="false" requiredMessage=""
-                          value="#{modifyItem.file}"  rendered="#{model_item_data.edited}">                                
-                          <f:ajax listener="#{modifyItem.validateFile()}" render="model_previewImgId"/> 
+                          value="#{modifyItemBean.file}"  rendered="#{model_item_data.edited}">                                
+                          <f:ajax listener="#{modifyItemBean.validateFile()}" render="model_previewImgId"/> 
                       </h:inputFile>
                     </h:column>
                     
                     <h:column>
-                       <f:facet name="header">#{modifyItem.comment}</f:facet> 
+                       <f:facet name="header">#{modifyItemBean.comment}</f:facet> 
                        <h:outputText value="#{model_item_data.comment}"   rendered="#{not model_item_data.edited}"/>                      
                        <h:inputText value="#{model_item_data.comment}" rendered="#{model_item_data.edited}">
                       </h:inputText>                      
                     </h:column>
                     
                     <h:column>
-                        <f:facet name="header">#{modifyItem.duration}</f:facet>  
+                        <f:facet name="header">#{modifyItemBean.duration}</f:facet>  
                         <h:outputText value="#{model_item_data.duration}"   rendered="#{not model_item_data.edited}"/>
                       
                         <h:inputText value="#{model_item_data.duration}" rendered="#{model_item_data.edited}">
@@ -118,7 +118,7 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                     </h:column>
                     
                     <h:column>
-                        <f:facet name="header">#{modifyItem.price}</f:facet>  
+                        <f:facet name="header">#{modifyItemBean.price}</f:facet>  
                         <h:outputText value="#{model_item_data.price}"   rendered="#{not model_item_data.edited}"/>
                       
                         <h:inputText value="#{model_item_data.price}" rendered="#{model_item_data.edited}">
@@ -126,7 +126,7 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                     </h:column>
                     
                     <h:column>
-                        <f:facet name="header">#{modifyItem.qty}</f:facet>  
+                        <f:facet name="header">#{modifyItemBean.qty}</f:facet>  
                         <h:outputText value="#{model_item_data.qty}"   rendered="#{not model_item_data.edited}"/>
                       
                         <h:inputText value="#{model_item_data.qty}" rendered="#{model_item_data.edited}">
@@ -134,7 +134,7 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                     </h:column>
                     
                     <h:column>
-                        <f:facet name="header">#{modifyItem.virtual}</f:facet>  
+                        <f:facet name="header">#{modifyItemBean.virtual}</f:facet>  
                         <h:outputText value="#{model_item_data.virtual}"   rendered="#{not model_item_data.edited}"/>
                       
                         <h:inputText value="#{model_item_data.virtual}" rendered="#{model_item_data.edited}">
@@ -142,16 +142,16 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                     </h:column>
                     
                     <h:column>
-                        <f:facet name="header">#{modifyItem.unit}</f:facet> 
+                        <f:facet name="header">#{modifyItemBean.unit}</f:facet> 
                         <h:outputText value="#{model_item_data.unit}"  rendered="#{not model_item_data.edited}"/>
                       
                         <h:selectOneMenu id = "unit" required="true" value="#{model_item_data.unit}" rendered="#{model_item_data.edited}">
-                            <f:selectItems value="#{modifyItem.unitsList}" />
+                            <f:selectItems value="#{modifyItemBean.unitsList}" />
                         </h:selectOneMenu>
                     </h:column> 
                     
                     <h:column>
-                        <f:facet name="header">#{modifyItem.publish}</f:facet>  
+                        <f:facet name="header">#{modifyItemBean.publish}</f:facet>  
                         <h:outputText value="#{model_item_data.publish}"   rendered="#{not model_item_data.edited}"/>
                       
                         <h:inputText value="#{model_item_data.publish}" rendered="#{model_item_data.edited}">
@@ -159,17 +159,17 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                     </h:column>
                   
                     <h:column rendered="#{not model_item_data.edited}">
-                      <f:facet name="header" rendered="#{not model_item_data.edited}">#{modifyItem.remove}</f:facet>                      
+                      <f:facet name="header" rendered="#{not model_item_data.edited}">#{modifyItemBean.remove}</f:facet>                      
                       <h:commandButton image="#{resource['images/common/red_minus.png']}" 
-                                       action="#{modifyItem.removeRowItemdata(model_item_data)}"
+                                       action="#{modifyItemBean.removeRowItemdata(model_item_data)}"
                                        rendered="#{not model_item_data.edited}"> 
                           <f:ajax execute="@form" render="@form"/>
                       </h:commandButton>
                     </h:column>
                     
                     <h:column>
-                      <f:facet name="header">#{modifyItem.edit}</f:facet>
-                      <h:commandButton image="#{resource['images/common/green_plus.png']}" action="#{modifyItem.editRowItemdata(model_item_data)}">  
+                      <f:facet name="header">#{modifyItemBean.edit}</f:facet>
+                      <h:commandButton image="#{resource['images/common/green_plus.png']}" action="#{modifyItemBean.editRowItemdata(model_item_data)}">  
                                        <f:ajax execute="@form" render="@form"/>
                       </h:commandButton>
                     </h:column>

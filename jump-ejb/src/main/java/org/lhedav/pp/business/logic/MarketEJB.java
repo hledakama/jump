@@ -13,6 +13,7 @@ import javax.persistence.PersistenceContext;
 import org.lhedav.pp.business.cdi.event.ProviderEvent;
 import org.lhedav.pp.business.model.common.Global;
 import org.lhedav.pp.business.model.service.Service;
+import org.lhedav.pp.business.model.user.Account;
 
 /**
  *
@@ -39,15 +40,23 @@ public class MarketEJB {
     
     
     public void addService(@Observes @ProviderEvent(name = "serviceAddedEvent") Service aService){
-        
+        System.out.println("serviceAddedEvent to market");
     }
     
     public void removeService(@Observes @ProviderEvent(name = "serviceRemovedEvent") Service aService){
-        
+        System.out.println("serviceRemovedEvent to market");
     }
     
     public void mergeService(@Observes @ProviderEvent(name = "serviceMergedEvent") Service aService){
-        
+        System.out.println("serviceMergedEvent to market");
+    }
+    
+    public void addAccount(@Observes @ProviderEvent(name = "accountAddedEvent") Account anAccount){
+        System.out.println("accountAddedEvent to market");
+    }
+    
+     public void mergeAccount(@Observes @ProviderEvent(name = "acountMergedEvent") Account anAccount){
+        System.out.println("acountMergedEvent to market");
     }
     
 }

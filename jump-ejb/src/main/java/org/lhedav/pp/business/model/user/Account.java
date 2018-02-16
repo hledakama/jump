@@ -51,7 +51,7 @@ public class Account implements Serializable {
     @GeneratedValue( strategy = GenerationType.TABLE, generator = "sequence_account" ) 
     @Column(name = "ACCOUNT_T_ID")
     private Long accountTId;
-    @OneToMany( cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "accountFk")
+   /* @OneToMany( cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "accountFk")
     private List<Service> serviceList;
     @OneToMany( cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "accountFk")
     private List<Order_> orderList;
@@ -69,7 +69,7 @@ public class Account implements Serializable {
         serviceList = new ArrayList();
         orderList   = new ArrayList();
         profileList = new ArrayList();
-    }
+    }*/
 
     public Long getAccountTId() {
         return accountTId;
@@ -79,7 +79,7 @@ public class Account implements Serializable {
         this.accountTId = accountTId;
     }
 
-    @XmlTransient
+   /* @XmlTransient
     public List<Service> getServiceList() {
         return serviceList;
     }
@@ -203,7 +203,7 @@ public class Account implements Serializable {
         return true;
     }  
     return false;
-}
+}*/
 
     @Override
     public int hashCode() {
@@ -230,7 +230,7 @@ public class Account implements Serializable {
         return "org.lhedav.pp.business.model.order.Account[ accountTId=" + accountTId + " ]";
     }
 
-    @XmlTransient
+  /*  @XmlTransient
     public List<Profile> getProfileList() {
         return profileList;
     }
@@ -281,6 +281,6 @@ public class Account implements Serializable {
         return true;
     }  
     return false;
-}
+}*/
     
 }

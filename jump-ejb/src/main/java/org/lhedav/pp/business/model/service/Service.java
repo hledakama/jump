@@ -50,14 +50,15 @@ import org.lhedav.pp.business.model.user.Account;
     , @NamedQuery(name = "Service.findByServicename", query = "SELECT s FROM Service s WHERE s.servicename = :servicename")
     , @NamedQuery(name = "Service.findByServicereference", query = "SELECT s FROM Service s WHERE s.servicereference = :servicereference")
     , @NamedQuery(name = "Service.findByType", query = "SELECT s FROM Service s WHERE s.type = :type")
-    , @NamedQuery(name = "Service.findByAccountTFk", query = "SELECT s FROM Service s WHERE s.accountFk = :accountFk")
+    , @NamedQuery(name = "Service.findByAccountId", query = "SELECT s FROM Service s WHERE s.accountId = :accountId")
     , @NamedQuery(name = "Service.findByServiceNameKindTypeCategory", query = "SELECT s FROM Service s WHERE ((s.servicename = :servicename) AND (s.kind = :kind) AND (s.type = :type) AND (s.category = :category))")
 })
 public class Service implements Serializable {
 
-    @JoinColumn(name = "ACCOUNT_FK", referencedColumnName = "ACCOUNT_T_ID")
-    @ManyToOne
-    private Account accountFk;
+    /*@JoinColumn(name = "ACCOUNT_FK", referencedColumnName = "ACCOUNT_T_ID")
+    @ManyToOne*/
+    @Column(name = "ACCOUNT_ID")
+    private long accountId;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -302,12 +303,12 @@ public class Service implements Serializable {
         merged = aBool;
     }
 
-    public Account getAccountFk() {
-        return accountFk;
+    public Long getAccountId() {
+        return accountId;
     }
 
-    public void setAccountFk(Account accountFk) {
-        this.accountFk = accountFk;
+    public void setAccountId(long anAccountId) {
+        this.accountId = anAccountId;
     }
     
 }

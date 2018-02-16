@@ -12,12 +12,9 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
-import javax.interceptor.ExcludeClassInterceptors;
-import javax.interceptor.Interceptors;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 import org.lhedav.pp.business.data.Categories;
 import org.lhedav.pp.business.data.Items;
@@ -30,7 +27,7 @@ import org.lhedav.pp.business.data.ServiceType;
 import org.lhedav.pp.business.data.Services;
 import org.lhedav.pp.business.data.Unit;
 import org.lhedav.pp.business.cdi.event.ProviderEvent;
-import org.lhedav.pp.business.cdi.interceptor.LoggingInterceptor;
+import org.lhedav.pp.business.model.user.Account;
 
 /**
  *
@@ -101,6 +98,14 @@ public class ProviderEJB {
     @Inject
     @ProviderEvent(name = "unitMergedEvent")
     private Event<Unit> unitMergedEvent;
+    
+    @Inject
+    @ProviderEvent(name = "accountAddedEvent")
+    private Event<Account> accountAddedEvent;
+    
+    @Inject
+    @ProviderEvent(name = "accountMergedEvent")
+    private Event<Account> accountMergedEvent;
     
     
     
@@ -333,6 +338,22 @@ public class ProviderEJB {
          }
     }
     
+        public Account getAccountById(@NotNull Account anAccount){
+            try{
+            TypedQuery<Account> theQuery;
+            theQuery = em.createNamedQuery("Account.findByAccountTId", Account.class);
+            theQuery.setParameter("accountTId", anAccount.getAccountTId());
+            return theQuery.getSingleResult();
+             }
+             catch(javax.persistence.NoResultException e){
+                 return null;
+             }
+             catch(Exception e){
+                 e.printStackTrace();
+                 return null;
+             }
+        }
+    
     public boolean PersistService(@NotNull Service aService){
         if(aService.isMerged()){
             //System.out.println("aService merge ");
@@ -345,6 +366,21 @@ public class ProviderEJB {
              //System.out.println("aService persist, aService.getServiceTId(): "+aService.getServiceTId());
             em.persist(aService);
             serviceAddedEvent.fire(aService);
+            return true;
+        }
+    } 
+    
+    public boolean PersistService(@NotNull Account anAccount){ 
+        Account someAccount = getAccountById(anAccount);
+        if(someAccount != null){
+            em.merge(anAccount);
+            accountMergedEvent.fire(anAccount);
+            return false;
+        }
+        else{
+             //System.out.println("aService persist, aService.getServiceTId(): "+aService.getServiceTId());
+            em.persist(anAccount);
+            accountAddedEvent.fire(anAccount);
             return true;
         }
     }    

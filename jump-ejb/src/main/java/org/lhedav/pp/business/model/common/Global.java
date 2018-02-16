@@ -182,6 +182,7 @@ public class Global {
                 anItemdata.setCurrentAvatar(Global.diritemdata.getAbsolutePath() + File.separator + theSubmitedFileName);
                 theAvatar.setLocation(Global.PROVIDER_IMAGES_FOLDER+theSubmitedFileName);
                 anItemdata.addProviderAvatarToList(theAvatar);
+                System.out.println("resetFile from saveFileToDisk");
                 resetFile(aFile);
                 Date theNewDate = new Date();
                 if(aNewData){
@@ -203,10 +204,12 @@ public class Global {
     }
     
     public static void resetFile(Part aFile) {
+        System.out.println("resetFile called ");
         setUploadValidated(false);
         if(aFile == null) return;
         try {           
                 aFile.delete();
+                aFile = null;
         } catch (IOException ex) {
             Logger.getLogger(Itemdata.class.getName()).log(Level.SEVERE, null, ex);
         }

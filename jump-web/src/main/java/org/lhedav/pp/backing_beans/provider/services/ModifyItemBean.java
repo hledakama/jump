@@ -5,14 +5,18 @@
  */
 package org.lhedav.pp.backing_beans.provider.services;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.bean.ViewScoped;
 //import javax.faces.component.html.HtmlDataTable;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
@@ -37,9 +41,8 @@ import org.lhedav.pp.business.model.service.SortedDataModel;
  * 
  */
 @Named
-//@RequestScoped
 @SessionScoped
-public class ModifyItem implements Serializable{
+public class ModifyItemBean  implements Serializable{
 
     private String pageTitle = "Modify";
     private String Nav1 = "User account";
@@ -92,7 +95,7 @@ public class ModifyItem implements Serializable{
     private String showhide = "ShowHide";
     private String upload = "Upload";
     private String submitRow = "submitRow";
-    private boolean isInitiated = false;  
+    //private static boolean isInitiated = false;  
     private String strItemDeletion = Global.STR_EMPTY;
     private String strLastItemContentDeleted = Global.STR_EMPTY;
     private int numOfItems = -1;
@@ -100,7 +103,7 @@ public class ModifyItem implements Serializable{
    // private HtmlDataTable table;
    // private int rowsOnPage;
 
-    ModifyItem() {
+    ModifyItemBean() {
      //   rowsOnPage = 2;
     }
     
@@ -148,24 +151,27 @@ public class ModifyItem implements Serializable{
     }
     //https://stackoverflow.com/questions/6341462/initializng-a-backing-bean-with-parameters-on-page-load-with-jsf-2-0
     public void loadService(){
-        System.out.println("loadService modify ");
-        Service theService = null;
-        if((service.getKind() != null) && (service.getType() != null) && (service.getServicename() != null) && (service.getCategory() != null)){
-           theService  = provider_logic.getItemsFromService(service.getKind(), service.getType(), service.getServicename(), service.getCategory()); 
+        if(!FacesContext.getCurrentInstance().isPostback()){
+           System.out.println("loadService modify ");
+           Service theService = null;
+           if((service.getKind() != null) && (service.getType() != null) && (service.getServicename() != null) && (service.getCategory() != null)){
+              theService  = provider_logic.getItemsFromService(service.getKind(), service.getType(), service.getServicename(), service.getCategory()); 
+           }
+           List<Item> theItems = null;
+           if(theService != null){
+               theItems = theService.getItemList();
+           }
+
+           if(/*!isInitiated ||*/ isItemNameEmpty() || (theItems != null) && (numOfItems != (theItems.size())) ) {
+               init();
+               //isInitiated = true;
+               numOfItems  = (theItems == null)?0 : theItems.size();
+               //System.out.println("numOfItems: "+numOfItems+ ", theItems.size(): "+theItems.size());
+           }
+           loadService_(); 
+           setSortitemdatamodel();           
         }
-        List<Item> theItems = null;
-        if(theService != null){
-            theItems = theService.getItemList();
-        }
-        
-        if(!isInitiated || isItemNameEmpty() || (theItems != null) && (numOfItems != (theItems.size())) ) {
-            init();
-            isInitiated = true;
-            numOfItems  = (theItems == null)?0 : theItems.size();
-            //System.out.println("numOfItems: "+numOfItems+ ", theItems.size(): "+theItems.size());
-        }
-        loadService_(); 
-        setSortitemdatamodel();
+
     }    
    
     public String sortItemByReference(final String dir) {
@@ -703,11 +709,11 @@ public class ModifyItem implements Serializable{
     }
 //https://stackoverflow.com/tags/jsf/info
     public void setSortitemdatamodel() {
+        System.out.println("resetItem-->setSortitemdatamodel");
         List<Itemdata> theList = null;
         //System.out.println("yyyyy item.getItemname(): "+item.getItemname()+", isItemNameEmpty(): "+isItemNameEmpty());
         item.setItemreference(service.getKind(), service.getType(), service.getServicename(), service.getCategory());
-        if((item.getItemname() == null) && (!isItemNameEmpty())){
-            System.out.println("resetItem-->setSortitemdatamodel");
+        if((item.getItemname() == null) && (!isItemNameEmpty())){            
             resetItem(itemsNames.get(0));
         }
         Item theItem = null;
@@ -770,7 +776,7 @@ public class ModifyItem implements Serializable{
             service.setMerged(true);            
             //System.out.println("service.getItemList().size(): "+service.getItemList().size());
     
-    }
+        }
     }
     public void removeName(int startingIndex, String theJoker){
         if(itemsNames.isEmpty()){
@@ -786,7 +792,7 @@ public class ModifyItem implements Serializable{
         }
         if(theResult != -1 ){
             itemsNames.remove(theResult);
-    }
+        }
     }
 
     public Part getFile() {
@@ -800,6 +806,17 @@ public class ModifyItem implements Serializable{
     public void validateFile(){
         Global.validateFile(file);
     } 
+    
+    public void resetFile() {
+        if(file == null) return;
+        try {           
+                file.delete();
+                file = null;
+                System.out.println("file deleted in modifyItemBean");
+        } catch (IOException ex) {
+            Logger.getLogger(Itemdata.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
     
   /*  public HtmlDataTable getTable() {
         return table;

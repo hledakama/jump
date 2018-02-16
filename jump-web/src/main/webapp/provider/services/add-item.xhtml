@@ -14,11 +14,11 @@ xmlns:f="http://xmlns.jcp.org/jsf/core"
 xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
     
  <f:metadata>
-   <f:viewParam name="kind"      value="#{addItem.service.kind}"/>
-   <f:viewParam name="type"      value="#{addItem.service.type}"/>
-   <f:viewParam name="service"   value="#{addItem.service.servicename}"/> 
-   <f:viewParam name="category"  value="#{addItem.service.category}"/>  
-   <f:event type="preRenderView" listener="#{addItem.loadService}"/>
+   <f:viewParam name="kind"      value="#{addItemBean.service.kind}"/>
+   <f:viewParam name="type"      value="#{addItemBean.service.type}"/>
+   <f:viewParam name="service"   value="#{addItemBean.service.servicename}"/> 
+   <f:viewParam name="category"  value="#{addItemBean.service.category}"/>  
+   <f:event type="preRenderView" listener="#{addItemBean.loadService}"/>
  </f:metadata>
     
     <ui:composition template="/WEB-INF/masterTemplate.xhtml">        
@@ -29,18 +29,18 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
         -->
         <ui:define name="title"> 
             <h:outputStylesheet name="css/datatable_styles.css" />
-            <h:outputText value="#{addItem.pageTitle}"/> 
+            <h:outputText value="#{addItemBean.pageTitle}"/> 
         </ui:define> 
         
 
         <ui:define name="location"> 
-            <h:outputText value="#{addItem.nav1}"/><h:graphicImage value="#{resource['images/common/nav_arrow.png']}" alt="/"/>
-            <h:outputText value="#{addItem.nav2}"/><h:graphicImage value="#{resource['images/common/nav_arrow.png']}" alt="/"/>
-            <h:outputText value="#{addItem.nav3}"/><h:graphicImage value="#{resource['images/common/nav_arrow.png']}" alt="/"/>
-            <h:outputText value="#{addItem.nav4}"/><h:graphicImage value="#{resource['images/common/nav_arrow.png']}" alt="/"/>
-            <h:outputText value="#{addItem.service.servicename}"/><h:graphicImage value="#{resource['images/common/nav_arrow.png']}" alt="/"/>
-            <h:outputText value="#{addItem.service.category}"/><h:graphicImage value="#{resource['images/common/nav_arrow.png']}" alt="/"/>
-            <h:outputText value="#{addItem.nav5}"/>
+            <h:outputText value="#{addItemBean.nav1}"/><h:graphicImage value="#{resource['images/common/nav_arrow.png']}" alt="/"/>
+            <h:outputText value="#{addItemBean.nav2}"/><h:graphicImage value="#{resource['images/common/nav_arrow.png']}" alt="/"/>
+            <h:outputText value="#{addItemBean.nav3}"/><h:graphicImage value="#{resource['images/common/nav_arrow.png']}" alt="/"/>
+            <h:outputText value="#{addItemBean.nav4}"/><h:graphicImage value="#{resource['images/common/nav_arrow.png']}" alt="/"/>
+            <h:outputText value="#{addItemBean.service.servicename}"/><h:graphicImage value="#{resource['images/common/nav_arrow.png']}" alt="/"/>
+            <h:outputText value="#{addItemBean.service.category}"/><h:graphicImage value="#{resource['images/common/nav_arrow.png']}" alt="/"/>
+            <h:outputText value="#{addItemBean.nav5}"/>
         </ui:define>
         
         <ui:define name="content">
@@ -48,20 +48,20 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
             <h:form id="add_item_form_id" enctype="multipart/form-data">
                 <h:messages id= "globalMessagesId" infoStyle="color:blue" warnStyle="color:orange" errorStyle="color:red"/>
                 <h:panelGrid columns="5">
-                    <h:outputLabel value="#{addItem.serviceKind}"/>
-                    <h:outputLabel value="#{addItem.serviceType}"/>
-                    <h:outputLabel value="#{addItem.serviceReference}"/>
-                    <h:outputLabel value="#{addItem.itemReference}"/>
-                    <h:outputLabel value="#{addItem.name}"/>
+                    <h:outputLabel value="#{addItemBean.serviceKind}"/>
+                    <h:outputLabel value="#{addItemBean.serviceType}"/>
+                    <h:outputLabel value="#{addItemBean.serviceReference}"/>
+                    <h:outputLabel value="#{addItemBean.itemReference}"/>
+                    <h:outputLabel value="#{addItemBean.name}"/>
                     
-                    <h:outputText id = "service_kind" value="#{addItem.service.kind}"/>
-                    <h:outputText id = "service_type" value="#{addItem.service.type}"/>
-                    <h:outputText id = "service_reference" value="#{addItem.service.servicereference}"/>
-                    <h:outputText id = "item_reference" value="#{addItem.item.itemreference}"/>                    
+                    <h:outputText id = "service_kind" value="#{addItemBean.service.kind}"/>
+                    <h:outputText id = "service_type" value="#{addItemBean.service.type}"/>
+                    <h:outputText id = "service_reference" value="#{addItemBean.service.servicereference}"/>
+                    <h:outputText id = "item_reference" value="#{addItemBean.item.itemreference}"/>                    
                     <!--https://stackoverflow.com/questions/14824178/getting-selected-value-of-a-selectonemenu-->                    
-                    <h:selectOneMenu id = "item_name" required="true" value="#{addItem.item.itemname}"
-                                     valueChangeListener="#{addItem.onNameChanged}">
-                        <f:selectItems value="#{addItem.itemsNames}"/>
+                    <h:selectOneMenu id = "item_name" required="true" value="#{addItemBean.item.itemname}"
+                                     valueChangeListener="#{addItemBean.onNameChanged}">
+                        <f:selectItems value="#{addItemBean.itemsNames}"/>
                         <f:validateLength minimum="3" maximum="50"/>
                         <f:ajax render="@form"/>
                     </h:selectOneMenu>                    
@@ -94,36 +94,36 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                 -->
             
                 
-                <h:dataTable id="itemdata_table" value="#{addItem.sortitemdatamodel}" var="model_item_data">
+                <h:dataTable id="itemdata_table" value="#{addItemBean.sortitemdatamodel}" var="model_item_data">
                     <h:column>
-                        <f:facet name="header"> #{addItem.creationDate}  </f:facet> 
+                        <f:facet name="header"> #{addItemBean.creationDate}  </f:facet> 
                         #{model_item_data.mdate}
                     </h:column>
                     
                     <h:column>
-                        <f:facet name="header"> #{addItem.updateDate}  </f:facet> 
+                        <f:facet name="header"> #{addItemBean.updateDate}  </f:facet> 
                         #{model_item_data.sdate}
                     </h:column>
                     
                     <h:column>
-                        <f:facet name="header"> #{addItem.avatar}</f:facet>                         
+                        <f:facet name="header"> #{addItemBean.avatar}</f:facet>                         
                         <h:graphicImage id="model_file_preview" url="#{model_item_data.lastAvatar.location}" 
                                       alt="avatar is missing" rendered="#{not model_item_data.edited}" 
-                                      width="#{addItem.imageMinWidth}" 
-                                      height="#{addItem.imageMinHeighth}"/>
+                                      width="#{addItemBean.imageMinWidth}" 
+                                      height="#{addItemBean.imageMinHeighth}"/>
                     </h:column>
                     
            
                     
                     <h:column>
-                       <f:facet name="header">#{addItem.comment}</f:facet> 
+                       <f:facet name="header">#{addItemBean.comment}</f:facet> 
                        <h:outputText value="#{model_item_data.comment}"   rendered="#{not model_item_data.edited}"/>                      
                        <h:inputText value="#{model_item_data.comment}" rendered="#{model_item_data.edited}">
                       </h:inputText>                      
                     </h:column>
                     
                     <h:column>
-                        <f:facet name="header">#{addItem.duration}</f:facet>  
+                        <f:facet name="header">#{addItemBean.duration}</f:facet>  
                         <h:outputText value="#{model_item_data.duration}"   rendered="#{not model_item_data.edited}"/>
                       
                         <h:inputText value="#{model_item_data.duration}" rendered="#{model_item_data.edited}">
@@ -131,7 +131,7 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                     </h:column>
                     
                     <h:column>
-                        <f:facet name="header">#{addItem.price}</f:facet>  
+                        <f:facet name="header">#{addItemBean.price}</f:facet>  
                         <h:outputText value="#{model_item_data.price}"   rendered="#{not model_item_data.edited}"/>
                       
                         <h:inputText value="#{model_item_data.price}" rendered="#{model_item_data.edited}">
@@ -139,7 +139,7 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                     </h:column>
                     
                     <h:column>
-                        <f:facet name="header">#{addItem.qty}</f:facet>  
+                        <f:facet name="header">#{addItemBean.qty}</f:facet>  
                         <h:outputText value="#{model_item_data.qty}"   rendered="#{not model_item_data.edited}"/>
                       
                         <h:inputText value="#{model_item_data.qty}" rendered="#{model_item_data.edited}">
@@ -147,7 +147,7 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                     </h:column>
                     
                     <h:column>
-                        <f:facet name="header">#{addItem.virtual}</f:facet>  
+                        <f:facet name="header">#{addItemBean.virtual}</f:facet>  
                         <h:outputText value="#{model_item_data.virtual}"   rendered="#{not model_item_data.edited}"/>
                       
                         <h:inputText value="#{model_item_data.virtual}" rendered="#{model_item_data.edited}">
@@ -155,68 +155,68 @@ xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
                     </h:column>
                     
                     <h:column>
-                        <f:facet name="header">#{addItem.unit}</f:facet> 
+                        <f:facet name="header">#{addItemBean.unit}</f:facet> 
                         <h:outputText value="#{model_item_data.unit}"  rendered="#{not model_item_data.edited}"/>
                       
                         <h:selectOneMenu id = "unit" required="true" value="#{model_item_data.unit}" rendered="#{model_item_data.edited}">
-                            <f:selectItems value="#{addItem.unitsList}" />
+                            <f:selectItems value="#{addItemBean.unitsList}" />
                         </h:selectOneMenu>
                     </h:column> 
                   
                     <h:column  rendered="#{not model_item_data.edited}">
-                      <f:facet name="header">#{addItem.remove} </f:facet>                      
-                      <h:commandButton image="#{resource['images/common/red_minus.png']}" action="#{addItem.removeRowItemdata(model_item_data)}"/>
+                      <f:facet name="header">#{addItemBean.remove} </f:facet>                      
+                      <h:commandButton image="#{resource['images/common/red_minus.png']}" action="#{addItemBean.removeRowItemdata(model_item_data)}"/>
                     </h:column>
                     
                     <h:column>
-                      <f:facet name="header" rendered="#{not model_item_data.edited}">#{addItem.edit}</f:facet>
+                      <f:facet name="header" rendered="#{not model_item_data.edited}">#{addItemBean.edit}</f:facet>
                       <h:commandButton image="#{resource['images/common/green_plus.png']}" 
-                                       action="#{addItem.editRowItemdata(model_item_data)}"
+                                       action="#{addItemBean.editRowItemdata(model_item_data)}"
                                        rendered="#{not model_item_data.edited}"/>
                     </h:column>
                 </h:dataTable>
                 
                 <h:panelGrid columns="9">
-                    <h:outputLabel value="#{addItem.avatar}"/>
-                    <h:outputLabel value="#{addItem.upload}"/>
-                    <h:outputLabel value="#{addItem.comment}"/>
-                    <h:outputLabel value="#{addItem.duration}"/>
-                    <h:outputLabel value="#{addItem.price}"/>
-                    <h:outputLabel value="#{addItem.qty}"/>
-                    <h:outputLabel value="#{addItem.virtual}"/>
-                    <h:outputLabel value="#{addItem.unit}"/>
-                    <h:outputLabel value="#{addItem.publish}"/>
+                    <h:outputLabel value="#{addItemBean.avatar}"/>
+                    <h:outputLabel value="#{addItemBean.upload}"/>
+                    <h:outputLabel value="#{addItemBean.comment}"/>
+                    <h:outputLabel value="#{addItemBean.duration}"/>
+                    <h:outputLabel value="#{addItemBean.price}"/>
+                    <h:outputLabel value="#{addItemBean.qty}"/>
+                    <h:outputLabel value="#{addItemBean.virtual}"/>
+                    <h:outputLabel value="#{addItemBean.unit}"/>
+                    <h:outputLabel value="#{addItemBean.publish}"/>
                     
                     <h:graphicImage id="previewImgId" 
                                     value="/PreviewServlet/#{header['Content-Length']}?data=#{-1}" 
-                                    width= "#{addItem.file.size gt 0 ? addItem.imageMinWidth : 0   }" 
-                                    height="#{addItem.file.size gt 0 ? addItem.imageMinHeighth : 0 }"
+                                    width= "#{addItemBean.file.size gt 0 ? addItemBean.imageMinWidth   : 0 }" 
+                                    height="#{addItemBean.file.size gt 0 ? addItemBean.imageMinHeighth : 0 }"
                                     rendered="true"/>
                     
-                    <h:inputFile id="fileToUpload_itemdata" required="false" requiredMessage="" value="#{addItem.file}">
-                        <f:ajax render="previewImgId" listener="#{addItem.validateFile()}"/>           
+                    <h:inputFile id="fileToUpload_itemdata" required="false" requiredMessage="" value="#{addItemBean.file}">
+                        <f:ajax render="previewImgId" listener="#{addItemBean.validateFile()}"/>           
                     </h:inputFile>
-                    <h:inputText id = "comment_itemdata" value="#{addItem.itemdata.comment}"/>   
-                    <h:inputText id = "durataion_itemdata" value="#{addItem.itemdata.duration}"/>
+                    <h:inputText id = "comment_itemdata" value="#{addItemBean.itemdata.comment}"/>   
+                    <h:inputText id = "durataion_itemdata" value="#{addItemBean.itemdata.duration}"/>
                                         
-                    <h:inputText id = "itemdata_price" required="true" value="#{addItem.itemdata.price}">
+                    <h:inputText id = "itemdata_price" required="true" value="#{addItemBean.itemdata.price}">
                         <f:validateLongRange minimum="1" maximum="1000000"/>
                     </h:inputText >                    
                     
-                    <h:inputText id = "itemdata_qty" required="#{not addItem.virtualItemdata}" value="#{addItem.itemdata.qty}">
+                    <h:inputText id = "itemdata_qty" required="#{not addItemBean.virtualItemdata}" value="#{addItemBean.itemdata.qty}">
                     <f:validateLongRange minimum="0" maximum="10000"/>
                     </h:inputText > 
                     
-                    <h:selectBooleanCheckbox id = "itemdata_virtual" value="#{addItem.virtualItemdata}"/>                    
+                    <h:selectBooleanCheckbox id = "itemdata_virtual" value="#{addItemBean.virtualItemdata}"/>                    
                     
-                    <h:selectOneMenu id = "unit_itemdata" required="true" value="#{addItem.itemdata.unit}">
-                        <f:selectItems value="#{addItem.unitsList}" />
+                    <h:selectOneMenu id = "unit_itemdata" required="true" value="#{addItemBean.itemdata.unit}">
+                        <f:selectItems value="#{addItemBean.unitsList}" />
                     </h:selectOneMenu>
 
-                    <h:selectBooleanCheckbox id = "itemdata_publish" value="#{addItem.publishItemdata}"/>                    
+                    <h:selectBooleanCheckbox id = "itemdata_publish" value="#{addItemBean.publishItemdata}"/>                    
                 </h:panelGrid>
                  
-                 <h:commandButton value="#{addItem.saveItemLabel}" action="#{addItem.saveItem()}">
+                 <h:commandButton value="#{addItemBean.saveItemLabel}" action="#{addItemBean.saveItem()}">
                      <!-- <f:ajax execute="fileToUpload" render="@all"/> use @all in JSF 2.2.0 -->
                      <f:ajax execute="@form" render="@form"/> <!-- works in JSF 2.2.5 -->
                  </h:commandButton>

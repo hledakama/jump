@@ -75,9 +75,10 @@ public class Profile implements Serializable {
     @Size(max = 10, min = 7)
     @Column(name = "MOBILE_PHONE")
     private String mobilePhone;
-    @JoinColumn(name = "ACCOUNT_FK", referencedColumnName = "ACCOUNT_T_ID")
-    @ManyToOne
-    private Account accountFk;    
+    /*@JoinColumn(name = "ACCOUNT_FK", referencedColumnName = "ACCOUNT_T_ID")
+    @ManyToOne*/
+    @Column(name = "ACCOUNT_ID")
+    private long accountId;    
     @OneToMany( cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "profileFk")
     private List<Address> addressList;
     @OneToMany( cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "profileFk")
@@ -157,12 +158,12 @@ public class Profile implements Serializable {
         this.mobilePhone = mobilePhone;
     }
 
-    public Account getAccountFk() {
-        return accountFk;
+    public long getAccountId() {
+        return accountId;
     }
 
-    public void setAccountFk(Account accountFk) {
-        this.accountFk = accountFk;
+    public void setAccountId(long anAccountId) {
+        this.accountId = anAccountId;
     }
 
     @Override

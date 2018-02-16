@@ -6,6 +6,7 @@
 package org.lhedav.pp.backing_beans.provider.services;
 
 
+import java.io.Serializable;
 import org.lhedav.pp.business.logic.ProviderEJB;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
@@ -36,8 +37,8 @@ import org.lhedav.pp.business.model.service.SortedDataModel;
  */
 
 @Named
-@RequestScoped
-public class PublishService {
+@SessionScoped
+public class PublishService  implements Serializable{
     private static Service service = new Service();
     private List<String> servicesKinds   = new ArrayList();
     private List<String> servicesTypes   = new ArrayList();

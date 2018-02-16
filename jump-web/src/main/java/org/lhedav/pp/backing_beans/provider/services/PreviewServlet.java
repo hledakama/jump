@@ -12,12 +12,10 @@ import java.io.OutputStream;
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 import org.lhedav.pp.business.model.common.Global;
 
@@ -30,13 +28,13 @@ import org.lhedav.pp.business.model.common.Global;
 //http://www.codejava.net/java-ee/servlet/webservlet-annotation-examples
 //https://docs.oracle.com/javaee/6/tutorial/doc/gmhal.html
 @WebServlet(name = "PreviewServlet", urlPatterns = {"/PreviewServlet/*"})
-@MultipartConfig(location="/opt/lhedav/images/tmp", fileSizeThreshold=1024*1024, 
-    maxFileSize=1024*1024*5, maxRequestSize=1024*1024*5*5)
+/*@MultipartConfig(location="/opt/lhedav/images/tmp", fileSizeThreshold=1024*1024, 
+    maxFileSize=1024*1024*5, maxRequestSize=1024*1024*5*5)*/
 public class PreviewServlet extends HttpServlet {
 @Inject
-private AddItem additemBean;
+private AddItemBean addItemBean;
 @Inject
-private ModifyItem modifyitemBean;
+private ModifyItemBean modifyItemBean;
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -60,24 +58,31 @@ private ModifyItem modifyitemBean;
         System.out.println("data: "+request.getParameter("data")+", source: "+source);        
             //https://www.ntu.edu.sg/home/ehchua/programming/java/JavaServlets.html   
             //http://www.codejava.net/java-ee/servlet/java-file-upload-example-with-servlet-30-api
+            //https://stackoverflow.com/questions/2633112/get-jsf-managed-bean-by-name-in-any-servlet-related-class
         try {
             System.out.println("preview1");
-            HttpSession session = request.getSession(false);
-            Part theFile = null; 
+            //HttpSession session = request.getSession(false);
+            Part theFile = null;
             //https://stackoverflow.com/questions/2633112/get-jsf-managed-bean-by-name-in-any-servlet-related-class
-                        
+                
                 if (data.equals("-1")) {
-                    System.out.println("preview2 add dat is null");
-                    if(additemBean != null){
-                        System.out.println("preview2 additemBean bean --");
-                        theFile = additemBean.getFile();
-                    }                                        
+                    if(addItemBean != null){
+                        //AddItemBean addItemBean = (AddItemBean) session.getAttribute("beanName");
+                        System.out.println("preview2 add dat is null");
+                        if (addItemBean.getFile() != null) {
+                            System.out.println("preview2 addItemBean bean --");
+                            theFile = addItemBean.getFile();
+                        }                         
+                    }
                 }
                 else{
-                    System.out.println("preview2 modify data ok");
-                    if(modifyitemBean != null){
-                        System.out.println("preview2 modify bean ++");
-                        theFile = modifyitemBean.getFile();
+                    if(modifyItemBean != null){
+                        //ModifyItemBean modifyItemBean = (ModifyItemBean) session.getAttribute("beanName");
+                        System.out.println("preview2 modify data ok");
+                        if(modifyItemBean.getFile() != null){
+                            System.out.println("preview2 modify bean ++");
+                            theFile = modifyItemBean.getFile();
+                        }
                     }
                 }
                 if (theFile != null) {
@@ -87,7 +92,7 @@ private ModifyItem modifyitemBean;
                         Graphics2D g = resizedImage.createGraphics();
                         g.drawImage(image, 0, 0, Global.IMAGE_MIN_WIDTH, Global.IMAGE_MIN_HEIGTH, null);
                         g.dispose();
-                        ImageIO.write(resizedImage, "png", out);                    
+                        ImageIO.write(resizedImage, "png", out);
                     }
 
         } finally {

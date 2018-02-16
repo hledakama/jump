@@ -98,9 +98,10 @@ public class Order_ implements Serializable {
     private List<Chat> chatList;
     @OneToMany( cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "orderFk")
     private List<OrderLine> orderLineList;
-    @JoinColumn(name = "ACCOUNT_FK", referencedColumnName = "ACCOUNT_T_ID")
-    @ManyToOne
-    private Account accountFk;
+    /*@JoinColumn(name = "ACCOUNT_FK", referencedColumnName = "ACCOUNT_T_ID")
+    @ManyToOne*/
+    @Column(name = "ACCOUNT_ID")
+    private long accountId;
     @OneToMany( cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "orderFk")
     private List<Rate> rateList;
     @OneToMany( cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "orderFk")
@@ -338,12 +339,12 @@ public class Order_ implements Serializable {
     return false;
 }
 
-    public Account getAccountFk() {
-        return accountFk;
+    public long getAccountId() {
+        return accountId;
     }
 
-    public void setAccountFk(Account accountFk) {
-        this.accountFk = accountFk;
+    public void setAccountFk(long anAccountId) {
+        this.accountId = anAccountId;
     }
 
     @XmlTransient

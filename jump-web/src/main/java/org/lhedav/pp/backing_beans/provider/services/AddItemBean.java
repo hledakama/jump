@@ -5,6 +5,7 @@
  */
 package org.lhedav.pp.backing_beans.provider.services;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,20 +13,19 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import javax.annotation.PostConstruct;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.CollectionDataModel;
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.json.JsonArray;
 import javax.servlet.http.Part;
 import javax.validation.constraints.NotNull;
 import org.lhedav.pp.business.data.Items;
 import org.lhedav.pp.business.data.ServiceKind;
-import org.lhedav.pp.business.data.Services;
 import org.lhedav.pp.business.json.ItemdataJsonBuilder;
 import org.lhedav.pp.business.logic.ProviderEJB;
 import org.lhedav.pp.business.model.common.CRC32StringCollection;
@@ -36,16 +36,14 @@ import org.lhedav.pp.business.model.user.Address;
 import org.lhedav.pp.business.model.user.Avatar;
 import org.lhedav.pp.business.model.service.Service;
 import org.lhedav.pp.business.model.service.SortedDataModel;
-import org.lhedav.pp.business.model.user.Account;
 
 /**
  *
  * @author client
  */
 @Named
-//@RequestScoped
-@SessionScoped
-public class AddItem implements Serializable{
+@SessionScoped //https://stackoverflow.com/questions/7031885/how-to-choose-the-right-bean-scope/7031941
+public class AddItemBean implements Serializable{
 
     private String pageTitle = "Add";
     private String Nav1 = "User account";
@@ -85,8 +83,8 @@ public class AddItem implements Serializable{
     private boolean publishItemdata;
     @EJB
     private ProviderEJB provider_logic;
-    @Inject
-    private Account userAccount;
+    //@Inject
+    //private Account userAccount;
     private boolean itemNameChanged = false; 
     private List<String> itemsNames = new ArrayList();
     private List<String> unitsList = new ArrayList();
@@ -109,37 +107,39 @@ public class AddItem implements Serializable{
                                         (new Date()).getTime()+ 
                                         "_" + 
                                         Global.DEFAULT_SHOPPING_IMAGE_NAME;
+    //private static boolean isPageLoaded = false;
+    List<Items> listOfItemsData;
 
-    AddItem() {
+    AddItemBean() {
+        /*
+        In @ViewScope, unitsList, itemsNames and file are not available. Because, they come from
+        another views back beans i.e. ProviderEJB, PreviewServlet in this case we need to upgrade
+        to @SessionScope.
         
-    }
-    
-    @PostConstruct
-    public void initUserAccount(){
-        userAccount.setAccountTId(Long.MIN_VALUE);// TODO, fecth from profile
-    }
-
+        
+        The session objects lives across forward and redirect mechanisms.
+        */
+    }     
     
     public void init() {
          //System.out.println("PostConstruct init");
-         List<Items> theItemsData = null;
          ServiceKind theKind = provider_logic.getServiceKindByName(service.getKind());
          if(theKind != null){
-             theItemsData = theKind.getListOfItems(service.getType(), 
+             listOfItemsData = theKind.getListOfItems(service.getType(), 
                                                    service.getServicename(), 
                                                    service.getCategory());
-         }
+        }   
          
-        if(theItemsData != null){
+        if(listOfItemsData != null){
             Global.buildComboBoxContent(
                     null, 
                     null, 
                     null, 
                     null, 
-                    theItemsData, 
+                    listOfItemsData, 
                     itemsNames,
                     Global.ITEMS, 
-                    null);
+                    item.getItemname());
         }
         if(!itemsNames.isEmpty()){
           resetItem(itemsNames.get(0));  
@@ -151,9 +151,24 @@ public class AddItem implements Serializable{
     }
     //https://stackoverflow.com/questions/6341462/initializng-a-backing-bean-with-parameters-on-page-load-with-jsf-2-0
     public void loadService(){
-        init();
-        loadService_();
-        setSortitemdatamodel();
+        if(!FacesContext.getCurrentInstance().isPostback()){
+            System.out.println("loadService ++++++>");
+                System.out.println("isPageLoaded ----->");
+                init();
+            if(listOfItemsData != null){
+                Global.buildComboBoxContent(
+                        null, 
+                        null, 
+                        null, 
+                        null, 
+                        listOfItemsData, 
+                        itemsNames,
+                        Global.ITEMS, 
+                        item.getItemname());
+            }
+            loadService_();
+            setSortitemdatamodel();
+        }       
     }    
    
     public String sortItemByReference(final String dir) {
@@ -204,7 +219,6 @@ public class AddItem implements Serializable{
     }
     
     public void resetItem(String anItemName){
-        Global.resetFile(file);
         item = new Item();
         item.setItemname(anItemName);
         if(itemsNames.isEmpty()){
@@ -258,10 +272,12 @@ public class AddItem implements Serializable{
         //}
         //System.out.println("=========== addItem end =============");
         service.setServicereference();
-        service.setAccountFk(userAccount);
+        service.setAccountId(Long.MIN_VALUE); // TODO later, link to account ID
         provider_logic.PersistService(service);        
         //after persisting
+        //Global.resetFile(file);
         itemdata = new Itemdata();
+        resetFile();
         return Global.STAY_ON_CURRENT_PAGE;
     }
 
@@ -787,6 +803,17 @@ public class AddItem implements Serializable{
     
     public Part getFile() {
         return file;
+    }
+    
+    public void resetFile() {
+        if(file == null) return;
+        try {           
+                file.delete();
+                file = null;
+                System.out.println("file deleted in addItemBean");
+        } catch (IOException ex) {
+            Logger.getLogger(Itemdata.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void setFile(Part file) {

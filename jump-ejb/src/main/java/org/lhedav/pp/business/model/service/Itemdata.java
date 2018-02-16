@@ -167,13 +167,13 @@ public class Itemdata implements Serializable {
     }
 
     public Itemdata(Long itemdataTId, Date mdate) {
-        this.itemdataTId = itemdataTId;
-        this.mdate = mdate;
-        providerAddressList = new ArrayList();
-        providerAvatarList = new ArrayList();
-        wishListList = new ArrayList();
-        recommendationList = new ArrayList();
-        marketViewList = new ArrayList();
+        this.itemdataTId     = itemdataTId;
+        this.mdate           = mdate;
+        providerAddressList  = new ArrayList();
+        providerAvatarList   = new ArrayList();
+        wishListList         = new ArrayList();
+        recommendationList   = new ArrayList();
+        marketViewList       = new ArrayList();
         adsConfigurationList = new ArrayList();
     }
 
